@@ -227,6 +227,29 @@
   .btn-research:disabled{background:#ccc;box-shadow:0 3px 0 #aaa;cursor:not-allowed}
   .btn-research.done{background:linear-gradient(135deg,var(--green),var(--green2));box-shadow:0 3px 0 var(--green2);cursor:default}
 
+  /* ── クエスト ── */
+  .quest-panel{width:100%;background:var(--panel);border-radius:20px;padding:14px 16px;box-shadow:0 4px 16px rgba(0,0,0,.07);margin-bottom:12px}
+  .quest-panel-title{font-family:'Kaisei Decol',serif;font-size:15px;color:var(--brown);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+  .quest-item{display:flex;align-items:center;gap:8px;padding:10px;border-radius:12px;border:2px solid #e8d8b0;background:linear-gradient(135deg,#fffdf5,#fef9ed);margin-bottom:8px}
+  .quest-item:last-child{margin-bottom:0}
+  .quest-item.done{border-color:var(--green);background:linear-gradient(135deg,#f1f8e9,#e8f5e9)}
+  .quest-item.claimed{border-color:#ccc;background:#f5f5f5;opacity:.65}
+  .quest-emoji{font-size:22px;flex-shrink:0}
+  .quest-info{flex:1;min-width:0}
+  .quest-label{font-size:11px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:3px}
+  .quest-progress-bar{height:5px;background:#e8d8b0;border-radius:3px;overflow:hidden;margin-bottom:2px}
+  .quest-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green2));border-radius:3px;transition:width .4s}
+  .quest-count{font-size:9px;color:var(--muted);font-weight:700}
+  .quest-right{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0}
+  .quest-reward{font-size:10px;font-weight:800;color:var(--coin2);white-space:nowrap}
+  .btn-quest{background:linear-gradient(135deg,var(--green),var(--green2));color:white;border:none;border-radius:8px;padding:5px 10px;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:10px;cursor:pointer;box-shadow:0 2px 0 var(--green2);white-space:nowrap}
+  .btn-quest:disabled{background:#ccc;box-shadow:0 2px 0 #aaa;cursor:not-allowed;color:#999}
+
+  /* ── サウンドボタン ── */
+  .sound-btns{display:flex;gap:4px}
+  .btn-sound{background:rgba(255,255,255,.8);border:2px solid #e8d8b0;border-radius:10px;padding:4px 7px;font-size:10px;font-weight:800;color:var(--brown);cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif;transition:border-color .15s}
+  .btn-sound.off{border-color:#ccc;color:#aaa}
+
   /* ── 週末バッジ ── */
   .weekend-badge{display:flex;align-items:center;gap:4px;background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:2px solid #ff9800;border-radius:20px;padding:5px 10px;font-size:12px;font-weight:800;color:#e65100;white-space:nowrap}
 
@@ -277,8 +300,12 @@
     <div class="title">🌿 <span>のどか</span>まち</div>
     <div class="header-right">
       <div class="prestige-badge" id="prestigeBadge" style="display:none">⭐<span id="prestigeCount">0</span>世代</div>
-      <div class="weekend-badge" id="weekendBadge" style="display:none">🎉 週末ボーナス×1.3</div>
+      <div class="weekend-badge" id="weekendBadge" style="display:none">🎉 週末×1.3</div>
       <div class="season-badge season-spring" id="seasonBadge">🌸 春</div>
+      <div class="sound-btns">
+        <button class="btn-sound" id="btnBgm" onclick="toggleBgm()">🎵</button>
+        <button class="btn-sound" id="btnSfx" onclick="toggleSfx()">🔔</button>
+      </div>
       <div class="coin-display"><span class="coin-icon">🪙</span><span id="coinCount">0</span></div>
     </div>
   </header>
@@ -360,6 +387,15 @@
   <div class="panel" id="panel-lvdesign" style="display:none">
     <div class="panel-title">📊 レベルデザイン設計書</div>
     <div id="lvDesignContent"></div>
+  </div>
+
+  <!-- クエストパネル -->
+  <div class="quest-panel">
+    <div class="quest-panel-title">
+      <span>🎯 デイリークエスト</span>
+      <span id="questCompleted" style="font-size:11px;color:var(--muted);font-family:sans-serif"></span>
+    </div>
+    <div id="questContainer"></div>
   </div>
 
   <div class="save-bar"><span>💾 <span id="saveStatus">未保存</span></span><button class="btn-save" onclick="saveGame()">今すぐ保存</button></div>
@@ -499,6 +535,206 @@ const EVENTS = [
 ];
 
 // ══════════════════════════════
+//  サウンドシステム（Web Audio API）
+// ══════════════════════════════
+let _audioCtx = null, _sfxOn = true, _bgmOn = true, _bgmTimer = null;
+
+function getAudioCtx() {
+  if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (_audioCtx.state === 'suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+
+function playTones(freqs, dur = 0.3, vol = 0.22, type = 'sine') {
+  if (!_sfxOn) return;
+  try {
+    const ctx = getAudioCtx();
+    freqs.forEach((freq, i) => {
+      const osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.type = type; osc.frequency.value = freq;
+      osc.connect(g); g.connect(ctx.destination);
+      const t = ctx.currentTime + i * 0.09;
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      osc.start(t); osc.stop(t + dur + 0.05);
+    });
+  } catch(e) {}
+}
+
+function playCoinSfx()      { playTones([523, 784], 0.2, 0.18); }
+function playBuildSfx()     { playTones([262, 330, 392], 0.28, 0.2); }
+function playAchievSfx()    { playTones([523, 659, 784, 1047], 0.5, 0.22); }
+function playHarvestSfx()   { playTones([440, 550], 0.18, 0.18); }
+function playMilestoneSfx() { playTones([392, 523, 659, 784, 1047], 0.55, 0.22); }
+function playQuestSfx()     { playTones([523, 659, 784], 0.4, 0.25); }
+function playUnlockSfx()    { playTones([330, 440, 554, 659], 0.45, 0.22); }
+
+function playBirdChirp() {
+  if (!_bgmOn) return;
+  try {
+    const ctx = getAudioCtx();
+    const base = 1100 + Math.random() * 1400;
+    [base, base * 1.2, base].forEach((f, i) => {
+      const osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.type = 'sine'; osc.frequency.value = f;
+      osc.connect(g); g.connect(ctx.destination);
+      const t = ctx.currentTime + i * 0.07;
+      g.gain.setValueAtTime(0.04, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+      osc.start(t); osc.stop(t + 0.2);
+    });
+  } catch(e) {}
+}
+
+function scheduleBgm() {
+  if (!_bgmOn) return;
+  _bgmTimer = setTimeout(() => { playBirdChirp(); scheduleBgm(); }, 3500 + Math.random() * 6500);
+}
+
+function toggleBgm() {
+  _bgmOn = !_bgmOn;
+  if (_bgmOn) scheduleBgm(); else clearTimeout(_bgmTimer);
+  localStorage.setItem('nodoka_bgm', _bgmOn ? '1' : '0');
+  updateSoundBtns();
+}
+function toggleSfx() {
+  _sfxOn = !_sfxOn;
+  localStorage.setItem('nodoka_sfx', _sfxOn ? '1' : '0');
+  updateSoundBtns();
+}
+function updateSoundBtns() {
+  const b = document.getElementById('btnBgm'), s = document.getElementById('btnSfx');
+  if (b) { b.textContent = _bgmOn ? '🎵' : '🔇'; b.classList.toggle('off', !_bgmOn); }
+  if (s) { s.textContent = _sfxOn ? '🔔' : '🔕'; s.classList.toggle('off', !_sfxOn); }
+}
+function initSound() {
+  _bgmOn = localStorage.getItem('nodoka_bgm') !== '0';
+  _sfxOn = localStorage.getItem('nodoka_sfx') !== '0';
+  updateSoundBtns();
+  document.addEventListener('click', () => { if (_bgmOn && !_bgmTimer) scheduleBgm(); }, { once: true });
+}
+
+// ══════════════════════════════
+//  クエストシステム
+// ══════════════════════════════
+function generateQuests() {
+  const pool = [];
+  const unlockedAreas = state.unlockedAreas || [1];
+
+  BUILDINGS.filter(b => unlockedAreas.includes(b.area)).forEach(b => {
+    const lv = state.buildings[b.id]?.level || 0;
+    [3, 5, 10, 25, 50].forEach(target => {
+      if (lv < target) pool.push({
+        id:`${b.id}_lv${target}`, emoji:b.emoji,
+        label:`${b.name}をLv${target}にする`,
+        type:'building_level', buildingId:b.id, target,
+        reward: Math.floor(b.baseCost * target * 0.3),
+      });
+    });
+  });
+  [10, 30, 60, 120].forEach(t => {
+    if (getTotalLv() < t) pool.push({
+      id:`total_${t}`, emoji:'🏘️', label:`建物の総レベルを${t}にする`,
+      type:'total_level', target:t, reward: t * 300,
+    });
+  });
+  [2000, 10000, 50000, 200000].forEach(t => {
+    if (state.totalEarned < t) pool.push({
+      id:`earn_${t}`, emoji:'💰', label:`累計コイン${fmt(t)}枚を稼ぐ`,
+      type:'earn', target:t, reward: Math.floor(t * 0.12),
+    });
+  });
+  const decoCount = Object.values(state.decorations || {}).filter(Boolean).length;
+  [1, 3, 6].forEach(t => {
+    if (decoCount < t) pool.push({
+      id:`deco_${t}`, emoji:'🌺', label:`デコレーションを${t}個設置する`,
+      type:'deco', target:t, reward: t * 1500,
+    });
+  });
+  const resCount = Object.keys(state.research || {}).length;
+  [1, 3, 5].forEach(t => {
+    if (resCount < t) pool.push({
+      id:`res_${t}`, emoji:'🔬', label:`研究を${t}個完了する`,
+      type:'research', target:t, reward: t * 4000,
+    });
+  });
+  // シャッフル
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, 3).map(q => ({ ...q, claimed: false }));
+}
+
+function getQuestProgress(q) {
+  switch (q.type) {
+    case 'building_level': return Math.min(state.buildings[q.buildingId]?.level || 0, q.target);
+    case 'total_level':    return Math.min(getTotalLv(), q.target);
+    case 'earn':           return Math.min(state.totalEarned, q.target);
+    case 'deco':           return Math.min(Object.values(state.decorations||{}).filter(Boolean).length, q.target);
+    case 'research':       return Math.min(Object.keys(state.research||{}).length, q.target);
+    default: return 0;
+  }
+}
+
+function claimQuest(i) {
+  const q = (state.quests?.active || [])[i];
+  if (!q || q.claimed || getQuestProgress(q) < q.target) return;
+  q.claimed = true;
+  state.coins += q.reward; state.totalEarned += q.reward;
+  state.quests.completedTotal = (state.quests.completedTotal || 0) + 1;
+  spawnFloatCoins(`+${fmt(q.reward)}`);
+  addLog(`🎯 クエスト完了：${q.label} +${fmt(q.reward)}コイン！`);
+  playQuestSfx();
+  checkAchievements(); renderQuests(); render(); saveGame();
+}
+
+function refreshQuests() {
+  const prev = state.quests?.completedTotal || 0;
+  state.quests = { active: generateQuests(), lastRefresh: getTodayStr(), completedTotal: prev };
+  renderQuests(); addLog('🎯 クエストが更新されました！'); saveGame();
+}
+
+function checkQuestRefresh() {
+  if (!state.quests?.active?.length || state.quests.lastRefresh !== getTodayStr()) refreshQuests();
+}
+
+function renderQuests() {
+  const container = document.getElementById('questContainer');
+  if (!container) return;
+  const quests = state.quests?.active || [];
+  const allClaimed = quests.length > 0 && quests.every(q => q.claimed);
+  const total = state.quests?.completedTotal || 0;
+  const el = document.getElementById('questCompleted');
+  if (el) el.textContent = `累計${total}件完了`;
+
+  container.innerHTML = quests.map((q, i) => {
+    const prog = getQuestProgress(q), pct = Math.min(100, (prog / q.target) * 100);
+    const done = prog >= q.target;
+    return `<div class="quest-item ${q.claimed ? 'claimed' : done ? 'done' : ''}">
+      <span class="quest-emoji">${q.emoji}</span>
+      <div class="quest-info">
+        <div class="quest-label">${q.label}</div>
+        <div class="quest-progress-bar"><div class="quest-bar-fill" style="width:${pct}%"></div></div>
+        <div class="quest-count">${fmt(prog)} / ${fmt(q.target)}</div>
+      </div>
+      <div class="quest-right">
+        <div class="quest-reward">🪙${fmt(q.reward)}</div>
+        <button class="btn-quest" onclick="claimQuest(${i})" ${q.claimed||!done?'disabled':''}>
+          ${q.claimed ? '✅' : done ? '受け取る' : '未達成'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  if (allClaimed) {
+    container.innerHTML += `<div style="text-align:center;margin-top:10px">
+      <button class="btn-save" onclick="refreshQuests()" style="background:var(--prestige);font-size:12px;padding:8px 20px;border-radius:10px">🎯 次のクエストへ</button>
+    </div>`;
+  }
+}
+
+// ══════════════════════════════
 //  エリア解放
 // ══════════════════════════════
 function unlockArea(areaId) {
@@ -508,6 +744,7 @@ function unlockArea(areaId) {
   state.coins -= area.unlockCost;
   state.unlockedAreas = [...(state.unlockedAreas || [1]), areaId];
   spawnFloatCoins(`-${fmt(area.unlockCost)}`);
+  playUnlockSfx();
   addLog(`🏙️ ${area.emoji}${area.name}を解放！新しい建物が建てられます！`);
   // 新建物をstateに追加
   BUILDINGS.filter(b => b.area === areaId).forEach(b => {
@@ -719,6 +956,7 @@ let state = {
   decorations: {},
   unlockedAreas: [1],
   research: {},
+  quests: null,
   // デイリーボーナス
   daily: {
     lastClaimDate: null,  // 'YYYY-MM-DD'
@@ -873,6 +1111,7 @@ function showMsToast(b, ms) {
   document.getElementById('msToastBody').textContent = `${b.name}がLv${ms}に到達しました`;
   document.getElementById('msToastBonus').textContent = `✨ ${b.name}のCPS ×2！`;
   t.classList.add('show');
+  playMilestoneSfx();
   if (msToastTimer) clearTimeout(msToastTimer);
   msToastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
@@ -888,6 +1127,7 @@ function saveGame() {
       achievements:state.achievements, eventCount:state.eventCount, stormCount:state.stormCount,
       daily: state.daily, decorations: state.decorations,
       unlockedAreas: state.unlockedAreas, research: state.research,
+      quests: state.quests,
     }));
     state.lastSaved = Date.now(); updateSaveStatus();
     addLog('💾 セーブしました！');
@@ -912,6 +1152,7 @@ function loadGame() {
     });
     if(!state.unlockedAreas) state.unlockedAreas=[1];
     if(!state.research) state.research={};
+    state.quests = d.quests || null;
     const offSec = Math.min((Date.now()-d.savedAt)/1000, 8*3600);
     if(offSec>30 && getCps()>0){
       const earned = Math.floor(getEffectiveCps()*offSec*.5);
@@ -944,6 +1185,7 @@ function showAchievToast(a) {
   document.getElementById('achievToastIcon').textContent=a.icon;
   document.getElementById('achievToastName').textContent=a.name;
   t.classList.add('show');
+  playAchievSfx();
   if(achievToastTimer) clearTimeout(achievToastTimer);
   achievToastTimer=setTimeout(()=>t.classList.remove('show'),3500);
 }
@@ -1295,8 +1537,10 @@ function buyBuilding(id) {
 
   addLog(lv===0?`🏗️ ${b.emoji}${b.name}を建設！(Lv.1)`:`⬆️ ${b.emoji}${b.name} Lv.${nl}に強化！`);
   spawnFloatCoins(`-${fmt(cost)}`);
+  playBuildSfx();
   checkMilestones(id);
   checkAchievements();
+  renderQuests();
   render();
 }
 
@@ -1304,7 +1548,8 @@ function manualHarvest() {
   const bonus=Math.max(1,getEffectiveCps()*2);
   state.coins+=bonus; state.totalEarned+=bonus;
   spawnFloatCoins(`+${fmt(bonus)}`);
-  checkAchievements(); render();
+  playHarvestSfx();
+  checkAchievements(); renderQuests(); render();
 }
 
 function spawnFloatCoins(text) {
@@ -1372,7 +1617,7 @@ function tick() {
   tickCount++;
   if(tickCount%150===0){ saveGame(); updateSaveStatus(); }
   if(tickCount%50===0) updateSaveStatus();
-  if(tickCount%100===0) checkAchievements();
+  if(tickCount%100===0) { checkAchievements(); renderQuests(); }
   // 住人を定期的にスポーン（総Lvに応じて頻度UP、最大8人/分）
   const resInterval = Math.max(25, 100 - getTotalLv());
   if(tickCount % resInterval === 0) spawnResident();
@@ -1531,6 +1776,8 @@ if(state.prestigeCount>0){
 }
 render();
 renderDailyBar();
+checkQuestRefresh();
+initSound();
 setInterval(tick,200);
 scheduleNextEvent();
 
