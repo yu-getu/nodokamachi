@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>のどかまち</title>
+
+<!-- PWA設定 -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#7bc47f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="のどかまち">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- OGP（シェア用） -->
+<meta property="og:title" content="のどかまち">
+<meta property="og:description" content="のんびり街を育てる放置ゲーム🌿">
+<meta property="og:type" content="website">
+
+<link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;700&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky:#d4eef7; --ground:#7bc47f; --ground2:#5ba860;
+    --cream:#fdf6e3; --brown:#8b5e3c; --text:#3d2b1f; --muted:#8a7060;
+    --coin:#f5c430; --coin2:#d4a017; --btn:#ff8c5a; --btn2:#e6723f;
+    --green:#4caf50; --green2:#388e3c; --panel:rgba(255,252,245,0.93);
+    --prestige:#9c27b0; --prestige2:#7b1fa2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--sky);min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column;align-items:center}
+  .sky-bg{position:fixed;inset:0;background:linear-gradient(180deg,#b8e3f5 0%,#d4eef7 40%,#e8f5e9 70%,#c8e6c9 100%);z-index:0}
+  .cloud{position:fixed;background:white;border-radius:50px;opacity:.75;animation:drift linear infinite}
+  .cloud::before,.cloud::after{content:'';position:absolute;background:white;border-radius:50%}
+  .c1{width:80px;height:28px;top:8%;left:-90px;animation-duration:40s}.c1::before{width:40px;height:40px;top:-20px;left:10px}.c1::after{width:30px;height:30px;top:-14px;left:36px}
+  .c2{width:60px;height:22px;top:16%;left:-70px;animation-duration:55s;animation-delay:-20s}.c2::before{width:30px;height:30px;top:-16px;left:8px}.c2::after{width:22px;height:22px;top:-11px;left:28px}
+  .c3{width:100px;height:32px;top:5%;left:-110px;animation-duration:70s;animation-delay:-35s}.c3::before{width:48px;height:48px;top:-24px;left:12px}.c3::after{width:36px;height:36px;top:-18px;left:48px}
+  @keyframes drift{to{left:110vw}}
+
+  .game-wrap{position:relative;z-index:1;width:100%;max-width:600px;padding:0 12px 90px;display:flex;flex-direction:column;align-items:center}
+
+  header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--panel);border-radius:0 0 20px 20px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:12px;gap:8px;flex-wrap:wrap}
+  .title{font-family:'Kaisei Decol',serif;font-size:20px;color:var(--brown);letter-spacing:.05em;white-space:nowrap}
+  .title span{color:var(--green2)}
+  .header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .coin-display{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#fff9e6,#fef3c7);border:2px solid var(--coin2);border-radius:20px;padding:5px 12px;font-weight:800;font-size:16px;color:var(--brown);box-shadow:0 2px 8px rgba(245,196,48,.3)}
+  .coin-icon{font-size:18px;animation:coinSpin 3s ease-in-out infinite}
+  @keyframes coinSpin{0%,100%{transform:rotateY(0deg)}50%{transform:rotateY(180deg)}}
+  .prestige-badge{display:flex;align-items:center;gap:4px;background:linear-gradient(135deg,#f3e5f5,#e1bee7);border:2px solid var(--prestige2);border-radius:20px;padding:5px 10px;font-size:12px;font-weight:800;color:var(--prestige2);white-space:nowrap}
+
+  .tabs{width:100%;display:flex;gap:6px;margin-bottom:12px}
+  .tab{flex:1;padding:9px 4px;border-radius:12px;border:2px solid transparent;background:var(--panel);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s}
+  .tab.active{background:var(--brown);color:white;border-color:var(--brown)}
+
+  .town-area{width:100%;background:linear-gradient(180deg,transparent 0%,#e8f5e9 60%,#c8e6c9 100%);border-radius:20px;padding:20px 12px 12px;margin-bottom:12px;min-height:180px;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.06)}
+  .town-area::after{content:'';position:absolute;bottom:0;left:0;right:0;height:44px;background:linear-gradient(180deg,var(--ground) 0%,var(--ground2) 100%);border-radius:0 0 20px 20px}
+  .buildings-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;padding-bottom:30px}
+  .building{display:flex;flex-direction:column;align-items:center;animation:buildingBob 3s ease-in-out infinite;animation-delay:var(--delay,0s)}
+  @keyframes buildingBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  .building-emoji{font-size:42px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.15))}
+  .building-name{font-size:9px;font-weight:700;color:var(--brown);background:rgba(255,255,255,.85);border-radius:8px;padding:2px 5px;margin-top:2px;white-space:nowrap}
+  .building-rate{font-size:9px;color:var(--coin2);font-weight:700;margin-top:1px}
+
+  .stats-bar{width:100%;display:flex;gap:8px;margin-bottom:12px}
+  .stat-card{flex:1;background:var(--panel);border-radius:14px;padding:9px 10px;box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;align-items:center;gap:6px}
+  .stat-icon{font-size:20px}
+  .stat-info{display:flex;flex-direction:column}
+  .stat-label{font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.05em}
+  .stat-value{font-size:14px;font-weight:800;color:var(--text)}
+
+  .panel{width:100%;background:var(--panel);border-radius:20px;padding:16px;box-shadow:0 4px 16px rgba(0,0,0,.07);margin-bottom:12px}
+  .panel-title{font-family:'Kaisei Decol',serif;font-size:16px;color:var(--brown);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+  /* ── ショップ ── */
+  .shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .shop-item{background:linear-gradient(135deg,#fffdf5,#fef9ed);border:2px solid #e8d8b0;border-radius:14px;padding:11px;display:flex;flex-direction:column;gap:3px;transition:border-color .15s;position:relative}
+  .shop-item.affordable{border-color:var(--green)}
+  .shop-item.maxed{border-color:#f5c430;background:linear-gradient(135deg,#fffde7,#fff8e1)}
+  .item-top{display:flex;align-items:center;gap:8px}
+  .item-emoji{font-size:28px;position:relative}
+  .item-info{flex:1;min-width:0}
+  .item-name{font-size:12px;font-weight:800;color:var(--text)}
+  .item-desc{font-size:10px;color:var(--muted)}
+
+  /* ── レベルバー（新設計） ── */
+  .lv-bar-wrap{margin-top:4px}
+  .lv-bar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+  .lv-label{font-size:10px;font-weight:800;color:var(--brown)}
+  .lv-next-ms{font-size:9px;color:var(--muted)}
+  .lv-bar-track{height:7px;background:#e8d8b0;border-radius:4px;overflow:hidden}
+  .lv-bar-fill{height:100%;border-radius:4px;transition:width .4s}
+  .phase-1 .lv-bar-fill{background:linear-gradient(90deg,#81c784,var(--green))}
+  .phase-2 .lv-bar-fill{background:linear-gradient(90deg,#4fc3f7,#0288d1)}
+  .phase-3 .lv-bar-fill{background:linear-gradient(90deg,#ff8a65,var(--btn2))}
+  .phase-4 .lv-bar-fill{background:linear-gradient(90deg,#ce93d8,var(--prestige))}
+
+  /* マイルストーンバッジ */
+  .ms-badges{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap}
+  .ms-badge{font-size:9px;padding:1px 6px;border-radius:8px;font-weight:800;border:1.5px solid}
+  .ms-badge.reached{background:#fff8e1;border-color:var(--coin2);color:var(--coin2)}
+  .ms-badge.next{background:#f5f5f5;border-color:#ccc;color:#aaa}
+
+  .btn-buy{margin-top:6px;background:linear-gradient(135deg,var(--btn),var(--btn2));color:white;border:none;border-radius:10px;padding:7px;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--btn2);transition:transform .1s,box-shadow .1s}
+  .btn-buy:active{transform:translateY(2px);box-shadow:0 1px 0 var(--btn2)}
+  .btn-buy:disabled{background:#ccc;box-shadow:0 3px 0 #aaa;cursor:not-allowed;color:#999}
+  .btn-buy.upgrade{background:linear-gradient(135deg,#66bb6a,var(--green2));box-shadow:0 3px 0 var(--green2)}
+  .btn-buy.maxed-btn{background:linear-gradient(135deg,var(--coin),var(--coin2));box-shadow:0 3px 0 var(--coin2);color:var(--brown)}
+
+  /* ── 実績 ── */
+  .achiev-summary{font-size:12px;color:var(--muted);margin-bottom:12px}
+  .achiev-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .achiev-card{border-radius:14px;padding:11px;border:2px solid #e8d8b0;background:linear-gradient(135deg,#fffdf5,#fef9ed);display:flex;gap:8px;align-items:flex-start}
+  .achiev-card.unlocked{border-color:var(--coin2);background:linear-gradient(135deg,#fffde7,#fff8e1)}
+  .achiev-card.locked{opacity:.5;filter:grayscale(.5)}
+  .achiev-icon{font-size:24px;flex-shrink:0;line-height:1.2}
+  .achiev-name{font-size:11px;font-weight:800;color:var(--text)}
+  .achiev-desc{font-size:10px;color:var(--muted);line-height:1.4;margin-top:2px}
+  .achiev-reward{font-size:10px;font-weight:800;color:var(--green2);margin-top:3px}
+  .unlocked-stamp{font-size:9px;background:var(--coin2);color:white;border-radius:6px;padding:1px 5px;display:inline-block;margin-top:3px;font-weight:800}
+
+  /* ── プレステージ ── */
+  .prestige-panel{background:linear-gradient(135deg,#f3e5f5,#ede7f6);border:2px solid var(--prestige);border-radius:20px;padding:18px;margin-bottom:12px;width:100%}
+  .prestige-panel .panel-title{color:var(--prestige2)}
+  .prestige-info{font-size:13px;color:#5e35b1;line-height:1.8;margin-bottom:12px}
+  .prestige-bonus-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  .prestige-bonus-item{display:flex;align-items:center;gap:8px;font-size:12px;color:#4a148c;font-weight:700}
+  .pb-icon{font-size:16px}
+  .prestige-req{font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.7}
+  .prestige-req strong{color:var(--prestige2)}
+  .progress-bar-wrap{background:#e1bee7;border-radius:8px;height:10px;margin:6px 0 14px;overflow:hidden}
+  .progress-bar{height:100%;background:linear-gradient(90deg,var(--prestige),var(--prestige2));border-radius:8px;transition:width .5s}
+  .btn-prestige{width:100%;background:linear-gradient(135deg,var(--prestige),var(--prestige2));color:white;border:none;border-radius:14px;padding:14px;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 4px 0 var(--prestige2);transition:transform .1s,box-shadow .1s}
+  .btn-prestige:active{transform:translateY(3px);box-shadow:0 1px 0 var(--prestige2)}
+  .btn-prestige:disabled{background:#ccc;box-shadow:0 4px 0 #aaa;cursor:not-allowed}
+  .prestige-history{margin-top:12px;font-size:12px;color:#9c27b0;text-align:center}
+
+  /* ── レベルデザイン表 ── */
+  .lv-design-panel{font-size:11px;color:var(--text);line-height:1.8}
+  .lv-design-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.06)}
+  .lv-design-row:last-child{border-bottom:none}
+  .lv-range{font-weight:800;width:70px;flex-shrink:0}
+  .lv-phase-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .dot-p1{background:var(--green)}.dot-p2{background:#0288d1}.dot-p3{background:var(--btn2)}.dot-p4{background:var(--prestige)}
+  .lv-detail{flex:1;color:var(--muted)}
+  .lv-ms-note{color:var(--coin2);font-weight:800}
+
+  .save-bar{width:100%;display:flex;align-items:center;justify-content:space-between;background:var(--panel);border-radius:14px;padding:9px 14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);font-size:12px;color:var(--muted)}
+  .btn-save{background:var(--green);color:white;border:none;border-radius:10px;padding:5px 12px;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:11px;cursor:pointer}
+
+  .log{width:100%;background:var(--panel);border-radius:16px;padding:11px 14px;box-shadow:0 2px 8px rgba(0,0,0,.05);max-height:110px;overflow-y:auto}
+  .log-entry{font-size:11px;color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.05);animation:fadeSlide .4s ease}
+  @keyframes fadeSlide{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+
+  .harvest-btn{position:fixed;bottom:22px;right:22px;z-index:100;background:linear-gradient(135deg,var(--coin),var(--coin2));color:var(--brown);border:none;border-radius:50%;width:66px;height:66px;font-size:26px;cursor:pointer;box-shadow:0 6px 0 var(--coin2),0 8px 24px rgba(245,196,48,.5);transition:transform .12s,box-shadow .12s;display:flex;align-items:center;justify-content:center;flex-direction:column}
+  .harvest-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--coin2)}
+  .harvest-label{font-size:9px;font-weight:800;margin-top:2px}
+
+  .float-coin{position:fixed;font-size:17px;pointer-events:none;z-index:999;animation:floatUp 1.2s ease-out forwards}
+  @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.6)}}
+
+  .event-toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:500;background:white;border-radius:18px;padding:12px 16px;box-shadow:0 8px 32px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;min-width:260px;max-width:320px;opacity:0;transition:opacity .35s,transform .35s;pointer-events:none;border-left:5px solid var(--accent-color,#4caf50)}
+  .event-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .event-toast.good{--accent-color:#4caf50}.event-toast.great{--accent-color:var(--coin2)}.event-toast.bad{--accent-color:#e53935}.event-toast.info{--accent-color:#42a5f5}
+  .event-toast-icon{font-size:26px;flex-shrink:0}
+  .event-toast-title{font-weight:800;font-size:13px;color:var(--text)}
+  .event-toast-desc{font-size:11px;color:var(--muted);line-height:1.4;margin-top:2px}
+
+  .achiev-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);z-index:500;background:linear-gradient(135deg,#fff8e1,#fffde7);border:2px solid var(--coin2);border-radius:18px;padding:10px 16px;box-shadow:0 8px 24px rgba(212,160,23,.3);display:flex;align-items:center;gap:10px;min-width:230px;max-width:310px;opacity:0;transition:opacity .35s,transform .35s;pointer-events:none}
+  .achiev-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .achiev-toast-icon{font-size:24px;flex-shrink:0}
+  .achiev-toast-label{font-size:10px;color:var(--coin2);font-weight:800;letter-spacing:.05em}
+  .achiev-toast-name{font-size:13px;font-weight:800;color:var(--text)}
+
+  /* マイルストーン到達エフェクト */
+  .ms-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);z-index:600;background:linear-gradient(135deg,#fff8e1,#fffde7);border:3px solid var(--coin2);border-radius:24px;padding:20px 28px;text-align:center;box-shadow:0 16px 48px rgba(212,160,23,.4);opacity:0;transition:all .3s;pointer-events:none;min-width:240px}
+  .ms-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  .ms-toast-icon{font-size:44px;margin-bottom:6px}
+  .ms-toast-title{font-family:'Kaisei Decol',serif;font-size:18px;color:var(--brown);margin-bottom:4px}
+  .ms-toast-body{font-size:13px;color:var(--muted)}
+  .ms-toast-bonus{font-size:16px;font-weight:800;color:var(--coin2);margin-top:6px}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:800;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+  .modal-overlay.show{opacity:1;pointer-events:all}
+  .modal{background:var(--cream);border-radius:24px;padding:24px 20px;max-width:320px;width:90%;text-align:center;box-shadow:0 12px 48px rgba(0,0,0,.2);transform:scale(.9);transition:transform .3s}
+  .modal-overlay.show .modal{transform:scale(1)}
+  .modal-icon{font-size:48px;margin-bottom:8px}
+  .modal h2{font-family:'Kaisei Decol',serif;font-size:19px;color:var(--brown);margin-bottom:7px}
+  .modal p{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6}
+  .modal-coins{font-size:24px;font-weight:800;color:var(--coin2);margin-bottom:16px}
+  .btn-modal{background:linear-gradient(135deg,var(--btn),var(--btn2));color:white;border:none;border-radius:12px;padding:10px 24px;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 3px 0 var(--btn2)}
+  .btn-modal.purple{background:linear-gradient(135deg,var(--prestige),var(--prestige2));box-shadow:0 3px 0 var(--prestige2)}
+  .prestige-confirm-list{text-align:left;background:rgba(156,39,176,.08);border-radius:12px;padding:12px;margin-bottom:12px;font-size:12px;color:#4a148c;line-height:2.1}
+
+  /* ── デイリーボーナス ── */
+  .daily-bar{width:100%;background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:2px solid var(--green);border-radius:16px;padding:11px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;transition:box-shadow .2s}
+  .daily-bar:hover{box-shadow:0 4px 16px rgba(76,175,80,.2)}
+  .daily-bar.claimed{background:var(--panel);border-color:#ccc;cursor:default}
+  .daily-bar-left{display:flex;align-items:center;gap:10px}
+  .daily-icon{font-size:28px}
+  .daily-info{}
+  .daily-title{font-size:13px;font-weight:800;color:var(--green2)}
+  .daily-bar.claimed .daily-title{color:var(--muted)}
+  .daily-subtitle{font-size:11px;color:var(--muted);margin-top:1px}
+  .daily-streak{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:800;color:var(--btn2)}
+  .btn-daily{background:linear-gradient(135deg,var(--green),var(--green2));color:white;border:none;border-radius:10px;padding:7px 14px;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:12px;cursor:pointer;box-shadow:0 3px 0 var(--green2);white-space:nowrap;transition:transform .1s}
+  .btn-daily:active{transform:translateY(2px)}
+  .btn-daily:disabled{background:#ccc;box-shadow:0 3px 0 #aaa;cursor:not-allowed}
+
+  /* デイリーモーダル */
+  .daily-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin:14px 0}
+  .daily-day{border-radius:10px;padding:6px 2px;text-align:center;border:2px solid #e8d8b0;background:#fafafa}
+  .daily-day.past{background:#e8f5e9;border-color:var(--green);opacity:.7}
+  .daily-day.today{background:linear-gradient(135deg,#fff8e1,#fffde7);border-color:var(--coin2);transform:scale(1.05)}
+  .daily-day.future{opacity:.4}
+  .daily-day-num{font-size:9px;color:var(--muted);font-weight:700}
+  .daily-day-icon{font-size:18px;line-height:1.3}
+  .daily-day-bonus{font-size:8px;color:var(--coin2);font-weight:800}
+</style>
+</head>
+<body>
+<div class="sky-bg"></div>
+<div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+
+<div class="game-wrap">
+  <header>
+    <div class="title">🌿 <span>のどか</span>まち</div>
+    <div class="header-right">
+      <div class="prestige-badge" id="prestigeBadge" style="display:none">⭐<span id="prestigeCount">0</span>世代</div>
+      <div class="coin-display"><span class="coin-icon">🪙</span><span id="coinCount">0</span></div>
+    </div>
+  </header>
+
+  <div class="town-area"><div class="buildings-row" id="buildingsRow"></div></div>
+
+  <div class="stats-bar">
+    <div class="stat-card"><span class="stat-icon">⏱️</span><div class="stat-info"><span class="stat-label">コイン/秒</span><span class="stat-value" id="cps">0</span></div></div>
+    <div class="stat-card"><span class="stat-icon">🏘️</span><div class="stat-info"><span class="stat-label">最高Lv</span><span class="stat-value" id="maxLvDisplay">0</span></div></div>
+    <div class="stat-card"><span class="stat-icon">📈</span><div class="stat-info"><span class="stat-label">総収穫</span><span class="stat-value" id="totalEarned">0</span></div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('shop')" id="tab-shop">🛒 建設</button>
+    <button class="tab" onclick="switchTab('achiev')" id="tab-achiev">🏅 実績</button>
+    <button class="tab" onclick="switchTab('prestige')" id="tab-prestige">⭐ 転生</button>
+    <button class="tab" onclick="switchTab('lvdesign')" id="tab-lvdesign">📊 設計</button>
+  </div>
+
+  <!-- デイリーボーナスバー -->
+  <div class="daily-bar" id="dailyBar" onclick="openDailyModal()">
+    <div class="daily-bar-left">
+      <div class="daily-icon" id="dailyBarIcon">🎁</div>
+      <div class="daily-info">
+        <div class="daily-title" id="dailyBarTitle">デイリーボーナス受け取れます！</div>
+        <div class="daily-subtitle" id="dailyBarSubtitle">タップして受け取ろう</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="daily-streak" id="dailyStreak"></div>
+      <button class="btn-daily" id="btnDailyClaim" onclick="event.stopPropagation();claimDaily()">受け取る</button>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-shop">
+    <div class="panel-title">🛒 建物を建てる <span style="font-size:11px;color:var(--muted);font-family:sans-serif">Lv上限：<span id="maxLvCap">100</span></span></div>
+    <div class="shop-grid" id="shopGrid"></div>
+  </div>
+
+  <div class="panel" id="panel-achiev" style="display:none">
+    <div class="panel-title">🏅 実績一覧</div>
+    <div class="achiev-summary" id="achievSummary"></div>
+    <div class="achiev-grid" id="achievGrid"></div>
+  </div>
+
+  <div class="prestige-panel" id="panel-prestige" style="display:none">
+    <div class="panel-title">⭐ プレステージ転生</div>
+    <div class="prestige-info" id="prestigeInfo"></div>
+    <div class="prestige-bonus-list" id="prestigeBonusList"></div>
+    <div class="prestige-req" id="prestigeReq"></div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="prestigeProgressBar" style="width:0%"></div></div>
+    <button class="btn-prestige" id="btnPrestige" onclick="confirmPrestige()" disabled>⭐ プレステージ転生する</button>
+    <div class="prestige-history" id="prestigeHistory"></div>
+  </div>
+
+  <!-- レベルデザイン表 -->
+  <div class="panel" id="panel-lvdesign" style="display:none">
+    <div class="panel-title">📊 レベルデザイン設計書</div>
+    <div id="lvDesignContent"></div>
+  </div>
+
+  <div class="save-bar"><span>💾 <span id="saveStatus">未保存</span></span><button class="btn-save" onclick="saveGame()">今すぐ保存</button></div>
+  <div class="log" id="log"></div>
+</div>
+
+<button class="harvest-btn" id="harvestBtn" onclick="manualHarvest()">🌾<span class="harvest-label">収穫</span></button>
+
+<div class="event-toast" id="eventToast">
+  <div class="event-toast-icon" id="eventIcon"></div>
+  <div><div class="event-toast-title" id="eventTitle"></div><div class="event-toast-desc" id="eventDesc"></div></div>
+</div>
+<div class="achiev-toast" id="achievToast">
+  <div class="achiev-toast-icon" id="achievToastIcon"></div>
+  <div><div class="achiev-toast-label">実績解除！</div><div class="achiev-toast-name" id="achievToastName"></div></div>
+</div>
+<!-- マイルストーントースト -->
+<div class="ms-toast" id="msToast">
+  <div class="ms-toast-icon" id="msToastIcon"></div>
+  <div class="ms-toast-title" id="msToastTitle"></div>
+  <div class="ms-toast-body" id="msToastBody"></div>
+  <div class="ms-toast-bonus" id="msToastBonus"></div>
+</div>
+
+<div class="modal-overlay" id="offlineModal">
+  <div class="modal"><div class="modal-icon">🌙</div><h2>おかえりなさい！</h2>
+    <p id="offlineMsg"></p><div class="modal-coins" id="offlineCoins"></div>
+    <button class="btn-modal" onclick="closeModal('offlineModal')">受け取る！</button>
+  </div>
+</div>
+
+<!-- デイリーボーナスモーダル -->
+<div class="modal-overlay" id="dailyModal">
+  <div class="modal">
+    <div class="modal-icon">🗓️</div>
+    <h2>デイリーボーナス</h2>
+    <p id="dailyModalMsg"></p>
+    <div class="daily-calendar" id="dailyCalendar"></div>
+    <div class="modal-coins" id="dailyBonusCoins"></div>
+    <button class="btn-modal" id="btnDailyModal" onclick="claimDaily()">受け取る！</button>
+  </div>
+</div>
+<div class="modal-overlay" id="prestigeModal">
+  <div class="modal"><div class="modal-icon">⭐</div><h2>プレステージ転生</h2>
+    <div class="prestige-confirm-list" id="prestigeConfirmList"></div>
+    <p>本当に転生しますか？</p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
+      <button class="btn-modal" onclick="closeModal('prestigeModal')">やめる</button>
+      <button class="btn-modal purple" onclick="doPrestige()">転生する！</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SAVE_KEY = 'nodokamachi_v3';
+
+// ══════════════════════════════
+//  デイリーボーナス定義
+//  連続ログイン日数に応じてボーナスが増える（7日サイクル）
+// ══════════════════════════════
+const DAILY_REWARDS = [
+  { day:1, icon:'🌱', label:'初日',     coins: 100,   multiplier: 1   },
+  { day:2, icon:'🌿', label:'2日目',    coins: 200,   multiplier: 1   },
+  { day:3, icon:'☕', label:'3日目',    coins: 400,   multiplier: 1   },
+  { day:4, icon:'🥐', label:'4日目',    coins: 800,   multiplier: 1   },
+  { day:5, icon:'⭐', label:'5日目',    coins: 1500,  multiplier: 1   },
+  { day:6, icon:'🎆', label:'6日目',    coins: 3000,  multiplier: 1   },
+  { day:7, icon:'👑', label:'7日目！',  coins: 0,     multiplier: 2,  special: 'CPS×2（1時間）' },
+];
+
+// ═══════════════════════════════════════
+//  レベルデザイン定数（ここを変えるだけでゲームバランスが変わる）
+// ═══════════════════════════════════════
+
+// フェーズ定義: [最大Lv, コスト倍率, フェーズ名, フェーズカラーCSS]
+const PHASES = [
+  { maxLv: 10,  mult: 1.30, name: '開拓期',   colorClass: 'phase-1', dot: 'dot-p1' },
+  { maxLv: 25,  mult: 1.20, name: '成長期',   colorClass: 'phase-2', dot: 'dot-p2' },
+  { maxLv: 50,  mult: 1.15, name: '円熟期',   colorClass: 'phase-3', dot: 'dot-p3' },
+  { maxLv: 100, mult: 1.10, name: 'レジェンド', colorClass: 'phase-4', dot: 'dot-p4' },
+];
+
+// マイルストーン: { lv, ボーナス内容 }
+// ボーナス: その建物のCPS×2（到達回数分累積）
+const MILESTONES = [10, 25, 50, 100];
+
+// プレステージでのLvキャップ拡張（1回転生ごとに+25）
+const BASE_MAX_LV   = 100;
+const PRESTIGE_LV_BONUS = 25;
+
+// 建物定義
+const BUILDINGS = [
+  {id:'farm',   name:'農場',     emoji:'🌾', baseCost:50,   baseCps:.5,  desc:'作物を育てる'},
+  {id:'cafe',   name:'カフェ',   emoji:'☕', baseCost:150,  baseCps:1.5, desc:'コーヒーを提供'},
+  {id:'bakery', name:'パン屋',   emoji:'🥐', baseCost:400,  baseCps:4,   desc:'焼きたてパン'},
+  {id:'market', name:'市場',     emoji:'🏪', baseCost:1000, baseCps:10,  desc:'商品を売買'},
+  {id:'inn',    name:'宿屋',     emoji:'🏨', baseCost:3000, baseCps:30,  desc:'旅人を迎える'},
+  {id:'mill',   name:'風車小屋', emoji:'⚙️', baseCost:8000, baseCps:80,  desc:'小麦を挽く'},
+];
+
+const EVENTS = [
+  {id:'sunny',    type:'great',icon:'☀️', title:'晴天ボーナス！',  desc:'1分間コイン収入2倍！',       mult:2,   dur:60},
+  {id:'harvest',  type:'good', icon:'🌽', title:'大収穫の季節！',  desc:'農場が大豊作！コインを獲得', bonus:'cps30',dur:0},
+  {id:'traveler', type:'good', icon:'🧳', title:'旅人が訪れた！',  desc:'旅人がお土産を持ってきた！', bonus:'flat',amt:200,dur:0},
+  {id:'festival', type:'great',icon:'🎆', title:'お祭り開催！',    desc:'2分間コイン収入1.5倍！',     mult:1.5, dur:120},
+  {id:'storm',    type:'bad',  icon:'⛈️', title:'嵐が来た...',     desc:'30秒間コイン収入半減。',     mult:.5,  dur:30},
+  {id:'drought',  type:'bad',  icon:'🏜️', title:'干ばつ発生...',   desc:'45秒間収入0.7倍。',          mult:.7,  dur:45},
+  {id:'merchant', type:'info', icon:'🛒', title:'行商人が来た！',  desc:'次の購入が20%引きに！',      discount:.8,dur:60},
+  {id:'rain',     type:'good', icon:'🌧️', title:'恵みの雨',        desc:'50秒間収入1.3倍！',          mult:1.3, dur:50},
+];
+
+const ACHIEVEMENTS = [
+  {id:'first_build',   icon:'🏗️', name:'はじめの一歩',    desc:'最初の建物を建設',          reward:'記念',       check:s=>getTotalLv()>=1},
+  {id:'lv10',          icon:'🌱', name:'Lv10到達',         desc:'いずれかの建物がLv10に',    reward:'記念称号',   check:s=>BUILDINGS.some(b=>s.buildings[b.id]?.level>=10)},
+  {id:'lv25',          icon:'🌿', name:'Lv25到達',         desc:'いずれかの建物がLv25に',    reward:'記念称号',   check:s=>BUILDINGS.some(b=>s.buildings[b.id]?.level>=25)},
+  {id:'lv50',          icon:'🌳', name:'Lv50到達',         desc:'いずれかの建物がLv50に',    reward:'CPS+10%',    check:s=>BUILDINGS.some(b=>s.buildings[b.id]?.level>=50)},
+  {id:'lv100',         icon:'🏆', name:'Lv100マスター',    desc:'いずれかの建物がLv100に',   reward:'CPS+20%',    check:s=>BUILDINGS.some(b=>s.buildings[b.id]?.level>=100)},
+  {id:'coins_10k',     icon:'💎', name:'万金持ち',         desc:'累計コイン1万枚を達成',     reward:'CPS+5%',     check:s=>s.totalEarned>=10000},
+  {id:'coins_100k',    icon:'👑', name:'百万長者への道',   desc:'累計コイン10万枚を達成',    reward:'CPS+10%',    check:s=>s.totalEarned>=100000},
+  {id:'all_buildings', icon:'🌆', name:'まちの設計士',     desc:'全建物を最低1つ建設',        reward:'CPS+15%',    check:s=>BUILDINGS.every(b=>s.buildings[b.id]?.level>=1)},
+  {id:'ms_4',          icon:'🌟', name:'マイルストーンコンプ', desc:'Lv100のマイルストーン到達', reward:'CPS+25%', check:s=>BUILDINGS.some(b=>(s.buildings[b.id]?.msReached||[]).length>=4)},
+  {id:'prestige_1',    icon:'⭐', name:'転生者',           desc:'初めてプレステージ転生',     reward:'永続CPS×1.2',check:s=>s.prestigeCount>=1},
+  {id:'prestige_3',    icon:'🌟', name:'三度の転生',       desc:'3回プレステージ転生',        reward:'永続追加ボーナス',check:s=>s.prestigeCount>=3},
+  {id:'lv125',         icon:'💫', name:'転生の恩恵',       desc:'転生後の建物がLv125に',      reward:'特別称号',   check:s=>BUILDINGS.some(b=>s.buildings[b.id]?.level>=125)},
+];
+
+// ═══════════════════════════════════════
+//  ゲーム状態
+// ═══════════════════════════════════════
+let state = {
+  coins:50, totalEarned:0, buildings:{},
+  lastTick:Date.now(), lastSaved:null,
+  activeEvent:null, eventDiscount:1,
+  prestigeCount:0, achievements:{},
+  eventCount:0, stormCount:0,
+  // デイリーボーナス
+  daily: {
+    lastClaimDate: null,  // 'YYYY-MM-DD'
+    streak: 0,            // 連続ログイン日数
+    totalClaimed: 0,      // 累計受け取り回数
+  },
+};
+BUILDINGS.forEach(b=>{ state.buildings[b.id]={level:0, msReached:[]}; });
+
+// ═══════════════════════════════════════
+//  レベルデザイン計算（核心部分）
+// ═══════════════════════════════════════
+
+/** 現在のLv上限（プレステージで拡張） */
+function getMaxLevel() {
+  return BASE_MAX_LV + state.prestigeCount * PRESTIGE_LV_BONUS;
+}
+
+/** フェーズ取得（Lvがどのフェーズか） */
+function getPhase(lv) {
+  // プレステージ拡張分は最後のフェーズ倍率を使い続ける
+  for (const p of PHASES) {
+    if (lv <= p.maxLv) return p;
+  }
+  return PHASES[PHASES.length - 1];
+}
+
+/** フェーズ境界ラベル（拡張上限込み） */
+function getPhaseLabel(lv) {
+  const maxLv = getMaxLevel();
+  if (lv <= 10)  return '開拓期';
+  if (lv <= 25)  return '成長期';
+  if (lv <= 50)  return '円熟期';
+  if (lv <= 100) return 'レジェンド';
+  return `転生拡張(${state.prestigeCount}世代)`;
+}
+
+/**
+ * コスト計算：フェーズごとに倍率が変わる累積計算
+ * Lv0→1: baseCost × 1.30^0
+ * Lv1→2: baseCost × 1.30^1
+ * ...フェーズが変わると倍率も変わる
+ */
+function getBuildingCost(b) {
+  const lv = state.buildings[b.id].level;
+  const maxLv = getMaxLevel();
+  if (lv >= maxLv) return Infinity;
+
+  // フェーズごとの累積コストを事前計算
+  let cost = b.baseCost;
+  let remaining = lv;
+  let phaseStart = 0;
+
+  for (const p of PHASES) {
+    const phaseEnd = Math.min(p.maxLv, maxLv);
+    const lvInPhase = Math.max(0, Math.min(remaining, phaseEnd - phaseStart));
+    if (lvInPhase <= 0) { phaseStart = phaseEnd; continue; }
+    cost *= Math.pow(p.mult, lvInPhase);
+    remaining -= lvInPhase;
+    phaseStart = phaseEnd;
+    if (remaining <= 0) break;
+  }
+  // 拡張フェーズ（プレステージ）は最終倍率で継続
+  if (remaining > 0) {
+    cost *= Math.pow(PHASES[PHASES.length-1].mult, remaining);
+  }
+  return Math.floor(cost * (state.eventDiscount || 1));
+}
+
+/**
+ * CPS計算：マイルストーン到達でその建物のCPS×2（累積）
+ * 基本: baseCps × lv × (1 + lv×0.15)
+ * マイルストーン: ×2^（到達数）
+ */
+function getBuildingCps(b) {
+  const lv = state.buildings[b.id].level;
+  if (lv === 0) return 0;
+  const msCount = (state.buildings[b.id].msReached || []).length;
+  const base = b.baseCps * lv * (1 + lv * 0.15);
+  return base * Math.pow(2, msCount);
+}
+
+function getMilestoneCount(bid) {
+  const lv = state.buildings[bid].level;
+  return MILESTONES.filter(ms => lv >= ms).length;
+}
+
+/** 次のマイルストーンまでのLv */
+function getNextMilestone(lv, maxLv) {
+  for (const ms of MILESTONES) {
+    if (lv < ms && ms <= maxLv) return ms;
+  }
+  return null;
+}
+
+// ── グローバルCPS ──
+function getCps() {
+  const base = BUILDINGS.reduce((s,b) => s + getBuildingCps(b), 0);
+  return base * getAchievMult() * getPrestigeMult();
+}
+function getPrestigeMult() { return 1 + state.prestigeCount * 0.2; }
+function getAchievMult() {
+  let m = 1;
+  if(state.achievements.coins_10k)    m += .05;
+  if(state.achievements.coins_100k)   m += .10;
+  if(state.achievements.all_buildings) m += .15;
+  if(state.achievements.ms_4)         m += .25;
+  if(state.achievements.lv50)         m += .10;
+  if(state.achievements.lv100)        m += .20;
+  return m;
+}
+function getEventMult() {
+  if(!state.activeEvent) return 1;
+  if(Date.now()>state.activeEvent.endsAt){ state.activeEvent=null; state.eventDiscount=1; return 1; }
+  return state.activeEvent.mult;
+}
+function getEffectiveCps() { return getCps() * getEventMult(); }
+function getTotalLv() { return BUILDINGS.reduce((s,b)=>s+state.buildings[b.id].level,0); }
+function getPrestigeRequired() { return 50000 * Math.pow(3, state.prestigeCount); }
+
+// ═══════════════════════════════════════
+//  マイルストーン処理
+// ═══════════════════════════════════════
+let msToastTimer = null;
+function checkMilestones(bid) {
+  const b = BUILDINGS.find(x=>x.id===bid);
+  const lv = state.buildings[bid].level;
+  const reached = state.buildings[bid].msReached || [];
+  const maxLv = getMaxLevel();
+
+  for (const ms of MILESTONES) {
+    if (ms > maxLv) break;
+    if (lv >= ms && !reached.includes(ms)) {
+      reached.push(ms);
+      state.buildings[bid].msReached = reached;
+      showMsToast(b, ms);
+      addLog(`🌟 ${b.emoji}${b.name} Lv${ms} マイルストーン！CPS×2ボーナス！`);
+    }
+  }
+}
+
+function showMsToast(b, ms) {
+  const t = document.getElementById('msToast');
+  document.getElementById('msToastIcon').textContent = b.emoji;
+  document.getElementById('msToastTitle').textContent = `Lv${ms} マイルストーン！`;
+  document.getElementById('msToastBody').textContent = `${b.name}がLv${ms}に到達しました`;
+  document.getElementById('msToastBonus').textContent = `✨ ${b.name}のCPS ×2！`;
+  t.classList.add('show');
+  if (msToastTimer) clearTimeout(msToastTimer);
+  msToastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════
+//  セーブ・ロード
+// ═══════════════════════════════════════
+function saveGame() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      coins:state.coins, totalEarned:state.totalEarned, buildings:state.buildings,
+      savedAt:Date.now(), prestigeCount:state.prestigeCount,
+      achievements:state.achievements, eventCount:state.eventCount, stormCount:state.stormCount,
+      daily: state.daily,
+    }));
+    state.lastSaved = Date.now(); updateSaveStatus();
+    addLog('💾 セーブしました！');
+  } catch(e) { addLog('⚠️ セーブ失敗'); }
+}
+
+function loadGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY); if(!raw) return false;
+    const d = JSON.parse(raw);
+    state.coins = d.coins||50; state.totalEarned = d.totalEarned||0;
+    state.buildings = d.buildings||{}; state.prestigeCount = d.prestigeCount||0;
+    state.achievements = d.achievements||{}; state.eventCount = d.eventCount||0;
+    state.stormCount = d.stormCount||0;
+    state.daily = d.daily || { lastClaimDate:null, streak:0, totalClaimed:0 };
+    BUILDINGS.forEach(b=>{
+      if(!state.buildings[b.id]) state.buildings[b.id]={level:0,msReached:[]};
+      if(!state.buildings[b.id].msReached) state.buildings[b.id].msReached=[];
+    });
+    const offSec = Math.min((Date.now()-d.savedAt)/1000, 8*3600);
+    if(offSec>30 && getCps()>0){
+      const earned = Math.floor(getEffectiveCps()*offSec*.5);
+      state.coins+=earned; state.totalEarned+=earned;
+      showOfflineModal(offSec,earned);
+    }
+    return true;
+  } catch(e){ return false; }
+}
+
+function updateSaveStatus() {
+  const el=document.getElementById('saveStatus');
+  if(!state.lastSaved){el.textContent='未保存';return;}
+  const s=Math.floor((Date.now()-state.lastSaved)/1000);
+  el.textContent=s<60?`${s}秒前に保存`:`${Math.floor(s/60)}分前に保存`;
+}
+
+// ═══════════════════════════════════════
+//  実績・プレステージ
+// ═══════════════════════════════════════
+let achievToastTimer=null;
+function checkAchievements() {
+  ACHIEVEMENTS.forEach(a=>{
+    if(state.achievements[a.id]) return;
+    if(a.check(state)){ state.achievements[a.id]=true; showAchievToast(a); addLog(`🏅 実績解除：${a.name}`); }
+  });
+}
+function showAchievToast(a) {
+  const t=document.getElementById('achievToast');
+  document.getElementById('achievToastIcon').textContent=a.icon;
+  document.getElementById('achievToastName').textContent=a.name;
+  t.classList.add('show');
+  if(achievToastTimer) clearTimeout(achievToastTimer);
+  achievToastTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+function confirmPrestige() {
+  const req=getPrestigeRequired();
+  if(state.totalEarned<req) return;
+  const newMax = BASE_MAX_LV + (state.prestigeCount+1)*PRESTIGE_LV_BONUS;
+  const nextMult=(1+(state.prestigeCount+1)*.2).toFixed(1);
+  document.getElementById('prestigeConfirmList').innerHTML=
+    `✅ 転生後のCPS永続倍率：×${nextMult}<br>`+
+    `✅ レベル上限が <strong>Lv${newMax}</strong> に拡張<br>`+
+    `✅ 実績・転生回数は引き継ぎ<br>`+
+    `❌ コイン・建物レベルがリセット<br>`+
+    `❌ マイルストーン達成状況もリセット`;
+  document.getElementById('prestigeModal').classList.add('show');
+}
+
+function doPrestige() {
+  closeModal('prestigeModal');
+  state.prestigeCount++;
+  state.coins=50; state.totalEarned=0;
+  BUILDINGS.forEach(b=>{ state.buildings[b.id]={level:0,msReached:[]}; });
+  state.activeEvent=null; state.eventDiscount=1;
+  const newMax=getMaxLevel();
+  addLog(`⭐ プレステージ転生(${state.prestigeCount}回目)！Lv上限→${newMax}、CPS倍率×${(1+state.prestigeCount*.2).toFixed(1)}`);
+  saveGame(); checkAchievements(); render(); renderPrestige();
+  document.getElementById('prestigeBadge').style.display='flex';
+  document.getElementById('prestigeCount').textContent=state.prestigeCount;
+  for(let i=0;i<10;i++) setTimeout(()=>spawnFloatCoins('⭐'),i*100);
+}
+
+// ═══════════════════════════════════════
+//  イベント
+// ═══════════════════════════════════════
+let eventToastTimer=null;
+function triggerRandomEvent() {
+  if(getTotalLv()<1) return;
+  const ev=EVENTS[Math.floor(Math.random()*EVENTS.length)];
+  showEventToast(ev);
+  state.eventCount++;
+  if(ev.id==='storm') state.stormCount++;
+  const now=Date.now();
+  state.activeEvent={eventId:ev.id, endsAt:ev.dur>0?now+ev.dur*1000:now, mult:ev.mult||1};
+  state.eventDiscount=ev.discount||1;
+  if(ev.bonus==='flat'){
+    state.coins+=ev.amt; state.totalEarned+=ev.amt;
+    spawnFloatCoins(`+${fmt(ev.amt)}`);
+    addLog(`${ev.icon} ${ev.title} +${fmt(ev.amt)}コイン！`);
+  } else if(ev.bonus==='cps30'){
+    const b=Math.floor(getCps()*30); state.coins+=b; state.totalEarned+=b;
+    spawnFloatCoins(`+${fmt(b)}`);
+    addLog(`${ev.icon} ${ev.title} +${fmt(b)}コイン！`);
+  } else { addLog(`${ev.icon} ${ev.title}`); }
+  checkAchievements(); render();
+}
+function showEventToast(ev) {
+  const t=document.getElementById('eventToast');
+  document.getElementById('eventIcon').textContent=ev.icon;
+  document.getElementById('eventTitle').textContent=ev.title;
+  document.getElementById('eventDesc').textContent=ev.desc;
+  t.className=`event-toast ${ev.type} show`;
+  if(eventToastTimer) clearTimeout(eventToastTimer);
+  eventToastTimer=setTimeout(()=>t.classList.remove('show'),4000);
+}
+function scheduleNextEvent() {
+  setTimeout(()=>{ triggerRandomEvent(); scheduleNextEvent(); },(45+Math.random()*75)*1000);
+}
+
+// ═══════════════════════════════════════
+//  UI描画
+// ═══════════════════════════════════════
+function fmt(n){
+  if(n>=1e12) return (n/1e12).toFixed(2)+'兆';
+  if(n>=1e8)  return (n/1e8).toFixed(2)+'億';
+  if(n>=1e4)  return (n/1e4).toFixed(1)+'万';
+  return Math.floor(n).toLocaleString();
+}
+
+function switchTab(name) {
+  ['shop','achiev','prestige','lvdesign'].forEach(t=>{
+    document.getElementById(`panel-${t}`).style.display=t===name?'':'none';
+    document.getElementById(`tab-${t}`).classList.toggle('active',t===name);
+  });
+  if(name==='achiev') renderAchiev();
+  if(name==='prestige') renderPrestige();
+  if(name==='lvdesign') renderLvDesign();
+}
+
+function renderStats() {
+  document.getElementById('coinCount').textContent=fmt(state.coins);
+  const cps=getEffectiveCps(), m=getEventMult();
+  document.getElementById('cps').textContent=m!==1?`${fmt(cps)}(×${m})`:fmt(cps);
+  document.getElementById('totalEarned').textContent=fmt(state.totalEarned);
+  const maxLvBuilding = BUILDINGS.reduce((max,b)=>Math.max(max,state.buildings[b.id].level),0);
+  document.getElementById('maxLvDisplay').textContent=maxLvBuilding;
+  document.getElementById('maxLvCap').textContent=getMaxLevel();
+}
+
+function renderTown() {
+  const row=document.getElementById('buildingsRow'); row.innerHTML=''; let any=false;
+  BUILDINGS.forEach((b,i)=>{
+    const lv=state.buildings[b.id].level; if(!lv) return; any=true;
+    const msCount=(state.buildings[b.id].msReached||[]).length;
+    const d=document.createElement('div'); d.className='building';
+    d.style.setProperty('--delay',`${i*.4}s`);
+    const cps=getBuildingCps(b).toFixed(1);
+    const msGlow=msCount>0?`filter:drop-shadow(0 0 6px gold)`:'';
+    d.innerHTML=`<div class="building-emoji" style="${msGlow}">${b.emoji}${msCount>0?`<span style="font-size:10px;vertical-align:top">×${Math.pow(2,msCount)}</span>`:''}</div>
+      <div class="building-name">${b.name} Lv${lv}</div>
+      <div class="building-rate">+${cps}/秒</div>`;
+    row.appendChild(d);
+  });
+  if(!any) row.innerHTML='<div style="text-align:center;color:var(--muted);font-size:13px;padding:32px 0">🌱 最初の建物を建ててみよう！</div>';
+}
+
+function renderShop() {
+  const grid=document.getElementById('shopGrid'); grid.innerHTML='';
+  const maxLv=getMaxLevel();
+  const disc=state.eventDiscount<1;
+
+  BUILDINGS.forEach(b=>{
+    const lv=state.buildings[b.id].level;
+    const cost=getBuildingCost(b);
+    const isMax=lv>=maxLv;
+    const canAfford=!isMax&&state.coins>=cost;
+    const msReached=state.buildings[b.id].msReached||[];
+    const msCount=msReached.length;
+    const nextMs=getNextMilestone(lv,maxLv);
+
+    // フェーズ判定
+    const phase=getPhase(lv);
+    const phaseLabel=getPhaseLabel(lv);
+
+    // レベルバー：現フェーズ内の進捗
+    let barPct=0, barPhaseClass=phase.colorClass;
+    if(!isMax) {
+      const prevPhaseMax = PHASES.find(p=>lv<=p.maxLv);
+      const pStart = prevPhaseMax===PHASES[0]?0:PHASES[PHASES.indexOf(prevPhaseMax)-1]?.maxLv||0;
+      const pEnd = Math.min(prevPhaseMax?.maxLv||100, maxLv);
+      barPct=Math.min(100,((lv-pStart)/(pEnd-pStart))*100);
+    }
+
+    // マイルストーンバッジ
+    const msBadges=MILESTONES.filter(ms=>ms<=maxLv).map(ms=>{
+      const hit=msReached.includes(ms);
+      return `<span class="ms-badge ${hit?'reached':'next'}">Lv${ms}${hit?' ✓':''}</span>`;
+    }).join('');
+
+    const sale=disc&&!isMax?`<span style="font-size:9px;color:#e53935;font-weight:800"> SALE</span>`:'';
+    const btnText=isMax?`✨ MAX Lv${maxLv}`:lv===0?`🪙${fmt(cost)} 建設`:`🪙${fmt(cost)} 強化`;
+    const btnClass=isMax?'maxed-btn':lv>0?'upgrade':'';
+
+    const div=document.createElement('div');
+    div.className='shop-item '+`${isMax?'maxed':canAfford?'affordable':''} ${phase.colorClass}`;
+    div.innerHTML=`
+      <div class="item-top">
+        <span class="item-emoji">${b.emoji}${msCount>0?`<span style="font-size:10px;color:var(--coin2);font-weight:800;vertical-align:top">×${Math.pow(2,msCount)}</span>`:''}</span>
+        <div class="item-info">
+          <div class="item-name">${b.name}${sale}</div>
+          <div class="item-desc">${b.desc} · ${phaseLabel}</div>
+        </div>
+      </div>
+      <div class="lv-bar-wrap ${phase.colorClass}">
+        <div class="lv-bar-header">
+          <span class="lv-label">Lv ${lv} / ${maxLv}</span>
+          <span class="lv-next-ms">${nextMs?`次のMS: Lv${nextMs}`:'全MS達成！'}</span>
+        </div>
+        <div class="lv-bar-track"><div class="lv-bar-fill" style="width:${isMax?100:barPct}%"></div></div>
+      </div>
+      <div class="ms-badges">${msBadges}</div>
+      <button class="btn-buy ${btnClass}" onclick="buyBuilding('${b.id}')" ${isMax||(!isMax&&!canAfford)?'disabled':''}>${btnText}</button>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function renderAchiev() {
+  const unlocked=ACHIEVEMENTS.filter(a=>state.achievements[a.id]).length;
+  document.getElementById('achievSummary').textContent=`${unlocked} / ${ACHIEVEMENTS.length} 件解除`;
+  const grid=document.getElementById('achievGrid'); grid.innerHTML='';
+  ACHIEVEMENTS.forEach(a=>{
+    const ok=!!state.achievements[a.id];
+    const div=document.createElement('div');
+    div.className='achiev-card'+(ok?' unlocked':' locked');
+    div.innerHTML=`<div class="achiev-icon">${a.icon}</div><div>
+      <div class="achiev-name">${a.name}</div>
+      <div class="achiev-desc">${ok?a.desc:'???'}</div>
+      <div class="achiev-reward">🎁 ${ok?a.reward:'???'}</div>
+      ${ok?'<span class="unlocked-stamp">✅ 解除済み</span>':''}
+    </div>`;
+    grid.appendChild(div);
+  });
+}
+
+function renderPrestige() {
+  const req=getPrestigeRequired(), can=state.totalEarned>=req;
+  const prog=Math.min(100,(state.totalEarned/req)*100);
+  const newMax=BASE_MAX_LV+(state.prestigeCount+1)*PRESTIGE_LV_BONUS;
+  const nextMult=(1+(state.prestigeCount+1)*.2).toFixed(1);
+  const curMult=(1+state.prestigeCount*.2).toFixed(1);
+  document.getElementById('prestigeInfo').innerHTML=
+    `現在の永続CPS倍率：<strong style="color:var(--prestige2)">×${curMult}</strong><br>
+     現在のレベル上限：<strong style="color:var(--prestige2)">Lv${getMaxLevel()}</strong>`;
+  document.getElementById('prestigeBonusList').innerHTML=
+    `<div class="prestige-bonus-item"><span class="pb-icon">⭐</span>永続CPS倍率 → ×<strong>${nextMult}</strong></div>
+     <div class="prestige-bonus-item"><span class="pb-icon">📈</span>レベル上限 → <strong>Lv${newMax}</strong>（+${PRESTIGE_LV_BONUS}）</div>
+     <div class="prestige-bonus-item"><span class="pb-icon">📌</span>実績・転生回数は引き継ぎ</div>
+     <div class="prestige-bonus-item"><span class="pb-icon">🔄</span>コイン・建物・マイルストーンはリセット</div>`;
+  document.getElementById('prestigeReq').innerHTML=
+    `転生条件：累計コイン <strong style="color:var(--prestige2)">${fmt(req)}</strong> 以上<br>
+     現在：${fmt(state.totalEarned)} ${can?'✅ 転生可能！':'（あと '+fmt(req-state.totalEarned)+'）'}`;
+  document.getElementById('prestigeProgressBar').style.width=`${prog}%`;
+  document.getElementById('btnPrestige').disabled=!can;
+  document.getElementById('prestigeHistory').innerHTML=
+    state.prestigeCount>0?'⭐'.repeat(Math.min(state.prestigeCount,10))+` ${state.prestigeCount}回転生済み`:'まだ転生したことがありません';
+}
+
+function renderLvDesign() {
+  const maxLv=getMaxLevel();
+  // コスト・CPS早見表
+  const rows = BUILDINGS.map(b=>{
+    // サンプルとして各フェーズ境界のコスト計算
+    const snapshots=[1,10,25,50,100].filter(lv=>lv<=maxLv).map(snapLv=>{
+      const origLv=state.buildings[b.id].level;
+      state.buildings[b.id].level=snapLv-1; // 「snapLvに強化するコスト」
+      const cost=getBuildingCost(b);
+      state.buildings[b.id].level=origLv;
+      // CPS at snapLv (no milestone for simplicity)
+      const cps=b.baseCps*snapLv*(1+snapLv*.15);
+      return {lv:snapLv,cost,cps};
+    });
+    return {b,snapshots};
+  });
+
+  let html=`
+    <div class="lv-design-panel">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">
+        現在のLv上限：<strong style="color:var(--prestige2)">Lv${maxLv}</strong>
+        （転生${state.prestigeCount}回 × +${PRESTIGE_LV_BONUS}）
+      </div>
+      <div style="margin-bottom:14px">
+        <div style="font-weight:800;font-size:12px;color:var(--brown);margin-bottom:6px">📐 フェーズ定義</div>`;
+  PHASES.forEach(p=>{
+    const cap=Math.min(p.maxLv,maxLv);
+    html+=`<div class="lv-design-row">
+      <div class="lv-range">〜Lv${cap}</div>
+      <div class="lv-phase-dot ${p.dot}"></div>
+      <div class="lv-detail">${p.name}（コスト倍率×${p.mult}）${cap<p.maxLv?'<span style="color:#e53935">（上限外）</span>':''}</div>
+    </div>`;
+  });
+  if(maxLv>100){
+    html+=`<div class="lv-design-row">
+      <div class="lv-range">101〜${maxLv}</div>
+      <div class="lv-phase-dot dot-p4"></div>
+      <div class="lv-detail">転生拡張（倍率×${PHASES[3].mult}継続）</div>
+    </div>`;
+  }
+  html+=`</div><div style="margin-bottom:14px">
+    <div style="font-weight:800;font-size:12px;color:var(--brown);margin-bottom:6px">🌟 マイルストーン（CPS×2ボーナス）</div>`;
+  MILESTONES.filter(ms=>ms<=maxLv).forEach(ms=>{
+    html+=`<div class="lv-design-row">
+      <div class="lv-range">Lv${ms}</div>
+      <div style="font-size:14px">⭐</div>
+      <div class="lv-detail"><span class="lv-ms-note">CPS×2（累積：到達4回で最大×16）</span></div>
+    </div>`;
+  });
+  html+=`</div><div>
+    <div style="font-weight:800;font-size:12px;color:var(--brown);margin-bottom:6px">📊 建物別コスト早見表</div>
+    <div style="overflow-x:auto"><table style="width:100%;font-size:10px;border-collapse:collapse">
+    <thead><tr style="background:var(--warm)">
+      <th style="padding:5px;text-align:left">建物</th>
+      <th style="padding:5px">Lv1</th>
+      <th style="padding:5px">Lv10</th>
+      <th style="padding:5px">Lv25</th>
+      <th style="padding:5px">Lv50</th>
+      ${maxLv>=100?'<th style="padding:5px">Lv100</th>':''}
+    </tr></thead><tbody>`;
+  rows.forEach(({b,snapshots})=>{
+    html+=`<tr style="border-bottom:1px solid #e8d8b0">
+      <td style="padding:5px;font-weight:800">${b.emoji}${b.name}</td>`;
+    snapshots.forEach(s=>{
+      html+=`<td style="padding:5px;text-align:center;color:var(--muted)">${fmt(s.cost)}</td>`;
+    });
+    if(snapshots.length<5) html+=`<td style="padding:5px;text-align:center;color:#ccc">-</td>`;
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table></div></div></div>`;
+  document.getElementById('lvDesignContent').innerHTML=html;
+}
+
+function render() { renderStats(); renderTown(); renderShop(); }
+
+// ═══════════════════════════════════════
+//  アクション
+// ═══════════════════════════════════════
+function buyBuilding(id) {
+  const b=BUILDINGS.find(x=>x.id===id);
+  const lv=state.buildings[id].level;
+  const maxLv=getMaxLevel();
+  const cost=getBuildingCost(b);
+  if(state.coins<cost||lv>=maxLv) return;
+
+  state.coins-=cost;
+  state.buildings[id].level++;
+  const nl=state.buildings[id].level;
+
+  addLog(lv===0?`🏗️ ${b.emoji}${b.name}を建設！(Lv.1)`:`⬆️ ${b.emoji}${b.name} Lv.${nl}に強化！`);
+  spawnFloatCoins(`-${fmt(cost)}`);
+  checkMilestones(id);
+  checkAchievements();
+  render();
+}
+
+function manualHarvest() {
+  const bonus=Math.max(1,getEffectiveCps()*2);
+  state.coins+=bonus; state.totalEarned+=bonus;
+  spawnFloatCoins(`+${fmt(bonus)}`);
+  checkAchievements(); render();
+}
+
+function spawnFloatCoins(text) {
+  const btn=document.getElementById('harvestBtn'), r=btn.getBoundingClientRect();
+  const el=document.createElement('div'); el.className='float-coin';
+  el.textContent=`🪙${text}`; el.style.left=(r.left+r.width/2-20)+'px'; el.style.top=(r.top-10)+'px';
+  document.body.appendChild(el); setTimeout(()=>el.remove(),1300);
+}
+
+function addLog(msg) {
+  const log=document.getElementById('log'), now=new Date();
+  const t=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+  const e=document.createElement('div'); e.className='log-entry';
+  e.textContent=`[${t}] ${msg}`; log.insertBefore(e,log.firstChild);
+  while(log.children.length>20) log.removeChild(log.lastChild);
+}
+
+function showOfflineModal(sec,coins) {
+  const h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60);
+  document.getElementById('offlineMsg').textContent=`${h>0?h+'時間':''} ${m}分の間、街が働き続けました（効率50%）`;
+  document.getElementById('offlineCoins').textContent=`+${fmt(coins)} 🪙`;
+  document.getElementById('offlineModal').classList.add('show');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// ═══════════════════════════════════════
+//  ゲームループ
+// ═══════════════════════════════════════
+let tickCount=0;
+function tick() {
+  const now=Date.now(), dt=(now-state.lastTick)/1000; state.lastTick=now;
+  const earned=getEffectiveCps()*dt;
+  state.coins+=earned; state.totalEarned+=earned;
+  renderStats();
+  document.querySelectorAll('.shop-item').forEach((el,i)=>{
+    const b=BUILDINGS[i]; if(!b) return;
+    const lv=state.buildings[b.id].level, maxLv=getMaxLevel();
+    const isMax=lv>=maxLv, cost=getBuildingCost(b);
+    el.className=`shop-item ${isMax?'maxed':state.coins>=cost?'affordable':''} ${getPhase(lv).colorClass}`;
+    const btn=el.querySelector('.btn-buy');
+    if(btn&&!isMax) btn.disabled=state.coins<cost;
+  });
+  tickCount++;
+  if(tickCount%150===0){ saveGame(); updateSaveStatus(); }
+  if(tickCount%50===0) updateSaveStatus();
+  if(tickCount%100===0) checkAchievements();
+}
+
+// ══════════════════════════════
+//  デイリーボーナス
+// ══════════════════════════════
+function getTodayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getYesterdayStr() {
+  const d = new Date(); d.setDate(d.getDate()-1);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function isDailyClaimable() {
+  return state.daily.lastClaimDate !== getTodayStr();
+}
+
+function getCurrentDayReward() {
+  // streakは0始まりなので、次に受け取る日は streak % 7
+  const idx = state.daily.streak % 7;
+  return DAILY_REWARDS[idx];
+}
+
+function claimDaily() {
+  if (!isDailyClaimable()) return;
+
+  const today = getTodayStr();
+  const yesterday = getYesterdayStr();
+
+  // 連続判定：昨日受け取っていたらstreakを継続、そうでなければリセット
+  if (state.daily.lastClaimDate === yesterday) {
+    state.daily.streak++;
+  } else {
+    state.daily.streak = 1;
+  }
+  state.daily.lastClaimDate = today;
+  state.daily.totalClaimed++;
+
+  const reward = DAILY_REWARDS[(state.daily.streak - 1) % 7];
+
+  // ボーナス適用
+  if (reward.multiplier > 1) {
+    // 7日目特別ボーナス：1時間CPS×2
+    state.activeEvent = {
+      eventId: 'daily7',
+      endsAt: Date.now() + 3600 * 1000,
+      mult: reward.multiplier,
+    };
+    addLog(`👑 7日連続ログイン！1時間CPS×${reward.multiplier}ボーナス！`);
+    spawnFloatCoins('👑×2');
+  } else {
+    // コインボーナス
+    const bonus = Math.floor(reward.coins * (1 + state.prestigeCount * 0.1));
+    state.coins += bonus;
+    state.totalEarned += bonus;
+    addLog(`🎁 デイリーボーナス受け取り！(${state.daily.streak}日連続) +${fmt(bonus)}コイン`);
+    spawnFloatCoins(`+${fmt(bonus)}`);
+  }
+
+  saveGame();
+  renderDailyBar();
+  closeModal('dailyModal');
+  render();
+}
+
+function openDailyModal() {
+  const today = getTodayStr();
+  const canClaim = isDailyClaimable();
+  const streak = state.daily.streak;
+  const nextReward = getCurrentDayReward();
+
+  // メッセージ
+  document.getElementById('dailyModalMsg').textContent = canClaim
+    ? `${streak > 0 ? streak + '日連続ログイン中！' : ''}今日のボーナスを受け取ろう`
+    : '今日はもう受け取り済みです。また明日！';
+
+  // カレンダー（7日分）
+  const cal = document.getElementById('dailyCalendar');
+  cal.innerHTML = '';
+  DAILY_REWARDS.forEach((r, i) => {
+    const dayNum = i + 1;
+    const isPast  = dayNum < (streak % 7 === 0 && streak > 0 ? 7 : streak % 7);
+    const isToday = canClaim && dayNum === ((streak % 7) + 1 <= 7 ? (streak % 7) + 1 : 1);
+    const isFuture = !isPast && !isToday;
+    const cls = isPast ? 'past' : isToday ? 'today' : 'future';
+    const bonusText = r.multiplier > 1 ? r.special : `+${fmt(r.coins)}`;
+    cal.innerHTML += `<div class="daily-day ${cls}">
+      <div class="daily-day-num">${dayNum}日</div>
+      <div class="daily-day-icon">${r.icon}</div>
+      <div class="daily-day-bonus">${bonusText}</div>
+    </div>`;
+  });
+
+  // ボーナス表示
+  const bonusEl = document.getElementById('dailyBonusCoins');
+  if (nextReward.multiplier > 1) {
+    bonusEl.textContent = `👑 ${nextReward.special}`;
+  } else {
+    const bonus = Math.floor(nextReward.coins * (1 + state.prestigeCount * 0.1));
+    bonusEl.textContent = `+${fmt(bonus)} 🪙`;
+  }
+
+  const btn = document.getElementById('btnDailyModal');
+  btn.textContent = canClaim ? '受け取る！' : '明日またね！';
+  btn.disabled = !canClaim;
+  btn.onclick = canClaim ? claimDaily : () => closeModal('dailyModal');
+
+  document.getElementById('dailyModal').classList.add('show');
+}
+
+function renderDailyBar() {
+  const canClaim = isDailyClaimable();
+  const bar = document.getElementById('dailyBar');
+  const streak = state.daily.streak;
+  const nextReward = getCurrentDayReward();
+
+  bar.classList.toggle('claimed', !canClaim);
+  document.getElementById('dailyBarIcon').textContent = canClaim ? nextReward.icon : '✅';
+  document.getElementById('dailyBarTitle').textContent = canClaim
+    ? 'デイリーボーナス受け取れます！'
+    : '本日受け取り済み';
+
+  // 次回受け取り可能時刻
+  if (!canClaim) {
+    const now = new Date();
+    const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate()+1);
+    tomorrow.setHours(0,0,0,0);
+    const diffH = Math.ceil((tomorrow-now)/3600000);
+    document.getElementById('dailyBarSubtitle').textContent = `次回：約${diffH}時間後`;
+  } else {
+    const bonus = nextReward.multiplier > 1
+      ? nextReward.special
+      : `+${fmt(Math.floor(nextReward.coins*(1+state.prestigeCount*.1)))}コイン`;
+    document.getElementById('dailyBarSubtitle').textContent = `本日のボーナス：${bonus}`;
+  }
+
+  document.getElementById('dailyStreak').textContent =
+    streak > 0 ? `🔥${streak}日連続` : '';
+  document.getElementById('btnDailyClaim').disabled = !canClaim;
+  document.getElementById('btnDailyClaim').style.display = canClaim ? '' : 'none';
+}
+
+// ═══════════════════════════════════════
+//  起動
+// ═══════════════════════════════════════
+const loaded=loadGame();
+addLog(loaded?'💾 セーブデータを読み込みました。':'🌿 のどかまちへようこそ！最初の建物を建ててみよう。');
+if(state.prestigeCount>0){
+  document.getElementById('prestigeBadge').style.display='flex';
+  document.getElementById('prestigeCount').textContent=state.prestigeCount;
+}
+render();
+renderDailyBar();
+setInterval(tick,200);
+scheduleNextEvent();
+
+// Service Worker 登録
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('SW登録成功:', reg.scope))
+      .catch(err => console.log('SW登録失敗:', err));
+  });
+}
+</script>
+</body>
+</html>
