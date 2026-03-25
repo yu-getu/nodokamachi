@@ -1158,6 +1158,14 @@ function tick() {
     const btn=el.querySelector('.btn-buy');
     if(btn&&!isMax) btn.disabled=state.coins<cost;
   });
+  document.querySelectorAll('.deco-item').forEach((el,i)=>{
+    const d=DECORATIONS[i]; if(!d) return;
+    const owned=!!state.decorations[d.id];
+    const canAfford=!owned&&state.coins>=d.cost;
+    el.className=`deco-item ${owned?'owned':canAfford?'affordable':''}`;
+    const btn=el.querySelector('.btn-buy');
+    if(btn&&!owned) btn.disabled=!canAfford;
+  });
   tickCount++;
   if(tickCount%150===0){ saveGame(); updateSaveStatus(); }
   if(tickCount%50===0) updateSaveStatus();
