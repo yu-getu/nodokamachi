@@ -1,225 +1,262 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>のどかまち</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>のどかまち</title>
 
-<!-- PWA設定 -->
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#7bc47f">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="のどかまち">
-<meta name="mobile-web-app-capable" content="yes">
+  <!-- PWA設定 -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#7bc47f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="のどかまち">
+  <meta name="mobile-web-app-capable" content="yes">
 
-<!-- OGP（シェア用） -->
-<meta property="og:title" content="のどかまち">
-<meta property="og:description" content="のんびり街を育てる放置ゲーム🌿">
-<meta property="og:type" content="website">
+  <!-- OGP（シェア用） -->
+  <meta property="og:title" content="のどかまち">
+  <meta property="og:description" content="のんびり街を育てる放置ゲーム🌿">
+  <meta property="og:type" content="website">
 
-<link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;700&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;700&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap"
+    rel="stylesheet">
 
-<!-- CSS -->
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/layout.css">
-<link rel="stylesheet" href="css/town.css">
-<link rel="stylesheet" href="css/shop.css">
-<link rel="stylesheet" href="css/systems.css">
-<link rel="stylesheet" href="css/ui.css">
-<link rel="stylesheet" href="css/responsive.css">
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/town.css">
+  <link rel="stylesheet" href="css/shop.css">
+  <link rel="stylesheet" href="css/systems.css">
+  <link rel="stylesheet" href="css/ui.css">
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
+
 <body>
-<div class="sky-bg"><div id="skyMoon">🌙</div><div id="skySun">☀️</div></div>
-<div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+  <div class="sky-bg">
+    <div id="skyMoon">🌙</div>
+    <div id="skySun">☀️</div>
+  </div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
 
-<div class="game-wrap">
-  <header>
-    <div class="title">🌿 <span>のどか</span>まち</div>
-    <div class="header-right">
-      <div class="prestige-badge" id="prestigeBadge" style="display:none">⭐<span id="prestigeCount">0</span>世代</div>
-      <div class="weekend-badge" id="weekendBadge" style="display:none">🎉 週末×1.3</div>
-      <div class="season-badge season-spring" id="seasonBadge">🌸 春</div>
-      <div class="sound-btns">
-        <button class="btn-sound" id="btnBgm" onclick="toggleBgm()">🎵</button>
-        <button class="btn-sound" id="btnSfx" onclick="toggleSfx()">🔔</button>
+  <div class="game-wrap">
+    <header>
+      <div class="title">🌿 <span>のどか</span>まち</div>
+      <div class="header-right">
+        <div class="prestige-badge" id="prestigeBadge" style="display:none">⭐<span id="prestigeCount">0</span>世代</div>
+        <div class="weekend-badge" id="weekendBadge" style="display:none">🎉 週末×1.3</div>
+        <div class="season-badge season-spring" id="seasonBadge">🌸 春</div>
+        <div class="sound-btns">
+          <button class="btn-sound" id="btnBgm" onclick="toggleBgm()">🎵</button>
+          <button class="btn-sound" id="btnSfx" onclick="toggleSfx()">🔔</button>
+        </div>
+        <div class="coin-display"><span class="coin-icon">🪙</span><span id="coinCount">0</span></div>
       </div>
-      <div class="coin-display"><span class="coin-icon">🪙</span><span id="coinCount">0</span></div>
+    </header>
+
+    <div class="town-area" id="townArea">
+      <div id="weatherLayer"></div>
+      <div class="buildings-row" id="buildingsRow"></div>
     </div>
-  </header>
 
-  <div class="town-area" id="townArea">
-    <div id="weatherLayer"></div>
-    <div class="buildings-row" id="buildingsRow"></div>
-  </div>
-
-  <div class="stats-bar">
-    <div class="stat-card"><span class="stat-icon">⏱️</span><div class="stat-info"><span class="stat-label">コイン/秒</span><span class="stat-value" id="cps">0</span></div></div>
-    <div class="stat-card"><span class="stat-icon">🏘️</span><div class="stat-info"><span class="stat-label">最高Lv</span><span class="stat-value" id="maxLvDisplay">0</span></div></div>
-    <div class="stat-card"><span class="stat-icon">📈</span><div class="stat-info"><span class="stat-label">総収入</span><span class="stat-value" id="totalEarned">0</span></div></div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('shop')" id="tab-shop">🛒 建設</button>
-    <button class="tab" onclick="switchTab('research')" id="tab-research">🔬 研究</button>
-    <button class="tab" onclick="switchTab('deco')" id="tab-deco">🌺 飾り</button>
-    <button class="tab" onclick="switchTab('achiev')" id="tab-achiev">🏅 実績</button>
-    <button class="tab" onclick="switchTab('prestige')" id="tab-prestige">⭐ 転生</button>
-    <button class="tab" onclick="switchTab('skill')" id="tab-skill">🌟 スキル</button>
-    <button class="tab" onclick="switchTab('lvdesign')" id="tab-lvdesign">📊 設計</button>
-  </div>
-
-  <!-- デイリーボーナスバー -->
-  <div class="daily-bar" id="dailyBar" onclick="openDailyModal()">
-    <div class="daily-bar-left">
-      <div class="daily-icon" id="dailyBarIcon">🎁</div>
-      <div class="daily-info">
-        <div class="daily-title" id="dailyBarTitle">デイリーボーナス受け取れます！</div>
-        <div class="daily-subtitle" id="dailyBarSubtitle">タップして受け取ろう</div>
+    <div class="stats-bar">
+      <div class="stat-card"><span class="stat-icon">⏱️</span>
+        <div class="stat-info"><span class="stat-label">コイン/秒</span><span class="stat-value" id="cps">0</span></div>
+      </div>
+      <div class="stat-card"><span class="stat-icon">🏘️</span>
+        <div class="stat-info"><span class="stat-label">最高Lv</span><span class="stat-value" id="maxLvDisplay">0</span>
+        </div>
+      </div>
+      <div class="stat-card"><span class="stat-icon">📈</span>
+        <div class="stat-info"><span class="stat-label">総収入</span><span class="stat-value" id="totalEarned">0</span>
+        </div>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <div class="daily-streak" id="dailyStreak"></div>
-      <button class="btn-daily" id="btnDailyClaim" onclick="event.stopPropagation();claimDaily()">受け取る</button>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('shop')" id="tab-shop">🛒 建設</button>
+      <button class="tab" onclick="switchTab('research')" id="tab-research">🔬 研究</button>
+      <button class="tab" onclick="switchTab('deco')" id="tab-deco">🌺 飾り</button>
+      <button class="tab" onclick="switchTab('achiev')" id="tab-achiev">🏅 実績</button>
+      <button class="tab" onclick="switchTab('prestige')" id="tab-prestige">⭐ 転生</button>
+      <button class="tab" onclick="switchTab('skill')" id="tab-skill">🌟 スキル</button>
+      <button class="tab" onclick="switchTab('lvdesign')" id="tab-lvdesign">📊 設計</button>
     </div>
-  </div>
 
-  <div class="panel" id="panel-shop">
-    <div class="panel-title">🛒 建物を建てる <span style="font-size:11px;color:var(--muted);font-family:sans-serif">Lv上限：<span id="maxLvCap">100</span></span></div>
-    <div class="shop-grid" id="shopGrid"></div>
-  </div>
-
-  <!-- 研究パネル -->
-  <div class="panel" id="panel-research" style="display:none">
-    <div class="panel-title">🔬 研究開発</div>
-    <p style="font-size:11px;color:var(--muted);margin-bottom:12px">コインを投資して建物の生産力を強化しよう！</p>
-    <div class="research-grid" id="researchGrid"></div>
-  </div>
-
-  <!-- デコレーションパネル -->
-  <div class="panel" id="panel-deco" style="display:none">
-    <div class="panel-title">🌺 デコレーション</div>
-    <div class="beauty-bar">
-      <div class="beauty-icon">✨</div>
-      <div class="beauty-info">
-        <div class="beauty-title">美観スコア：<span id="beautyScore">0</span> pt</div>
-        <div class="beauty-sub">CPS +<span id="beautyBonus">0</span>%ボーナス中</div>
+    <!-- デイリーボーナスバー -->
+    <div class="daily-bar" id="dailyBar" onclick="openDailyModal()">
+      <div class="daily-bar-left">
+        <div class="daily-icon" id="dailyBarIcon">🎁</div>
+        <div class="daily-info">
+          <div class="daily-title" id="dailyBarTitle">デイリーボーナス受け取れます！</div>
+          <div class="daily-subtitle" id="dailyBarSubtitle">タップして受け取ろう</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="daily-streak" id="dailyStreak"></div>
+        <button class="btn-daily" id="btnDailyClaim" onclick="event.stopPropagation();claimDaily()">受け取る</button>
       </div>
     </div>
-    <div class="deco-grid" id="decoGrid"></div>
+
+    <div class="panel" id="panel-shop">
+      <div class="panel-title">🛒 建物を建てる <span
+          style="font-size:11px;color:var(--muted);font-family:sans-serif">Lv上限：<span id="maxLvCap">100</span></span>
+      </div>
+      <div class="shop-grid" id="shopGrid"></div>
+    </div>
+
+    <!-- 研究パネル -->
+    <div class="panel" id="panel-research" style="display:none">
+      <div class="panel-title">🔬 研究開発</div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:12px">コインを投資して建物の生産力を強化しよう！</p>
+      <div class="research-grid" id="researchGrid"></div>
+    </div>
+
+    <!-- デコレーションパネル -->
+    <div class="panel" id="panel-deco" style="display:none">
+      <div class="panel-title">🌺 デコレーション</div>
+      <div class="beauty-bar">
+        <div class="beauty-icon">✨</div>
+        <div class="beauty-info">
+          <div class="beauty-title">美観スコア：<span id="beautyScore">0</span> pt</div>
+          <div class="beauty-sub">CPS +<span id="beautyBonus">0</span>%ボーナス中</div>
+        </div>
+      </div>
+      <div class="deco-grid" id="decoGrid"></div>
+    </div>
+
+    <div class="panel" id="panel-achiev" style="display:none">
+      <div class="panel-title">🏅 実績一覧</div>
+      <div class="achiev-summary" id="achievSummary"></div>
+      <div class="achiev-grid" id="achievGrid"></div>
+    </div>
+
+    <div class="prestige-panel" id="panel-prestige" style="display:none">
+      <div class="panel-title">⭐ プレステージ転生</div>
+      <div class="prestige-info" id="prestigeInfo"></div>
+      <div class="prestige-bonus-list" id="prestigeBonusList"></div>
+      <div class="prestige-req" id="prestigeReq"></div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="prestigeProgressBar" style="width:0%"></div>
+      </div>
+      <button class="btn-prestige" id="btnPrestige" onclick="confirmPrestige()" disabled>⭐ プレステージ転生する</button>
+      <div class="prestige-history" id="prestigeHistory"></div>
+    </div>
+
+    <!-- スキルツリーパネル -->
+    <div class="panel" id="panel-skill" style="display:none">
+      <div class="panel-title">🌟 スキルツリー</div>
+      <div class="skill-sp-bar">
+        <div class="skill-sp-icon">💎</div>
+        <div class="skill-sp-info">
+          <div class="skill-sp-title">スキルポイント：<span id="skillSpAvail">0</span> SP 残り</div>
+          <div class="skill-sp-sub">総獲得：<span id="skillSpTotal">0</span> SP（消費：<span id="skillSpSpent">0</span> SP）
+          </div>
+        </div>
+      </div>
+      <p style="font-size:10px;color:var(--muted);margin-bottom:10px">建物レベル8ごと・クエスト完了5件ごと・転生ごとにSPを獲得。スキルは転生でリセットされます。
+      </p>
+      <div id="skillTreeContent"></div>
+    </div>
+
+    <!-- レベルデザイン表 -->
+    <div class="panel" id="panel-lvdesign" style="display:none">
+      <div class="panel-title">📊 レベルデザイン設計書</div>
+      <div id="lvDesignContent"></div>
+    </div>
+
+    <!-- クエストパネル -->
+    <div class="quest-panel">
+      <div class="quest-panel-title">
+        <span>🎯 デイリークエスト</span>
+        <span id="questCompleted" style="font-size:11px;color:var(--muted);font-family:sans-serif"></span>
+      </div>
+      <div id="questContainer"></div>
+    </div>
+
+    <div class="save-bar"><span>💾 <span id="saveStatus">未保存</span></span><button class="btn-save"
+        onclick="saveGame()">今すぐ保存</button></div>
+    <div class="log" id="log"></div>
   </div>
 
-  <div class="panel" id="panel-achiev" style="display:none">
-    <div class="panel-title">🏅 実績一覧</div>
-    <div class="achiev-summary" id="achievSummary"></div>
-    <div class="achiev-grid" id="achievGrid"></div>
+  <button class="harvest-btn" id="harvestBtn" onclick="manualHarvest()">🪙<span
+      class="harvest-label">ひと稼ぎ</span></button>
+
+  <div class="event-toast" id="eventToast">
+    <div class="event-toast-icon" id="eventIcon"></div>
+    <div>
+      <div class="event-toast-title" id="eventTitle"></div>
+      <div class="event-toast-desc" id="eventDesc"></div>
+    </div>
+  </div>
+  <div class="achiev-toast" id="achievToast">
+    <div class="achiev-toast-icon" id="achievToastIcon"></div>
+    <div>
+      <div class="achiev-toast-label">実績解除！</div>
+      <div class="achiev-toast-name" id="achievToastName"></div>
+    </div>
+  </div>
+  <!-- マイルストーントースト -->
+  <div class="ms-toast" id="msToast">
+    <div class="ms-toast-icon" id="msToastIcon"></div>
+    <div class="ms-toast-title" id="msToastTitle"></div>
+    <div class="ms-toast-body" id="msToastBody"></div>
+    <div class="ms-toast-bonus" id="msToastBonus"></div>
   </div>
 
-  <div class="prestige-panel" id="panel-prestige" style="display:none">
-    <div class="panel-title">⭐ プレステージ転生</div>
-    <div class="prestige-info" id="prestigeInfo"></div>
-    <div class="prestige-bonus-list" id="prestigeBonusList"></div>
-    <div class="prestige-req" id="prestigeReq"></div>
-    <div class="progress-bar-wrap"><div class="progress-bar" id="prestigeProgressBar" style="width:0%"></div></div>
-    <button class="btn-prestige" id="btnPrestige" onclick="confirmPrestige()" disabled>⭐ プレステージ転生する</button>
-    <div class="prestige-history" id="prestigeHistory"></div>
+  <div class="modal-overlay" id="offlineModal">
+    <div class="modal">
+      <div class="modal-icon">🌙</div>
+      <h2>おかえりなさい！</h2>
+      <p id="offlineMsg"></p>
+      <div class="modal-coins" id="offlineCoins"></div>
+      <button class="btn-modal" onclick="closeModal('offlineModal')">受け取る！</button>
+    </div>
   </div>
 
-  <!-- スキルツリーパネル -->
-  <div class="panel" id="panel-skill" style="display:none">
-    <div class="panel-title">🌟 スキルツリー</div>
-    <div class="skill-sp-bar">
-      <div class="skill-sp-icon">💎</div>
-      <div class="skill-sp-info">
-        <div class="skill-sp-title">スキルポイント：<span id="skillSpAvail">0</span> SP 残り</div>
-        <div class="skill-sp-sub">総獲得：<span id="skillSpTotal">0</span> SP（消費：<span id="skillSpSpent">0</span> SP）</div>
+  <!-- デイリーボーナスモーダル -->
+  <div class="modal-overlay" id="dailyModal" onclick="if(event.target===this)closeModal('dailyModal')">
+    <div class="modal">
+      <div class="modal-icon">🗓️</div>
+      <h2>デイリーボーナス</h2>
+      <p id="dailyModalMsg"></p>
+      <div class="daily-calendar" id="dailyCalendar"></div>
+      <div class="modal-coins" id="dailyBonusCoins"></div>
+      <button class="btn-modal" id="btnDailyModal" onclick="claimDaily()">受け取る！</button>
+    </div>
+  </div>
+  <div class="modal-overlay" id="prestigeModal">
+    <div class="modal">
+      <div class="modal-icon">⭐</div>
+      <h2>プレステージ転生</h2>
+      <div class="prestige-confirm-list" id="prestigeConfirmList"></div>
+      <p>本当に転生しますか？</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
+        <button class="btn-modal" onclick="closeModal('prestigeModal')">やめる</button>
+        <button class="btn-modal purple" onclick="doPrestige()">転生する！</button>
       </div>
     </div>
-    <p style="font-size:10px;color:var(--muted);margin-bottom:10px">建物レベル8ごと・クエスト完了5件ごと・転生ごとにSPを獲得。スキルは転生でリセットされます。</p>
-    <div id="skillTreeContent"></div>
   </div>
 
-  <!-- レベルデザイン表 -->
-  <div class="panel" id="panel-lvdesign" style="display:none">
-    <div class="panel-title">📊 レベルデザイン設計書</div>
-    <div id="lvDesignContent"></div>
-  </div>
-
-  <!-- クエストパネル -->
-  <div class="quest-panel">
-    <div class="quest-panel-title">
-      <span>🎯 デイリークエスト</span>
-      <span id="questCompleted" style="font-size:11px;color:var(--muted);font-family:sans-serif"></span>
-    </div>
-    <div id="questContainer"></div>
-  </div>
-
-  <div class="save-bar"><span>💾 <span id="saveStatus">未保存</span></span><button class="btn-save" onclick="saveGame()">今すぐ保存</button></div>
-  <div class="log" id="log"></div>
-</div>
-
-<button class="harvest-btn" id="harvestBtn" onclick="manualHarvest()">🪙<span class="harvest-label">ひと稼ぎ</span></button>
-
-<div class="event-toast" id="eventToast">
-  <div class="event-toast-icon" id="eventIcon"></div>
-  <div><div class="event-toast-title" id="eventTitle"></div><div class="event-toast-desc" id="eventDesc"></div></div>
-</div>
-<div class="achiev-toast" id="achievToast">
-  <div class="achiev-toast-icon" id="achievToastIcon"></div>
-  <div><div class="achiev-toast-label">実績解除！</div><div class="achiev-toast-name" id="achievToastName"></div></div>
-</div>
-<!-- マイルストーントースト -->
-<div class="ms-toast" id="msToast">
-  <div class="ms-toast-icon" id="msToastIcon"></div>
-  <div class="ms-toast-title" id="msToastTitle"></div>
-  <div class="ms-toast-body" id="msToastBody"></div>
-  <div class="ms-toast-bonus" id="msToastBonus"></div>
-</div>
-
-<div class="modal-overlay" id="offlineModal">
-  <div class="modal"><div class="modal-icon">🌙</div><h2>おかえりなさい！</h2>
-    <p id="offlineMsg"></p><div class="modal-coins" id="offlineCoins"></div>
-    <button class="btn-modal" onclick="closeModal('offlineModal')">受け取る！</button>
-  </div>
-</div>
-
-<!-- デイリーボーナスモーダル -->
-<div class="modal-overlay" id="dailyModal" onclick="if(event.target===this)closeModal('dailyModal')">
-  <div class="modal">
-    <div class="modal-icon">🗓️</div>
-    <h2>デイリーボーナス</h2>
-    <p id="dailyModalMsg"></p>
-    <div class="daily-calendar" id="dailyCalendar"></div>
-    <div class="modal-coins" id="dailyBonusCoins"></div>
-    <button class="btn-modal" id="btnDailyModal" onclick="claimDaily()">受け取る！</button>
-  </div>
-</div>
-<div class="modal-overlay" id="prestigeModal">
-  <div class="modal"><div class="modal-icon">⭐</div><h2>プレステージ転生</h2>
-    <div class="prestige-confirm-list" id="prestigeConfirmList"></div>
-    <p>本当に転生しますか？</p>
-    <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
-      <button class="btn-modal" onclick="closeModal('prestigeModal')">やめる</button>
-      <button class="btn-modal purple" onclick="doPrestige()">転生する！</button>
-    </div>
-  </div>
-</div>
-
-<!-- JavaScript（読み込み順が重要） -->
-<script src="js/state.js"></script>
-<script src="js/sound.js"></script>
-<script src="js/skills.js"></script>
-<script src="js/buildings.js"></script>
-<script src="js/research.js"></script>
-<script src="js/decorations.js"></script>
-<script src="js/achievements.js"></script>
-<script src="js/prestige.js"></script>
-<script src="js/events.js"></script>
-<script src="js/seasons.js"></script>
-<script src="js/daily.js"></script>
-<script src="js/quests.js"></script>
-<script src="js/save.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/main.js"></script>
+  <!-- JavaScript（読み込み順が重要） -->
+  <script src="js/state.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/skills.js"></script>
+  <script src="js/buildings.js"></script>
+  <script src="js/research.js"></script>
+  <script src="js/decorations.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/prestige.js"></script>
+  <script src="js/events.js"></script>
+  <script src="js/seasons.js"></script>
+  <script src="js/daily.js"></script>
+  <script src="js/quests.js"></script>
+  <script src="js/save.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
 </body>
+
 </html>

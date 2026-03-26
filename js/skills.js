@@ -60,19 +60,19 @@ function getSkillBeautyMult() {
 // ── ツリー型レイアウト設定 ──
 // x: コンテナ幅に対する割合（0〜1）、tier: 段（1〜6）
 const SKILL_POS = {
-  farm_mastery:   { x: 0.16, tier: 1 },
-  commerce_art:   { x: 0.50, tier: 1 },
-  quick_hands:    { x: 0.84, tier: 1 },
-  beauty_power:   { x: 0.16, tier: 2 },
-  culture_bloom:  { x: 0.50, tier: 2 },
-  thrift:         { x: 0.84, tier: 2 },
+  farm_mastery: { x: 0.16, tier: 1 },
+  commerce_art: { x: 0.50, tier: 1 },
+  quick_hands: { x: 0.84, tier: 1 },
+  beauty_power: { x: 0.16, tier: 2 },
+  culture_bloom: { x: 0.50, tier: 2 },
+  thrift: { x: 0.84, tier: 2 },
   healing_spirit: { x: 0.22, tier: 3 },
-  city_dream:     { x: 0.50, tier: 3 },
-  research_gift:  { x: 0.78, tier: 3 },
-  town_vitality:  { x: 0.34, tier: 4 },
+  city_dream: { x: 0.50, tier: 3 },
+  research_gift: { x: 0.78, tier: 3 },
+  town_vitality: { x: 0.34, tier: 4 },
   space_ambition: { x: 0.66, tier: 4 },
-  miracle_town:   { x: 0.50, tier: 5 },
-  galaxy_civ:     { x: 0.50, tier: 6 },
+  miracle_town: { x: 0.50, tier: 5 },
+  galaxy_civ: { x: 0.50, tier: 6 },
 };
 const SKILL_ROW_H = 100;
 const SKILL_TOP_PAD = 10;
@@ -123,12 +123,12 @@ function renderSkills() {
     const pos = SKILL_POS[sk.id];
     if (!pos) return;
 
-    const unlocked  = !!state.skills?.[sk.id];
+    const unlocked = !!state.skills?.[sk.id];
     const canUnlock = canUnlockSkill(sk);
     const prereqMet = sk.requires.every(r => state.skills?.[r]);
 
     let stateClass = 'sk-locked';
-    if (unlocked)       stateClass = 'sk-unlocked';
+    if (unlocked) stateClass = 'sk-unlocked';
     else if (canUnlock) stateClass = 'sk-available';
     else if (prereqMet) stateClass = 'sk-prereq';
 
@@ -162,11 +162,11 @@ function _skillY(tier) {
 
 function _drawSkillLines() {
   const wrap = document.getElementById('skillTreeWrap');
-  const svg  = document.getElementById('skillTreeSvg');
+  const svg = document.getElementById('skillTreeSvg');
   if (!wrap || !svg) return;
 
   svg.innerHTML = '';
-  svg.setAttribute('width',  wrap.offsetWidth);
+  svg.setAttribute('width', wrap.offsetWidth);
   svg.setAttribute('height', wrap.offsetHeight);
 
   SKILLS.forEach(sk => {
@@ -192,8 +192,8 @@ function _drawSkillLines() {
 
       // ベジェ曲線：親ノード底辺 → 子ノード上辺
       const startX = px, startY = py + ph / 2 + 2;
-      const endX   = cx, endY   = cy - ch / 2 - 2;
-      const midY   = (startY + endY) / 2;
+      const endX = cx, endY = cy - ch / 2 - 2;
+      const midY = (startY + endY) / 2;
 
       let color, dash, strokeW;
       if (childUnlocked && parentUnlocked) {

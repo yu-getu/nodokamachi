@@ -13,13 +13,13 @@ function getAudioCtx() {
 function _initBgmAudio() {
   if (_bgmAudio) return;
   _bgmAudio = new Audio('./ひだまりのまち.mp3');
-  _bgmAudio.loop   = true;
+  _bgmAudio.loop = true;
   _bgmAudio.volume = 0.5;
 }
 
 function _startBgm() {
   _initBgmAudio();
-  _bgmAudio.play().catch(() => {});
+  _bgmAudio.play().catch(() => { });
 }
 
 function _stopBgm() {
@@ -39,16 +39,16 @@ function playTones(freqs, dur = 0.3, vol = 0.22, type = 'sine') {
       g.gain.exponentialRampToValueAtTime(0.001, t + dur);
       osc.start(t); osc.stop(t + dur + 0.05);
     });
-  } catch(e) {}
+  } catch (e) { }
 }
 
-function playCoinSfx()      { playTones([523, 784], 0.2, 0.18); }
-function playBuildSfx()     { playTones([262, 330, 392], 0.28, 0.2); }
-function playAchievSfx()    { playTones([523, 659, 784, 1047], 0.5, 0.22); }
-function playHarvestSfx()   { playTones([440, 550], 0.18, 0.18); }
+function playCoinSfx() { playTones([523, 784], 0.2, 0.18); }
+function playBuildSfx() { playTones([262, 330, 392], 0.28, 0.2); }
+function playAchievSfx() { playTones([523, 659, 784, 1047], 0.5, 0.22); }
+function playHarvestSfx() { playTones([440, 550], 0.18, 0.18); }
 function playMilestoneSfx() { playTones([392, 523, 659, 784, 1047], 0.55, 0.22); }
-function playQuestSfx()     { playTones([523, 659, 784], 0.4, 0.25); }
-function playUnlockSfx()    { playTones([330, 440, 554, 659], 0.45, 0.22); }
+function playQuestSfx() { playTones([523, 659, 784], 0.4, 0.25); }
+function playUnlockSfx() { playTones([330, 440, 554, 659], 0.45, 0.22); }
 
 function toggleBgm() {
   _bgmOn = !_bgmOn;

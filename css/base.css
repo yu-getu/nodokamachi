@@ -1,18 +1,143 @@
 /* ── ベース・変数・レイアウト ── */
 :root {
-  --sky:#d4eef7; --ground:#7bc47f; --ground2:#5ba860;
-  --cream:#fdf6e3; --brown:#8b5e3c; --text:#3d2b1f; --muted:#8a7060;
-  --coin:#f5c430; --coin2:#d4a017; --btn:#ff8c5a; --btn2:#e6723f;
-  --green:#4caf50; --green2:#388e3c; --panel:rgba(255,252,245,0.93);
-  --prestige:#9c27b0; --prestige2:#7b1fa2;
+  --sky: #d4eef7;
+  --ground: #7bc47f;
+  --ground2: #5ba860;
+  --cream: #fdf6e3;
+  --brown: #8b5e3c;
+  --text: #3d2b1f;
+  --muted: #8a7060;
+  --coin: #f5c430;
+  --coin2: #d4a017;
+  --btn: #ff8c5a;
+  --btn2: #e6723f;
+  --green: #4caf50;
+  --green2: #388e3c;
+  --panel: rgba(255, 252, 245, 0.93);
+  --prestige: #9c27b0;
+  --prestige2: #7b1fa2;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'M PLUS Rounded 1c',sans-serif;background:var(--sky);min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column;align-items:center}
-.sky-bg{position:fixed;inset:0;background:linear-gradient(180deg,#b8e3f5 0%,#d4eef7 40%,#e8f5e9 70%,#c8e6c9 100%);z-index:0}
-.cloud{position:fixed;background:white;border-radius:50px;opacity:.75;animation:drift linear infinite}
-.cloud::before,.cloud::after{content:'';position:absolute;background:white;border-radius:50%}
-.c1{width:80px;height:28px;top:8%;left:-90px;animation-duration:40s}.c1::before{width:40px;height:40px;top:-20px;left:10px}.c1::after{width:30px;height:30px;top:-14px;left:36px}
-.c2{width:60px;height:22px;top:16%;left:-70px;animation-duration:55s;animation-delay:-20s}.c2::before{width:30px;height:30px;top:-16px;left:8px}.c2::after{width:22px;height:22px;top:-11px;left:28px}
-.c3{width:100px;height:32px;top:5%;left:-110px;animation-duration:70s;animation-delay:-35s}.c3::before{width:48px;height:48px;top:-24px;left:12px}.c3::after{width:36px;height:36px;top:-18px;left:48px}
-@keyframes drift{to{left:110vw}}
-.game-wrap{position:relative;z-index:1;width:100%;max-width:600px;padding:0 12px 90px;display:flex;flex-direction:column;align-items:center}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0
+}
+
+body {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  background: var(--sky);
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center
+}
+
+.sky-bg {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, #b8e3f5 0%, #d4eef7 40%, #e8f5e9 70%, #c8e6c9 100%);
+  z-index: 0
+}
+
+.cloud {
+  position: fixed;
+  background: white;
+  border-radius: 50px;
+  opacity: .75;
+  animation: drift linear infinite
+}
+
+.cloud::before,
+.cloud::after {
+  content: '';
+  position: absolute;
+  background: white;
+  border-radius: 50%
+}
+
+.c1 {
+  width: 80px;
+  height: 28px;
+  top: 8%;
+  left: -90px;
+  animation-duration: 40s
+}
+
+.c1::before {
+  width: 40px;
+  height: 40px;
+  top: -20px;
+  left: 10px
+}
+
+.c1::after {
+  width: 30px;
+  height: 30px;
+  top: -14px;
+  left: 36px
+}
+
+.c2 {
+  width: 60px;
+  height: 22px;
+  top: 16%;
+  left: -70px;
+  animation-duration: 55s;
+  animation-delay: -20s
+}
+
+.c2::before {
+  width: 30px;
+  height: 30px;
+  top: -16px;
+  left: 8px
+}
+
+.c2::after {
+  width: 22px;
+  height: 22px;
+  top: -11px;
+  left: 28px
+}
+
+.c3 {
+  width: 100px;
+  height: 32px;
+  top: 5%;
+  left: -110px;
+  animation-duration: 70s;
+  animation-delay: -35s
+}
+
+.c3::before {
+  width: 48px;
+  height: 48px;
+  top: -24px;
+  left: 12px
+}
+
+.c3::after {
+  width: 36px;
+  height: 36px;
+  top: -18px;
+  left: 48px
+}
+
+@keyframes drift {
+  to {
+    left: 110vw
+  }
+}
+
+.game-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 12px 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center
+}

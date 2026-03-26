@@ -42,7 +42,7 @@ function renderResearch() {
       <button class="btn-research ${done ? 'done' : ''}"
         onclick="buyResearch('${r.id}')"
         ${done || !canAfford ? 'disabled' : ''}>
-        ${done ? '✅ 完了' : `🪙${fmt(cost)}${discounted ? '<span style="font-size:8px;opacity:.7;text-decoration:line-through;margin-left:2px">'+fmt(r.cost)+'</span>' : ''}`}
+        ${done ? '✅ 完了' : `🪙${fmt(cost)}${discounted ? '<span style="font-size:8px;opacity:.7;text-decoration:line-through;margin-left:2px">' + fmt(r.cost) + '</span>' : ''}`}
       </button>`;
     grid.appendChild(div);
   });

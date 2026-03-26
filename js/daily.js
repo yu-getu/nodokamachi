@@ -3,12 +3,12 @@
 // ══════════════════════════════
 function getTodayStr() {
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function getYesterdayStr() {
-  const d = new Date(); d.setDate(d.getDate()-1);
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const d = new Date(); d.setDate(d.getDate() - 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function isDailyClaimable() {
@@ -43,7 +43,7 @@ function claimDaily() {
       endsAt: Date.now() + dur,
       mult: reward.multiplier,
     };
-    addLog(`👑 7日連続ログイン！${reward.duration/3600}時間CPS×${reward.multiplier}ボーナス！`);
+    addLog(`👑 7日連続ログイン！${reward.duration / 3600}時間CPS×${reward.multiplier}ボーナス！`);
     spawnFloatCoins(`👑×${reward.multiplier}`);
   } else {
     const cpsBonus = Math.floor(getEffectiveCps() * reward.cpsHours * 3600);
@@ -73,7 +73,7 @@ function openDailyModal() {
   cal.innerHTML = '';
   DAILY_REWARDS.forEach((r, i) => {
     const dayNum = i + 1;
-    const isPast  = dayNum < (streak % 7 === 0 && streak > 0 ? 7 : streak % 7);
+    const isPast = dayNum < (streak % 7 === 0 && streak > 0 ? 7 : streak % 7);
     const isToday = canClaim && dayNum === ((streak % 7) + 1 <= 7 ? (streak % 7) + 1 : 1);
     const isFuture = !isPast && !isToday;
     const cls = isPast ? 'past' : isToday ? 'today' : 'future';
@@ -116,14 +116,14 @@ function renderDailyBar() {
 
   if (!canClaim) {
     const now = new Date();
-    const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate()+1);
-    tomorrow.setHours(0,0,0,0);
-    const diffH = Math.ceil((tomorrow-now)/3600000);
+    const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    const diffH = Math.ceil((tomorrow - now) / 3600000);
     document.getElementById('dailyBarSubtitle').textContent = `次回：約${diffH}時間後`;
   } else {
     const bonusSub = nextReward.multiplier > 1
       ? nextReward.special
-      : `+${fmt(Math.max(nextReward.minCoins, Math.floor(getEffectiveCps()*nextReward.cpsHours*3600)))}コイン（${nextReward.cpsHours}時間分）`;
+      : `+${fmt(Math.max(nextReward.minCoins, Math.floor(getEffectiveCps() * nextReward.cpsHours * 3600)))}コイン（${nextReward.cpsHours}時間分）`;
     document.getElementById('dailyBarSubtitle').textContent = `本日のボーナス：${bonusSub}`;
   }
 

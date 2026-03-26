@@ -7,13 +7,54 @@ function getBeautyScore() {
 }
 function getBeautyMult() { return (1 + getBeautyScore() * 0.01) * getSkillBeautyMult(); }
 
+// エリアシナジー（area_cps + all_cps を合算）
+function getDecoAreaMult(areaId) {
+  let bonus = 0;
+  DECORATIONS.forEach(d => {
+    if (!state.decorations[d.id]) return;
+    const e = d.effect;
+    if (e.type === 'area_cps' && e.area === areaId) bonus += e.value;
+    if (e.type === 'all_cps') bonus += e.value;
+  });
+  return 1 + bonus;
+}
+
+// 建物個別シナジー
+function getDecoBuildingMult(buildingId) {
+  let bonus = 0;
+  DECORATIONS.forEach(d => {
+    if (!state.decorations[d.id]) return;
+    const e = d.effect;
+    if (e.type === 'building_cps' && e.targets.includes(buildingId)) bonus += e.value;
+  });
+  return 1 + bonus;
+}
+
+// 手動収穫シナジー
+function getDecoCollectMult() {
+  let bonus = 0;
+  DECORATIONS.forEach(d => {
+    if (state.decorations[d.id] && d.effect.type === 'collect') bonus += d.effect.value;
+  });
+  return 1 + bonus;
+}
+
+// イベントシナジー
+function getDecoEventBonus() {
+  let bonus = 0;
+  DECORATIONS.forEach(d => {
+    if (state.decorations[d.id] && d.effect.type === 'event_bonus') bonus += d.effect.value;
+  });
+  return bonus;
+}
+
 function buyDecoration(id) {
   const d = DECORATIONS.find(x => x.id === id);
   if (!d || state.decorations[id] || state.coins < d.cost) return;
   state.coins -= d.cost;
   state.decorations[id] = true;
   spawnFloatCoins(`-${fmt(d.cost)}`);
-  addLog(`🌺 ${d.emoji}${d.name}を設置！美観+${d.beautyPts}`);
+  addLog(`🌺 ${d.emoji}${d.name}を設置！美観+${d.beautyPts} / ${d.effectDesc}`);
   renderDeco();
   renderTown();
   render();
@@ -38,7 +79,8 @@ function renderDeco() {
           <div class="deco-desc">${d.desc}</div>
         </div>
       </div>
-      <div class="deco-effect">✨ 美観 +${d.beautyPts} pt → CPS +${d.beautyPts}%</div>
+      <div class="deco-effect">✨ 美観 +${d.beautyPts}pt</div>
+      <div class="deco-synergy">🔗 ${d.effectDesc}</div>
       <button class="btn-buy ${owned ? 'maxed-btn' : ''}"
         onclick="buyDecoration('${d.id}')"
         ${owned || !canAfford ? 'disabled' : ''}>

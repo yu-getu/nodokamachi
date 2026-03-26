@@ -14,9 +14,9 @@ function getPhase(lv) {
 }
 
 function getPhaseLabel(lv) {
-  if (lv <= 10)  return '開拓期';
-  if (lv <= 25)  return '成長期';
-  if (lv <= 50)  return '円熟期';
+  if (lv <= 10) return '開拓期';
+  if (lv <= 25) return '成長期';
+  if (lv <= 50) return '円熟期';
   if (lv <= 100) return 'レジェンド';
   return `転生拡張(${state.prestigeCount}世代)`;
 }
@@ -40,7 +40,7 @@ function getBuildingCost(b) {
     if (remaining <= 0) break;
   }
   if (remaining > 0) {
-    cost *= Math.pow(PHASES[PHASES.length-1].mult, remaining);
+    cost *= Math.pow(PHASES[PHASES.length - 1].mult, remaining);
   }
   return Math.floor(cost * (state.eventDiscount || 1) * getSkillCostMult());
 }
@@ -50,7 +50,8 @@ function getBuildingCps(b) {
   if (lv === 0) return 0;
   const msCount = (state.buildings[b.id].msReached || []).length;
   const base = b.baseCps * lv * (1 + lv * 0.15);
-  return base * Math.pow(2, msCount) * getResearchMult(b.id) * getSkillCpsMult(b);
+  return base * Math.pow(2, msCount) * getResearchMult(b.id) * getSkillCpsMult(b)
+    * getDecoAreaMult(b.area) * getDecoBuildingMult(b.id);
 }
 
 function getMilestoneCount(bid) {
@@ -66,12 +67,12 @@ function getNextMilestone(lv, maxLv) {
 }
 
 function getTotalLv() {
-  return BUILDINGS.reduce((s,b)=>s+state.buildings[b.id].level,0);
+  return BUILDINGS.reduce((s, b) => s + state.buildings[b.id].level, 0);
 }
 
 let msToastTimer = null;
 function checkMilestones(bid) {
-  const b = BUILDINGS.find(x=>x.id===bid);
+  const b = BUILDINGS.find(x => x.id === bid);
   const lv = state.buildings[bid].level;
   const reached = state.buildings[bid].msReached || [];
   const maxLv = getMaxLevel();
@@ -109,7 +110,7 @@ function unlockArea(areaId) {
   playUnlockSfx();
   addLog(`🏙️ ${area.emoji}${area.name}を解放！新しい建物が建てられます！`);
   BUILDINGS.filter(b => b.area === areaId).forEach(b => {
-    if (!state.buildings[b.id]) state.buildings[b.id] = {level:0, msReached:[]};
+    if (!state.buildings[b.id]) state.buildings[b.id] = { level: 0, msReached: [] };
   });
   checkAchievements();
   render();

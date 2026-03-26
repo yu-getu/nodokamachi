@@ -4,103 +4,241 @@
 
 /* ── 小型スマホ（〜380px） ── */
 @media (max-width: 380px) {
-  .game-wrap { padding: 0 6px 80px; }
+  .game-wrap {
+    padding: 0 6px 80px;
+  }
 
-  header { padding: 8px 10px; }
-  .title { font-size: 16px; }
-  .coin-display { font-size: 13px; }
-  .coin-icon { font-size: 15px; }
+  header {
+    padding: 8px 10px;
+  }
 
-  .tabs { gap: 3px; padding: 0 6px; }
-  .tab { font-size: 10px; padding: 6px 5px; border-radius: 10px; }
+  .title {
+    font-size: 16px;
+  }
 
-  .stats-bar { gap: 4px; }
-  .stat-card { padding: 6px 8px; }
-  .stat-label { font-size: 9px; }
-  .stat-value { font-size: 13px; }
+  .coin-display {
+    font-size: 13px;
+  }
 
-  .town-area { height: 110px; }
+  .coin-icon {
+    font-size: 15px;
+  }
+
+  .tabs {
+    gap: 3px;
+    padding: 0 6px;
+  }
+
+  .tab {
+    font-size: 10px;
+    padding: 6px 5px;
+    border-radius: 10px;
+  }
+
+  .stats-bar {
+    gap: 4px;
+  }
+
+  .stat-card {
+    padding: 6px 8px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+  }
+
+  .stat-value {
+    font-size: 13px;
+  }
+
+  .town-area {
+    height: 110px;
+  }
 
   /* ショップ：1列 */
-  .shop-grid { grid-template-columns: 1fr; }
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
 
   /* 実績：1列 */
-  .achiev-grid { grid-template-columns: 1fr; }
+  .achiev-grid {
+    grid-template-columns: 1fr;
+  }
 
   /* デコ：1列 */
-  .deco-grid { grid-template-columns: 1fr; }
+  .deco-grid {
+    grid-template-columns: 1fr;
+  }
 
   /* スキルノード：少し小さく */
-  .skill-node { width: 76px; }
-  .sk-icon { font-size: 17px; }
-  .sk-name { font-size: 9px; }
-  .sk-eff  { font-size: 7px; }
-  .sk-btn  { font-size: 9px; }
+  .skill-node {
+    width: 76px;
+  }
+
+  .sk-icon {
+    font-size: 17px;
+  }
+
+  .sk-name {
+    font-size: 9px;
+  }
+
+  .sk-eff {
+    font-size: 7px;
+  }
+
+  .sk-btn {
+    font-size: 9px;
+  }
 
   /* ハーベストボタン */
-  .harvest-btn { width: 62px; height: 62px; font-size: 24px; bottom: 14px; right: 14px; }
-  .harvest-label { font-size: 9px; }
+  .harvest-btn {
+    width: 62px;
+    height: 62px;
+    font-size: 24px;
+    bottom: 14px;
+    right: 14px;
+  }
+
+  .harvest-label {
+    font-size: 9px;
+  }
 
   /* トースト */
-  .event-toast  { max-width: calc(100vw - 24px); font-size: 12px; }
-  .achiev-toast { max-width: calc(100vw - 24px); font-size: 11px; }
-  .ms-toast     { max-width: calc(100vw - 24px); }
+  .event-toast {
+    max-width: calc(100vw - 24px);
+    font-size: 12px;
+  }
+
+  .achiev-toast {
+    max-width: calc(100vw - 24px);
+    font-size: 11px;
+  }
+
+  .ms-toast {
+    max-width: calc(100vw - 24px);
+  }
 
   /* デイリーバー */
-  .daily-bar { padding: 8px 10px; }
-  .daily-icon { font-size: 22px; }
-  .daily-title { font-size: 12px; }
+  .daily-bar {
+    padding: 8px 10px;
+  }
+
+  .daily-icon {
+    font-size: 22px;
+  }
+
+  .daily-title {
+    font-size: 12px;
+  }
 
   /* モーダル */
-  .modal { padding: 20px 16px; }
-  .daily-calendar { grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .modal {
+    padding: 20px 16px;
+  }
+
+  .daily-calendar {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+  }
 }
 
 /* ── 中型スマホ（381px〜479px）── デフォルトスタイルで十分 ── */
 
 /* ── 大画面（600px〜） ── */
 @media (min-width: 600px) {
-  .game-wrap { max-width: 680px; padding: 0 16px 100px; }
+  .game-wrap {
+    max-width: 680px;
+    padding: 0 16px 100px;
+  }
 
-  .title { font-size: 22px; }
+  .title {
+    font-size: 22px;
+  }
 
-  .town-area { height: 160px; }
+  .town-area {
+    height: 160px;
+  }
 
   /* ショップ：2列維持 */
-  .shop-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .shop-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
 
   /* 実績：3列 */
-  .achiev-grid { grid-template-columns: repeat(3, 1fr); }
+  .achiev-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
   /* デコ：3列 */
-  .deco-grid { grid-template-columns: repeat(3, 1fr); }
+  .deco-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
   /* スキルノード：少し大きく */
-  .skill-node { width: 96px; }
-  .sk-icon { font-size: 22px; }
-  .sk-name { font-size: 11px; }
-  .sk-eff  { font-size: 9px; }
+  .skill-node {
+    width: 96px;
+  }
+
+  .sk-icon {
+    font-size: 22px;
+  }
+
+  .sk-name {
+    font-size: 11px;
+  }
+
+  .sk-eff {
+    font-size: 9px;
+  }
 
   /* フォントサイズ */
-  .panel-title { font-size: 17px; }
-  .stat-value  { font-size: 18px; }
+  .panel-title {
+    font-size: 17px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+  }
 
   /* クエスト */
-  .quest-label { font-size: 12px; }
+  .quest-label {
+    font-size: 12px;
+  }
 }
 
 /* ── タブレット横向き（768px〜959px） ── */
 @media (min-width: 768px) and (max-width: 959px) {
-  .game-wrap { max-width: 740px; }
+  .game-wrap {
+    max-width: 740px;
+  }
 
-  .tabs { gap: 8px; }
-  .tab  { font-size: 13px; padding: 8px 14px; }
+  .tabs {
+    gap: 8px;
+  }
 
-  .harvest-btn { width: 80px; height: 80px; font-size: 30px; bottom: 24px; right: 24px; }
-  .harvest-label { font-size: 11px; }
+  .tab {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+
+  .harvest-btn {
+    width: 80px;
+    height: 80px;
+    font-size: 30px;
+    bottom: 24px;
+    right: 24px;
+  }
+
+  .harvest-label {
+    font-size: 11px;
+  }
 
   /* ショップ：3列 */
-  .shop-grid { grid-template-columns: repeat(3, 1fr); }
+  .shop-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* ── PCレイアウト（960px〜）：町エリア全幅 ＋ 2カラムグリッド ── */
@@ -134,15 +272,50 @@
   }
 
   /* 左列：統計 → デイリー → クエスト → セーブ → ログ */
-  .stats-bar   { grid-column: 1; grid-row: 3; margin-bottom: 0; }
-  .daily-bar   { grid-column: 1; grid-row: 4; margin-bottom: 0; }
-  .quest-panel { grid-column: 1; grid-row: 5; align-self: start; margin-bottom: 0; }
-  .save-bar    { grid-column: 1; grid-row: 6; margin-bottom: 0; }
-  .log         { grid-column: 1; grid-row: 7; max-height: 160px; }
+  .stats-bar {
+    grid-column: 1;
+    grid-row: 3;
+    margin-bottom: 0;
+  }
+
+  .daily-bar {
+    grid-column: 1;
+    grid-row: 4;
+    margin-bottom: 0;
+  }
+
+  .quest-panel {
+    grid-column: 1;
+    grid-row: 5;
+    align-self: start;
+    margin-bottom: 0;
+  }
+
+  .save-bar {
+    grid-column: 1;
+    grid-row: 6;
+    margin-bottom: 0;
+  }
+
+  .log {
+    grid-column: 1;
+    grid-row: 7;
+    max-height: 160px;
+  }
 
   /* 右列：タブ（row3）→ パネルがすぐ下（row4〜）*/
-  .tabs { grid-column: 2; grid-row: 3; flex-wrap: wrap; gap: 6px; margin-bottom: 0; }
-  .tab  { font-size: 12px; padding: 8px 10px; }
+  .tabs {
+    grid-column: 2;
+    grid-row: 3;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 0;
+  }
+
+  .tab {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
 
   #panel-shop,
   #panel-research,
@@ -160,36 +333,91 @@
   }
 
   /* ショップ：画面幅に応じた可変列数（最小190px/列） */
-  .shop-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+  .shop-grid {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 12px;
+  }
 
   /* 実績・デコ：可変列数 */
-  .achiev-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
-  .deco-grid   { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .achiev-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .deco-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
 
   /* スキルノード：大きめ */
-  .skill-node { width: 100px; }
-  .sk-icon { font-size: 24px; }
-  .sk-name { font-size: 11px; }
-  .sk-eff  { font-size: 9px; }
+  .skill-node {
+    width: 100px;
+  }
+
+  .sk-icon {
+    font-size: 24px;
+  }
+
+  .sk-name {
+    font-size: 11px;
+  }
+
+  .sk-eff {
+    font-size: 9px;
+  }
 
   /* フォント */
-  .panel-title { font-size: 18px; }
-  .stat-value  { font-size: 18px; }
+  .panel-title {
+    font-size: 18px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+  }
 
   /* ハーベストボタン：画面右下固定 */
-  .harvest-btn { width: 84px; height: 84px; font-size: 32px; bottom: 28px; right: 28px; }
-  .harvest-label { font-size: 11px; }
+  .harvest-btn {
+    width: 84px;
+    height: 84px;
+    font-size: 32px;
+    bottom: 28px;
+    right: 28px;
+  }
+
+  .harvest-label {
+    font-size: 11px;
+  }
 }
 
 /* ── ランドスケープ（スマホ横） ── */
 @media (max-height: 500px) and (orientation: landscape) {
-  .town-area { height: 80px; }
+  .town-area {
+    height: 80px;
+  }
 
-  .tabs { position: sticky; top: 0; z-index: 10; background: var(--bg); padding-top: 4px; }
+  .tabs {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+    padding-top: 4px;
+  }
 
-  .harvest-btn { width: 54px; height: 54px; font-size: 20px; bottom: 10px; right: 10px; }
-  .harvest-label { display: none; }
+  .harvest-btn {
+    width: 54px;
+    height: 54px;
+    font-size: 20px;
+    bottom: 10px;
+    right: 10px;
+  }
 
-  .stat-card { padding: 5px 8px; }
-  .stat-value { font-size: 13px; }
+  .harvest-label {
+    display: none;
+  }
+
+  .stat-card {
+    padding: 5px 8px;
+  }
+
+  .stat-value {
+    font-size: 13px;
+  }
 }

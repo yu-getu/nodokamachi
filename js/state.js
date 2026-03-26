@@ -146,17 +146,33 @@ const SEASONS = [
     skyGrad:'linear-gradient(180deg,#e3f2fd 0%,#bbdefb 40%,#e8eaf6 70%,#b2ebf2 100%)', desc:'冬の静寂 -10%' },
 ];
 
+// effect.type: 'area_cps'|'building_cps'|'all_cps'|'collect'|'event_bonus'
 const DECORATIONS = [
-  { id:'flower',     name:'花壇',           emoji:'🌺', cost:500,      beautyPts:1,  desc:'色とりどりの花' },
-  { id:'fountain',   name:'噴水',           emoji:'⛲', cost:2000,     beautyPts:3,  desc:'涼しげな噴水' },
-  { id:'lantern',    name:'灯籠',           emoji:'🏮', cost:1500,     beautyPts:2,  desc:'和風の灯り' },
-  { id:'park',       name:'公園',           emoji:'🌳', cost:5000,     beautyPts:5,  desc:'憩いの場所' },
-  { id:'statue',     name:'銅像',           emoji:'🗿', cost:8000,     beautyPts:6,  desc:'街のシンボル' },
-  { id:'lighthouse', name:'灯台',           emoji:'🗼', cost:15000,    beautyPts:10, desc:'高くそびえる灯台' },
-  { id:'bandstand',  name:'音楽堂',         emoji:'🎵', cost:30000,    beautyPts:14, desc:'音楽が響く広場' },
-  { id:'observatory',name:'展望台',         emoji:'🔭', cost:80000,    beautyPts:20, desc:'街を一望できる高台' },
-  { id:'fireworks',  name:'花火台',         emoji:'🎆', cost:250000,   beautyPts:30, desc:'夜空を彩る花火' },
-  { id:'beachresort',name:'ビーチリゾート', emoji:'⛱️', cost:1000000,  beautyPts:50, desc:'海辺の癒やしスポット' },
+  // ── 農村シナジー ──
+  { id:'flower',      name:'花壇',             emoji:'🌺', cost:500,              beautyPts:2,  desc:'色とりどりの花が農村を彩る',     effect:{type:'area_cps',     area:1,                              value:0.10}, effectDesc:'農村エリア CPS +10%' },
+  { id:'windmill',    name:'風車',             emoji:'🌬️', cost:3000,             beautyPts:4,  desc:'のどかな農村に映える風車',       effect:{type:'area_cps',     area:1,                              value:0.20}, effectDesc:'農村エリア CPS +20%' },
+  // ── 商店街シナジー ──
+  { id:'fountain',    name:'噴水',             emoji:'⛲', cost:2000,             beautyPts:3,  desc:'涼しげな噴水が人を呼ぶ',         effect:{type:'area_cps',     area:2,                              value:0.10}, effectDesc:'商店街エリア CPS +10%' },
+  { id:'market',      name:'朝市広場',         emoji:'🏪', cost:12000,            beautyPts:6,  desc:'にぎわう朝市が商いを盛んに',     effect:{type:'area_cps',     area:2,                              value:0.20}, effectDesc:'商店街エリア CPS +20%' },
+  // ── 文化の丘シナジー ──
+  { id:'lantern',     name:'灯籠',             emoji:'🏮', cost:1500,             beautyPts:3,  desc:'和風の灯りが社を照らす',         effect:{type:'building_cps', targets:['shrine'],                  value:0.30}, effectDesc:'神社 CPS +30%' },
+  { id:'statue',      name:'銅像',             emoji:'🗿', cost:8000,             beautyPts:6,  desc:'街のシンボルが文化を育む',       effect:{type:'area_cps',     area:3,                              value:0.15}, effectDesc:'文化エリア CPS +15%' },
+  { id:'shrinegate',  name:'鳥居',             emoji:'⛩️', cost:50000,            beautyPts:10, desc:'神聖な鳥居が場を清める',         effect:{type:'area_cps',     area:3,                              value:0.25}, effectDesc:'文化エリア CPS +25%' },
+  // ── いやしの里シナジー ──
+  { id:'park',        name:'公園',             emoji:'🌳', cost:5000,             beautyPts:5,  desc:'緑あふれる憩いの場所',           effect:{type:'area_cps',     area:4,                              value:0.15}, effectDesc:'癒やしエリア CPS +15%' },
+  { id:'beachresort', name:'ビーチリゾート',   emoji:'⛱️', cost:1000000,          beautyPts:20, desc:'海辺の癒やしスポット',           effect:{type:'area_cps',     area:4,                              value:0.25}, effectDesc:'癒やしエリア CPS +25%' },
+  { id:'japangarden', name:'日本庭園',         emoji:'🪷', cost:5000000,          beautyPts:30, desc:'静謐な和の庭が心を癒す',         effect:{type:'area_cps',     area:4,                              value:0.35}, effectDesc:'癒やしエリア CPS +35%' },
+  // ── 夢の都市シナジー ──
+  { id:'lighthouse',  name:'灯台',             emoji:'🗼', cost:15000,            beautyPts:8,  desc:'高くそびえ旅人を呼び込む',       effect:{type:'building_cps', targets:['inn','skyscraper'],        value:0.20}, effectDesc:'旅館・摩天楼 CPS +20%' },
+  { id:'bandstand',   name:'音楽堂',           emoji:'🎵', cost:30000,            beautyPts:12, desc:'音楽が響き娯楽を盛り上げる',     effect:{type:'building_cps', targets:['theater','amusement'],     value:0.25}, effectDesc:'劇場・遊園地 CPS +25%' },
+  { id:'observatory', name:'展望台',           emoji:'🔭', cost:80000,            beautyPts:16, desc:'街を一望する高台',               effect:{type:'area_cps',     area:5,                              value:0.20}, effectDesc:'娯楽エリア CPS +20%' },
+  // ── 宇宙の夢シナジー ──
+  { id:'telescope',   name:'大型望遠鏡',       emoji:'🌌', cost:5000000000,       beautyPts:35, desc:'宇宙の神秘を覗く大望遠鏡',       effect:{type:'area_cps',     area:6,                              value:0.25}, effectDesc:'宇宙エリア CPS +25%' },
+  { id:'spacelift',   name:'宇宙エレベーター', emoji:'🛗', cost:2000000000000,    beautyPts:50, desc:'宇宙へ続く架け橋',               effect:{type:'area_cps',     area:6,                              value:0.40}, effectDesc:'宇宙エリア CPS +40%' },
+  // ── 全体効果 ──
+  { id:'cherrytree',  name:'桜並木',           emoji:'🌸', cost:20000,            beautyPts:10, desc:'春風に舞う花びらが元気をくれる', effect:{type:'collect',                                           value:1.0},  effectDesc:'手動収穫ボーナス ×2' },
+  { id:'fireworks',   name:'花火台',           emoji:'🎆', cost:250000,           beautyPts:15, desc:'夜空を彩る花火がイベントを盛大に',effect:{type:'event_bonus',                                      value:0.50}, effectDesc:'イベント効果 +50%' },
+  { id:'solarpanel',  name:'太陽光パネル',     emoji:'☀️', cost:500000,           beautyPts:8,  desc:'再生エネルギーで街全体を底上げ', effect:{type:'all_cps',                                           value:0.05}, effectDesc:'全建物 CPS +5%' },
 ];
 
 const WEATHER_DEFS = {
