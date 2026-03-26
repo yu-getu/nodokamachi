@@ -1,0 +1,37 @@
+/* ── 街エリア・建物・住人・天気・空 ── */
+.town-area{width:100%;background:linear-gradient(180deg,transparent 0%,#e8f5e9 60%,#c8e6c9 100%);border-radius:20px;padding:20px 12px 12px;margin-bottom:12px;min-height:180px;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.06)}
+.town-area::after{content:'';position:absolute;bottom:0;left:0;right:0;height:44px;background:linear-gradient(180deg,var(--ground) 0%,var(--ground2) 100%);border-radius:0 0 20px 20px}
+.buildings-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;padding-bottom:30px}
+.building{display:flex;flex-direction:column;align-items:center;animation:buildingBob 3s ease-in-out infinite;animation-delay:var(--delay,0s)}
+@keyframes buildingBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.building-emoji{font-size:42px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.15))}
+.building-name{font-size:9px;font-weight:700;color:var(--brown);background:rgba(255,255,255,.85);border-radius:8px;padding:2px 5px;margin-top:2px;white-space:nowrap}
+.building-rate{font-size:9px;color:var(--coin2);font-weight:700;margin-top:1px}
+
+/* ── 住人 ── */
+.resident{position:absolute;bottom:44px;z-index:2;animation:walkAcross linear forwards;pointer-events:none}
+.res-emoji{font-size:22px;display:inline-block}
+@keyframes walkAcross{from{left:-40px}to{left:110%}}
+@keyframes walkAcrossRtl{from{left:110%}to{left:-60px}}
+.resident.rtl{animation-name:walkAcrossRtl}
+.resident.rtl .res-emoji{transform:scaleX(-1)}
+.resident.rtl .speech-bubble{left:auto;right:0;border-radius:10px 10px 2px 10px}
+
+/* ── セリフ吹き出し ── */
+.speech-bubble{position:absolute;background:rgba(255,255,255,.93);border:2px solid #e8d8b0;border-radius:10px 10px 10px 2px;padding:3px 8px;font-size:10px;white-space:nowrap;bottom:28px;left:0;box-shadow:0 2px 6px rgba(0,0,0,.12);animation:bubbleIn .25s ease;pointer-events:none;color:var(--text)}
+@keyframes bubbleIn{from{opacity:0;transform:scale(.5) translateY(4px)}to{opacity:1;transform:scale(1)}}
+.speech-bubble.fadeout{animation:bubbleOut .4s ease forwards}
+@keyframes bubbleOut{to{opacity:0;transform:translateY(-6px) scale(.8)}}
+
+/* ── 天気パーティクル ── */
+#weatherLayer{position:absolute;inset:0;pointer-events:none;z-index:3;overflow:hidden}
+.wp{position:absolute;top:-30px;animation:wpFall linear forwards;pointer-events:none;user-select:none}
+@keyframes wpFall{to{transform:translateY(240px) rotate(360deg);opacity:0}}
+
+/* ── 星・月・太陽 ── */
+.sky-star{position:absolute;background:white;border-radius:50%;animation:twinkle ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.85}}
+#skyMoon{position:absolute;top:9%;right:11%;font-size:26px;animation:moonFloat 7s ease-in-out infinite;pointer-events:none;display:none}
+#skySun{position:absolute;top:7%;right:12%;font-size:28px;animation:sunPulse 5s ease-in-out infinite;pointer-events:none;display:none}
+@keyframes moonFloat{0%,100%{transform:translateY(0) rotate(-10deg)}50%{transform:translateY(-6px) rotate(8deg)}}
+@keyframes sunPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}

@@ -1,0 +1,40 @@
+/* ── UI要素：ハーベストボタン・トースト・モーダル・フロートコイン ── */
+.harvest-btn{position:fixed;bottom:22px;right:22px;z-index:100;background:linear-gradient(135deg,var(--coin),var(--coin2));color:var(--brown);border:none;border-radius:50%;width:66px;height:66px;font-size:26px;cursor:pointer;box-shadow:0 6px 0 var(--coin2),0 8px 24px rgba(245,196,48,.5);transition:transform .12s,box-shadow .12s;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.harvest-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--coin2)}
+.harvest-label{font-size:9px;font-weight:800;margin-top:2px}
+
+.float-coin{position:fixed;font-size:17px;pointer-events:none;z-index:999;animation:floatUp 1.2s ease-out forwards}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.6)}}
+
+.event-toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:500;background:white;border-radius:18px;padding:12px 16px;box-shadow:0 8px 32px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;min-width:260px;max-width:320px;opacity:0;transition:opacity .35s,transform .35s;pointer-events:none;border-left:5px solid var(--accent-color,#4caf50)}
+.event-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.event-toast.good{--accent-color:#4caf50}.event-toast.great{--accent-color:var(--coin2)}.event-toast.bad{--accent-color:#e53935}.event-toast.info{--accent-color:#42a5f5}
+.event-toast-icon{font-size:26px;flex-shrink:0}
+.event-toast-title{font-weight:800;font-size:13px;color:var(--text)}
+.event-toast-desc{font-size:11px;color:var(--muted);line-height:1.4;margin-top:2px}
+
+.achiev-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);z-index:500;background:linear-gradient(135deg,#fff8e1,#fffde7);border:2px solid var(--coin2);border-radius:18px;padding:10px 16px;box-shadow:0 8px 24px rgba(212,160,23,.3);display:flex;align-items:center;gap:10px;min-width:230px;max-width:310px;opacity:0;transition:opacity .35s,transform .35s;pointer-events:none}
+.achiev-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.achiev-toast-icon{font-size:24px;flex-shrink:0}
+.achiev-toast-label{font-size:10px;color:var(--coin2);font-weight:800;letter-spacing:.05em}
+.achiev-toast-name{font-size:13px;font-weight:800;color:var(--text)}
+
+/* マイルストーン到達エフェクト */
+.ms-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);z-index:600;background:linear-gradient(135deg,#fff8e1,#fffde7);border:3px solid var(--coin2);border-radius:24px;padding:20px 28px;text-align:center;box-shadow:0 16px 48px rgba(212,160,23,.4);opacity:0;transition:all .3s;pointer-events:none;min-width:240px}
+.ms-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.ms-toast-icon{font-size:44px;margin-bottom:6px}
+.ms-toast-title{font-family:'Kaisei Decol',serif;font-size:18px;color:var(--brown);margin-bottom:4px}
+.ms-toast-body{font-size:13px;color:var(--muted)}
+.ms-toast-bonus{font-size:16px;font-weight:800;color:var(--coin2);margin-top:6px}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:800;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{background:var(--cream);border-radius:24px;padding:24px 20px;max-width:320px;width:90%;text-align:center;box-shadow:0 12px 48px rgba(0,0,0,.2);transform:scale(.9);transition:transform .3s}
+.modal-overlay.show .modal{transform:scale(1)}
+.modal-icon{font-size:48px;margin-bottom:8px}
+.modal h2{font-family:'Kaisei Decol',serif;font-size:19px;color:var(--brown);margin-bottom:7px}
+.modal p{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6}
+.modal-coins{font-size:24px;font-weight:800;color:var(--coin2);margin-bottom:16px}
+.btn-modal{background:linear-gradient(135deg,var(--btn),var(--btn2));color:white;border:none;border-radius:12px;padding:10px 24px;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 3px 0 var(--btn2)}
+.btn-modal.purple{background:linear-gradient(135deg,var(--prestige),var(--prestige2));box-shadow:0 3px 0 var(--prestige2)}
+.prestige-confirm-list{text-align:left;background:rgba(156,39,176,.08);border-radius:12px;padding:12px;margin-bottom:12px;font-size:12px;color:#4a148c;line-height:2.1}

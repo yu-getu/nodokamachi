@@ -1,0 +1,40 @@
+/* ── ショップ・レベルバー・エリアヘッダー ── */
+.shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.shop-item{background:linear-gradient(135deg,#fffdf5,#fef9ed);border:2px solid #e8d8b0;border-radius:14px;padding:11px;display:flex;flex-direction:column;gap:3px;transition:border-color .15s;position:relative}
+.shop-item.affordable{border-color:var(--green)}
+.shop-item.maxed{border-color:#f5c430;background:linear-gradient(135deg,#fffde7,#fff8e1)}
+.item-top{display:flex;align-items:center;gap:8px}
+.item-emoji{font-size:28px;position:relative}
+.item-info{flex:1;min-width:0}
+.item-name{font-size:12px;font-weight:800;color:var(--text)}
+.item-desc{font-size:10px;color:var(--muted)}
+
+/* ── レベルバー ── */
+.lv-bar-wrap{margin-top:4px}
+.lv-bar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.lv-label{font-size:10px;font-weight:800;color:var(--brown)}
+.lv-next-ms{font-size:9px;color:var(--muted)}
+.lv-bar-track{height:7px;background:#e8d8b0;border-radius:4px;overflow:hidden}
+.lv-bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.phase-1 .lv-bar-fill{background:linear-gradient(90deg,#81c784,var(--green))}
+.phase-2 .lv-bar-fill{background:linear-gradient(90deg,#4fc3f7,#0288d1)}
+.phase-3 .lv-bar-fill{background:linear-gradient(90deg,#ff8a65,var(--btn2))}
+.phase-4 .lv-bar-fill{background:linear-gradient(90deg,#ce93d8,var(--prestige))}
+
+/* マイルストーンバッジ */
+.ms-badges{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap}
+.ms-badge{font-size:9px;padding:1px 6px;border-radius:8px;font-weight:800;border:1.5px solid}
+.ms-badge.reached{background:#fff8e1;border-color:var(--coin2);color:var(--coin2)}
+.ms-badge.next{background:#f5f5f5;border-color:#ccc;color:#aaa}
+
+.btn-buy{margin-top:6px;background:linear-gradient(135deg,var(--btn),var(--btn2));color:white;border:none;border-radius:10px;padding:7px;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--btn2);transition:transform .1s,box-shadow .1s}
+.btn-buy:active{transform:translateY(2px);box-shadow:0 1px 0 var(--btn2)}
+.btn-buy:disabled{background:#ccc;box-shadow:0 3px 0 #aaa;cursor:not-allowed;color:#999}
+.btn-buy.upgrade{background:linear-gradient(135deg,#66bb6a,var(--green2));box-shadow:0 3px 0 var(--green2)}
+.btn-buy.maxed-btn{background:linear-gradient(135deg,var(--coin),var(--coin2));box-shadow:0 3px 0 var(--coin2);color:var(--brown)}
+
+/* ── エリアヘッダー ── */
+.area-header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:7px 6px;border-bottom:2px solid #e8d8b0;margin:6px 0 4px;font-weight:800;font-size:13px;color:var(--brown)}
+.area-locked-card{grid-column:1/-1;background:linear-gradient(135deg,#f5f5f5,#eeeeee);border:2px dashed #ccc;border-radius:14px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
+.area-locked-info{font-size:12px;color:var(--muted)}
+.area-locked-name{font-size:14px;font-weight:800;color:#9e9e9e;margin-bottom:3px}
