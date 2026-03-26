@@ -1,23 +1,34 @@
 // ══════════════════════════════
 //  季節・昼夜・天気・住人システム
 // ══════════════════════════════
-function getCurrentSeason() {
-  const m = new Date().getMonth() + 1;
-  return SEASONS.find(s => s.months.includes(m)) || SEASONS[0];
+
+// ── ゲーム内時間 ──
+function getGameHour() {
+  return Math.floor((state.gameDayProgress || 0) * 24);
 }
-function getSeasonMult() { return getCurrentSeason().cpsMult; }
+
+function getGameDate() {
+  const day = state.gameDay || 0;
+  const seasonIdx   = Math.floor(day / GAME_SEASON_DAYS) % 4;
+  const dayInSeason = (day % GAME_SEASON_DAYS) + 1;
+  const year        = Math.floor(day / (GAME_SEASON_DAYS * 4)) + 1;
+  return { year, season: SEASONS[seasonIdx], dayInSeason, totalDays: day + 1 };
+}
+
+function getCurrentSeason() { return getGameDate().season; }
+function getSeasonMult()     { return getCurrentSeason().cpsMult; }
 
 function renderSeason() {
-  const s = getCurrentSeason();
+  const { year, season, dayInSeason } = getGameDate();
   const badge = document.getElementById('seasonBadge');
-  badge.textContent = `${s.emoji} ${s.name}`;
-  badge.className = `season-badge ${s.cssClass}`;
+  badge.textContent = `${season.emoji} ${year}年 ${season.name} ${dayInSeason}日`;
+  badge.className = `season-badge ${season.cssClass}`;
   updateSky();
 }
 
-// 昼夜サイクル
+// 昼夜サイクル（ゲーム内時間基準）
 function getDayPhase() {
-  const h = new Date().getHours();
+  const h = getGameHour();
   if (h >= 5  && h < 8)  return 'dawn';
   if (h >= 8  && h < 18) return 'day';
   if (h >= 18 && h < 20) return 'dusk';

@@ -2,11 +2,28 @@
 //  サウンドシステム（Web Audio API）
 // ══════════════════════════════
 let _audioCtx = null, _sfxOn = true, _bgmOn = true, _bgmTimer = null;
+let _bgmAudio = null;
 
 function getAudioCtx() {
   if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if (_audioCtx.state === 'suspended') _audioCtx.resume();
   return _audioCtx;
+}
+
+function _initBgmAudio() {
+  if (_bgmAudio) return;
+  _bgmAudio = new Audio('./ひだまりのまち.mp3');
+  _bgmAudio.loop   = true;
+  _bgmAudio.volume = 0.5;
+}
+
+function _startBgm() {
+  _initBgmAudio();
+  _bgmAudio.play().catch(() => {});
+}
+
+function _stopBgm() {
+  if (_bgmAudio) { _bgmAudio.pause(); _bgmAudio.currentTime = 0; }
 }
 
 function playTones(freqs, dur = 0.3, vol = 0.22, type = 'sine') {
@@ -33,31 +50,9 @@ function playMilestoneSfx() { playTones([392, 523, 659, 784, 1047], 0.55, 0.22);
 function playQuestSfx()     { playTones([523, 659, 784], 0.4, 0.25); }
 function playUnlockSfx()    { playTones([330, 440, 554, 659], 0.45, 0.22); }
 
-function playBirdChirp() {
-  if (!_bgmOn) return;
-  try {
-    const ctx = getAudioCtx();
-    const base = 1100 + Math.random() * 1400;
-    [base, base * 1.2, base].forEach((f, i) => {
-      const osc = ctx.createOscillator(), g = ctx.createGain();
-      osc.type = 'sine'; osc.frequency.value = f;
-      osc.connect(g); g.connect(ctx.destination);
-      const t = ctx.currentTime + i * 0.07;
-      g.gain.setValueAtTime(0.04, t);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
-      osc.start(t); osc.stop(t + 0.2);
-    });
-  } catch(e) {}
-}
-
-function scheduleBgm() {
-  if (!_bgmOn) return;
-  _bgmTimer = setTimeout(() => { playBirdChirp(); scheduleBgm(); }, 3500 + Math.random() * 6500);
-}
-
 function toggleBgm() {
   _bgmOn = !_bgmOn;
-  if (_bgmOn) scheduleBgm(); else clearTimeout(_bgmTimer);
+  if (_bgmOn) _startBgm(); else _stopBgm();
   localStorage.setItem('nodoka_bgm', _bgmOn ? '1' : '0');
   updateSoundBtns();
 }
@@ -76,5 +71,6 @@ function initSound() {
   _bgmOn = localStorage.getItem('nodoka_bgm') !== '0';
   _sfxOn = localStorage.getItem('nodoka_sfx') !== '0';
   updateSoundBtns();
-  document.addEventListener('click', () => { if (_bgmOn && !_bgmTimer) scheduleBgm(); }, { once: true });
+  // ブラウザの自動再生ポリシー対策：初回クリックで再生開始
+  document.addEventListener('click', () => { if (_bgmOn) _startBgm(); }, { once: true });
 }

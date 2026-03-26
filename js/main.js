@@ -73,11 +73,25 @@ function tick() {
     const btn=el.querySelector('.btn-research');
     if(btn&&!done) btn.disabled=!canAfford;
   });
+  // ── ゲーム内時間を進める ──
+  state.gameDayProgress = (state.gameDayProgress || 0) + dt / GAME_DAY_REAL_SECS;
+  if (state.gameDayProgress >= 1) {
+    state.gameDayProgress -= 1;
+    const prevSeason = getCurrentSeason();
+    state.gameDay = (state.gameDay || 0) + 1;
+    const newSeason = getCurrentSeason();
+    if (prevSeason.id !== newSeason.id) {
+      addLog(`${newSeason.emoji} 季節が変わりました：${newSeason.name}（${newSeason.desc}）`);
+      setWeather(getSeasonWeather());
+    }
+    renderSeason();
+  }
+
   tickCount++;
   if(tickCount%150===0){ saveGame(); updateSaveStatus(); }
   if(tickCount%50===0) updateSaveStatus();
   if(tickCount%100===0) { checkAchievements(); renderQuests(); }
-  if(tickCount%300===0) updateSky();
+  if(tickCount%50===0) updateSky();
   const resInterval = Math.max(25, 100 - getTotalLv());
   if(tickCount % resInterval === 0) spawnResident();
 }

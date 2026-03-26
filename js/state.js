@@ -27,6 +27,10 @@ const MILESTONES = [10, 25, 50, 100];
 const BASE_MAX_LV   = 100;
 const PRESTIGE_LV_BONUS = 25;
 
+// ゲーム内時間定数
+const GAME_DAY_REAL_SECS = 600; // 10リアル分 = 1ゲーム日
+const GAME_SEASON_DAYS   = 30;  // 30ゲーム日 = 1シーズン
+
 // 建物定義
 const BUILDINGS = [
   // ── 第1区「農村」──
@@ -224,5 +228,8 @@ let state = {
     streak: 0,
     totalClaimed: 0,
   },
+  // ゲーム内時間（0=春の1日目 朝8時スタート）
+  gameDay: 0,
+  gameDayProgress: 8 / 24,
 };
 BUILDINGS.forEach(b=>{ state.buildings[b.id]={level:0, msReached:[]}; });
