@@ -15,7 +15,7 @@ function setBulkMode(n) {
 // ── グローバルCPS計算 ──
 function getCps() {
   const base = BUILDINGS.reduce((s, b) => s + getBuildingCps(b), 0);
-  return base * getAchievMult() * getPrestigeMult();
+  return base * getAchievMult() * getPrestigeMult() * (1 + getPrestigeSkillEffect('cps_perm'));
 }
 function getEffectiveCps() { return getCps() * getEventMult() * getSeasonMult() * getBeautyMult() * getWeekendMult(); }
 

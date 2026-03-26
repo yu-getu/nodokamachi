@@ -262,8 +262,6 @@
     font-size: 28px
 }
 
-.daily-info {}
-
 .daily-title {
     font-size: 13px;
     font-weight: 800;
@@ -834,4 +832,64 @@
     font-size: 8px;
     color: var(--coin2);
     font-weight: 800
+}
+
+/* ── 世代スキルツリー（PSK） ── */
+.psk-section {
+    background: linear-gradient(135deg, #f3e5f5, #ede7f6);
+    border: 2px solid var(--prestige);
+    border-radius: 18px;
+    padding: 16px;
+    margin-top: 18px
+}
+
+.psk-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--prestige2);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px
+}
+
+.psk-sp-bar {
+    background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+    border: 2px solid var(--prestige2);
+    border-radius: 16px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.psk-sp-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--prestige2);
+    display: block
+}
+
+/* PSK ツリーノード */
+.psk-unlocked {
+    background: linear-gradient(135deg, #fff9c4, #ffee58) !important;
+    border-color: #f5c430 !important;
+    box-shadow: 0 2px 8px rgba(245, 196, 48, .3) !important
+}
+
+.psk-unlocked .sk-btn {
+    background: linear-gradient(135deg, #f5c430, #f9a825) !important;
+    box-shadow: 0 2px 0 #f57f17 !important
+}
+
+.psk-available {
+    background: linear-gradient(135deg, #f3e5f5, #ede7f6) !important;
+    border-color: var(--prestige) !important;
+    cursor: pointer !important
+}
+
+.psk-available:hover {
+    transform: translate(-50%, -50%) scale(1.06) !important;
+    box-shadow: 0 4px 14px rgba(156, 39, 176, .35) !important
 }

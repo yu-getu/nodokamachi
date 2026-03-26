@@ -2,10 +2,6 @@
 //  建物・エリア・マイルストーンシステム
 // ══════════════════════════════
 
-function getMaxLevel() {
-  return BASE_MAX_LV + state.prestigeCount * PRESTIGE_LV_BONUS;
-}
-
 function getPhase(lv) {
   for (const p of PHASES) {
     if (lv <= p.maxLv) return p;
@@ -35,7 +31,10 @@ function _buildingCostAtLv(b, lv) {
     if (remaining <= 0) break;
   }
   if (remaining > 0) cost *= Math.pow(PHASES[PHASES.length - 1].mult, remaining);
-  return Math.floor(cost * (state.eventDiscount || 1) * getSkillCostMult());
+  // cost_perm 効果：最低10%コストは保証、最大90%割引
+  const costPermEffect = getPrestigeSkillEffect('cost_perm');
+  const costPerm = Math.max(0.1, Math.min(0.9, 1 - costPermEffect));
+  return Math.floor(cost * (state.eventDiscount || 1) * getSkillCostMult() * costPerm);
 }
 
 function getBuildingCost(b) {
@@ -64,7 +63,8 @@ function getBuildingCps(b) {
   if (lv === 0) return 0;
   const msCount = (state.buildings[b.id].msReached || []).length;
   const base = b.baseCps * lv * (1 + lv * 0.15);
-  return base * Math.pow(2, msCount) * getResearchMult(b.id) * getSkillCpsMult(b)
+  const msBase = 2 + getPrestigeSkillEffect('ms_base');
+  return base * Math.pow(msBase, msCount) * getResearchMult(b.id) * getSkillCpsMult(b)
     * getDecoAreaMult(b.area) * getDecoBuildingMult(b.id);
 }
 

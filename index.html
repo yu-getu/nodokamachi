@@ -140,6 +140,17 @@
       </div>
       <button class="btn-prestige" id="btnPrestige" onclick="confirmPrestige()" disabled>⭐ プレステージ転生する</button>
       <div class="prestige-history" id="prestigeHistory"></div>
+
+      <!-- 世代スキルツリー -->
+      <div class="psk-section">
+        <div class="psk-title">🌌 世代スキルツリー（永続）</div>
+        <div class="psk-sp-bar">
+          <span class="psk-sp-label">PSP残り：<strong id="pskSpAvail">0</strong></span>
+          <span class="psk-sp-label" style="color:var(--muted)">総獲得：<span id="pskSpTotal">0</span> PSP</span>
+        </div>
+        <p style="font-size:10px;color:var(--muted);margin-bottom:8px">転生するたびに3 PSP獲得。世代スキルは転生後も永続します。</p>
+        <div id="prestigeSkillTree"></div>
+      </div>
     </div>
 
     <!-- スキルツリーパネル -->

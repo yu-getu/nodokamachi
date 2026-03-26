@@ -101,6 +101,30 @@ const RESEARCH = [
   {id:'hypertech', name:'超技術革新',   emoji:'⚡', cost:3e16,               desc:'全建物のCPS ×1.5',              targets:['all'],                                                                         mult:1.5},
 ];
 
+// 世代スキルツリー定義（転生専用・永続）
+const PRESTIGE_SKILLS = [
+  // Tier 1（各1PSP・前提なし）
+  {id:'legacy_memory',  name:'遺産の記憶', emoji:'📜', cost:1, tier:1, requires:[],                            effect:'offline_mult',      value:0.15, desc:'オフライン効率 +15%'},
+  {id:'ancestor_grace', name:'先祖の加護', emoji:'🙏', cost:1, tier:1, requires:[],                            effect:'prestige_sp_bonus', value:1,    desc:'転生ごとに通常SP +1'},
+  // Tier 2（各2PSP）
+  {id:'gen_bond',       name:'世代の絆',   emoji:'🔗', cost:2, tier:2, requires:['legacy_memory'],             effect:'cps_perm',          value:0.20, desc:'全CPS +20% 永続'},
+  {id:'history_mark',   name:'歴史の刻印', emoji:'⚖️', cost:2, tier:2, requires:['ancestor_grace'],            effect:'ms_base',           value:1,    desc:'マイルストーン倍率 ×2→×3'},
+  // Tier 3（各3PSP）
+  {id:'legend_grace',   name:'伝説の加護', emoji:'⭐', cost:3, tier:3, requires:['gen_bond'],                  effect:'prestige_cps_rate', value:0.2,  desc:'転生ごとのCPS増加率 +0.2'},
+  {id:'gods_will',      name:'神々の意志', emoji:'🌟', cost:3, tier:3, requires:['history_mark'],              effect:'cost_perm',         value:0.15, desc:'全建物コスト -15% 永続'},
+  // Tier 4（4PSP）
+  {id:'genesis_power',  name:'創世の力',   emoji:'🌌', cost:4, tier:4, requires:['legend_grace','gods_will'], effect:'cps_perm',          value:0.50, desc:'全CPS +50% 永続'},
+];
+const PRESTIGE_SKILL_POS = {
+  legacy_memory:  { x: 0.25, tier: 1 },
+  ancestor_grace: { x: 0.75, tier: 1 },
+  gen_bond:       { x: 0.25, tier: 2 },
+  history_mark:   { x: 0.75, tier: 2 },
+  legend_grace:   { x: 0.25, tier: 3 },
+  gods_will:      { x: 0.75, tier: 3 },
+  genesis_power:  { x: 0.50, tier: 4 },
+};
+
 // スキルツリー定義
 const SKILLS = [
   // Tier 1（前提なし・1SP）
@@ -239,6 +263,8 @@ let state = {
   research: {},
   quests: null,
   skills: {},
+  prestigeSkills: {},
+  prestigeSp: 0,
   daily: {
     lastClaimDate: null,
     streak: 0,
@@ -249,3 +275,8 @@ let state = {
   gameDayProgress: 8 / 24,
 };
 BUILDINGS.forEach(b=>{ state.buildings[b.id]={level:0, msReached:[]}; });
+
+// ── ユーティリティ関数 ──
+function getMaxLevel() {
+  return BASE_MAX_LV + state.prestigeCount * PRESTIGE_LV_BONUS;
+}

@@ -10,6 +10,7 @@ function saveGame() {
       daily: state.daily, decorations: state.decorations,
       unlockedAreas: state.unlockedAreas, research: state.research,
       quests: state.quests, skills: state.skills,
+      prestigeSkills: state.prestigeSkills, prestigeSp: state.prestigeSp,
     }));
     state.lastSaved = Date.now(); updateSaveStatus();
     addLog('💾 セーブしました！');
@@ -36,9 +37,15 @@ function loadGame() {
     if (!state.research) state.research = {};
     state.quests = d.quests || null;
     state.skills = d.skills || {};
+    state.prestigeSkills = d.prestigeSkills || {};
+    state.prestigeSp = d.prestigeSp || 0;
     const offSec = Math.min((Date.now() - d.savedAt) / 1000, 24 * 3600);
     if (offSec > 30 && getCps() > 0) {
-      const earned = Math.floor(getEffectiveCps() * offSec * .5);
+      // オフライン効率：基本50% + 世代スキル効果（上限100%）
+      const baseOffMult = 0.5;
+      const offlineSkillEffect = getPrestigeSkillEffect('offline_mult');
+      const offMult = Math.max(0.5, Math.min(1.0, baseOffMult + offlineSkillEffect));
+      const earned = Math.floor(getEffectiveCps() * offSec * offMult);
       state.coins += earned; state.totalEarned += earned;
       showOfflineModal(offSec, earned);
     }

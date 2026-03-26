@@ -2,11 +2,21 @@
 //  スキルシステム
 // ══════════════════════════════
 function getTotalSkillPoints() {
-  const fromPrestige  = (state.prestigeCount || 0) * 3;
-  const fromBuildings = BUILDINGS.filter(b => (state.buildings?.[b.id]?.level || 0) >= 10).length;
-  const achievCount   = Object.values(state.achievements || {}).filter(Boolean).length;
-  const fromAchiev    = Math.floor(achievCount / 10);
-  return fromPrestige + fromBuildings + fromAchiev;
+  // 基本SP獲得源：建物Lv10到達 + 実績10件ごと
+  const fromBuildings  = BUILDINGS.filter(b => (state.buildings?.[b.id]?.level || 0) >= 10).length;
+  const achievCount    = Object.values(state.achievements || {}).filter(Boolean).length;
+  const fromAchiev     = Math.floor(achievCount / 10);
+  // 転生ボーナス：基本 +1 SP/転生 + 先祖の加護による追加（複数世代スキルがある場合は合算）
+  const basePrestigeBonus = Math.max(0, state.prestigeCount || 0);
+  const extraBonus = getPrestigeSkillEffect('prestige_sp_bonus');
+  const spBonus = Math.floor(basePrestigeBonus + extraBonus * (state.prestigeCount || 0));
+  return fromBuildings + fromAchiev + spBonus;
+}
+
+function getPrestigeSkillEffect(effect) {
+  return PRESTIGE_SKILLS
+    .filter(s => s.effect === effect && state.prestigeSkills?.[s.id])
+    .reduce((sum, s) => sum + s.value, 0);
 }
 function getSpentSkillPoints() {
   return SKILLS.filter(s => state.skills?.[s.id]).reduce((sum, s) => sum + s.cost, 0);
