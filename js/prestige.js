@@ -2,7 +2,7 @@
 //  プレステージ転生システム
 // ══════════════════════════════
 function getPrestigeMult() { return 1 + state.prestigeCount * 0.2; }
-function getPrestigeRequired() { return 50000 * Math.pow(3, state.prestigeCount); }
+function getPrestigeRequired() { return 5000000000 * Math.pow(5, state.prestigeCount); }
 
 function confirmPrestige() {
   const req = getPrestigeRequired();
@@ -14,7 +14,7 @@ function confirmPrestige() {
     `✅ レベル上限が <strong>Lv${newMax}</strong> に拡張<br>` +
     `✅ 実績・転生回数は引き継ぎ<br>` +
     `❌ コイン・建物レベルがリセット<br>` +
-    `❌ マイルストーン達成状況もリセット`;
+    `❌ 研究・マイルストーン達成状況もリセット`;
   document.getElementById('prestigeModal').classList.add('show');
 }
 
@@ -23,7 +23,7 @@ function doPrestige() {
   state.prestigeCount++;
   state.coins = 50; state.totalEarned = 0;
   BUILDINGS.forEach(b => { state.buildings[b.id] = { level: 0, msReached: [] }; });
-  state.activeEvent = null; state.eventDiscount = 1; state.skills = {};
+  state.activeEvent = null; state.eventDiscount = 1; state.skills = {}; state.research = {};
   const newMax = getMaxLevel();
   addLog(`⭐ プレステージ転生(${state.prestigeCount}回目)！Lv上限→${newMax}、CPS倍率×${(1 + state.prestigeCount * .2).toFixed(1)}`);
   saveGame(); checkAchievements(); render(); renderPrestige();
@@ -45,7 +45,7 @@ function renderPrestige() {
     `<div class="prestige-bonus-item"><span class="pb-icon">⭐</span>永続CPS倍率 → ×<strong>${nextMult}</strong></div>
      <div class="prestige-bonus-item"><span class="pb-icon">📈</span>レベル上限 → <strong>Lv${newMax}</strong>（+${PRESTIGE_LV_BONUS}）</div>
      <div class="prestige-bonus-item"><span class="pb-icon">📌</span>実績・転生回数は引き継ぎ</div>
-     <div class="prestige-bonus-item"><span class="pb-icon">🔄</span>コイン・建物・マイルストーンはリセット</div>`;
+     <div class="prestige-bonus-item"><span class="pb-icon">🔄</span>コイン・建物・研究・マイルストーンはリセット</div>`;
   document.getElementById('prestigeReq').innerHTML =
     `転生条件：累計コイン <strong style="color:var(--prestige2)">${fmt(req)}</strong> 以上<br>
      現在：${fmt(state.totalEarned)} ${can ? '✅ 転生可能！' : '（あと ' + fmt(req - state.totalEarned) + '）'}`;

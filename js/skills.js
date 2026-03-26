@@ -2,9 +2,11 @@
 //  スキルシステム
 // ══════════════════════════════
 function getTotalSkillPoints() {
-  return Math.floor(getTotalLv() / 8)
-    + Math.floor((state.quests?.completedTotal || 0) / 5)
-    + (state.prestigeCount || 0);
+  const fromPrestige  = (state.prestigeCount || 0) * 3;
+  const fromBuildings = BUILDINGS.filter(b => (state.buildings?.[b.id]?.level || 0) >= 10).length;
+  const achievCount   = Object.values(state.achievements || {}).filter(Boolean).length;
+  const fromAchiev    = Math.floor(achievCount / 10);
+  return fromPrestige + fromBuildings + fromAchiev;
 }
 function getSpentSkillPoints() {
   return SKILLS.filter(s => state.skills?.[s.id]).reduce((sum, s) => sum + s.cost, 0);
@@ -60,19 +62,19 @@ function getSkillBeautyMult() {
 // ── ツリー型レイアウト設定 ──
 // x: コンテナ幅に対する割合（0〜1）、tier: 段（1〜6）
 const SKILL_POS = {
-  farm_mastery: { x: 0.16, tier: 1 },
-  commerce_art: { x: 0.50, tier: 1 },
-  quick_hands: { x: 0.84, tier: 1 },
-  beauty_power: { x: 0.16, tier: 2 },
-  culture_bloom: { x: 0.50, tier: 2 },
-  thrift: { x: 0.84, tier: 2 },
-  healing_spirit: { x: 0.22, tier: 3 },
-  city_dream: { x: 0.50, tier: 3 },
-  research_gift: { x: 0.78, tier: 3 },
-  town_vitality: { x: 0.34, tier: 4 },
-  space_ambition: { x: 0.66, tier: 4 },
-  miracle_town: { x: 0.50, tier: 5 },
-  galaxy_civ: { x: 0.50, tier: 6 },
+  farm_mastery:   { x: 0.17, tier: 1 },
+  commerce_art:   { x: 0.50, tier: 1 },
+  quick_hands:    { x: 0.83, tier: 1 },
+  beauty_power:   { x: 0.17, tier: 2 },
+  culture_bloom:  { x: 0.50, tier: 2 },
+  thrift:         { x: 0.83, tier: 2 },
+  healing_spirit: { x: 0.17, tier: 3 },
+  city_dream:     { x: 0.50, tier: 3 },
+  research_gift:  { x: 0.83, tier: 3 },
+  town_vitality:  { x: 0.33, tier: 4 },
+  space_ambition: { x: 0.67, tier: 4 },
+  miracle_town:   { x: 0.50, tier: 5 },
+  galaxy_civ:     { x: 0.50, tier: 6 },
 };
 const SKILL_ROW_H = 100;
 const SKILL_TOP_PAD = 10;

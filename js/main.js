@@ -2,6 +2,16 @@
 //  コアCPS計算・アクション・ゲームループ・起動
 // ══════════════════════════════
 
+// ── 一括購入モード（0=MAX, 1/10/100）──
+let bulkMode = 1;
+function setBulkMode(n) {
+  bulkMode = n;
+  document.querySelectorAll('.bulk-btn').forEach(btn => {
+    btn.classList.toggle('active', Number(btn.dataset.mode) === n);
+  });
+  renderShop();
+}
+
 // ── グローバルCPS計算 ──
 function getCps() {
   const base = BUILDINGS.reduce((s, b) => s + getBuildingCps(b), 0);
@@ -9,20 +19,34 @@ function getCps() {
 }
 function getEffectiveCps() { return getCps() * getEventMult() * getSeasonMult() * getBeautyMult() * getWeekendMult(); }
 
+// ひと稼ぎ用：マイルストーン倍率を除いたCPS
+function getEffectiveCpsWithoutMs() {
+  const base = BUILDINGS.reduce((s, b) => {
+    const lv = state.buildings[b.id]?.level || 0;
+    if (!lv) return s;
+    const baseCps = b.baseCps * lv * (1 + lv * 0.15);
+    return s + baseCps * getResearchMult(b.id) * getSkillCpsMult(b)
+             * getDecoAreaMult(b.area) * getDecoBuildingMult(b.id);
+  }, 0);
+  return base * getAchievMult() * getPrestigeMult()
+       * getEventMult() * getSeasonMult() * getBeautyMult() * getWeekendMult();
+}
+
 // ── アクション ──
 function buyBuilding(id) {
   const b = BUILDINGS.find(x => x.id === id);
-  const lv = state.buildings[id].level;
-  const maxLv = getMaxLevel();
-  const cost = getBuildingCost(b);
-  if (state.coins < cost || lv >= maxLv) return;
+  const { count, totalCost } = getBulkInfo(b);
+  if (count === 0) return;
 
-  state.coins -= cost;
-  state.buildings[id].level++;
+  const wasZero = state.buildings[id].level === 0;
+  state.coins -= totalCost;
+  state.buildings[id].level += count;
   const nl = state.buildings[id].level;
 
-  addLog(lv === 0 ? `🏗️ ${b.emoji}${b.name}を建設！(Lv.1)` : `⬆️ ${b.emoji}${b.name} Lv.${nl}に強化！`);
-  spawnFloatCoins(`-${fmt(cost)}`);
+  addLog(wasZero && count === 1
+    ? `🏗️ ${b.emoji}${b.name}を建設！(Lv.1)`
+    : `⬆️ ${b.emoji}${b.name} Lv.${nl}に強化！(+${count})`);
+  spawnFloatCoins(`-${fmt(totalCost)}`);
   playBuildSfx();
   checkMilestones(id);
   checkAchievements();
@@ -31,7 +55,8 @@ function buyBuilding(id) {
 }
 
 function manualHarvest() {
-  const bonus = Math.max(1, getEffectiveCps() * 2 * getSkillCollectMult() * getDecoCollectMult());
+  const clickMult = Math.max(1, 30 / (1 + getTotalLv() / 30));
+  const bonus = Math.max(1, getEffectiveCpsWithoutMs() * clickMult * getSkillCollectMult() * getDecoCollectMult());
   state.coins += bonus; state.totalEarned += bonus;
   spawnFloatCoins(`+${fmt(bonus)}`);
   playHarvestSfx();

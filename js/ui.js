@@ -45,8 +45,6 @@ function renderStats() {
   const fmtCps = n => n>=1e4 ? fmt(n) : n.toFixed(2);
   document.getElementById('cps').textContent=m!==1?`${fmtCps(cps)}(×${m})`:fmtCps(cps);
   document.getElementById('totalEarned').textContent=fmt(state.totalEarned);
-  const maxLvBuilding = BUILDINGS.reduce((max,b)=>Math.max(max,state.buildings[b.id].level),0);
-  document.getElementById('maxLvDisplay').textContent=maxLvBuilding;
   document.getElementById('maxLvCap').textContent=getMaxLevel();
 }
 
@@ -80,6 +78,20 @@ function renderTown() {
 
 function renderShop() {
   const grid=document.getElementById('shopGrid'); grid.innerHTML='';
+
+  // 一括購入モード切り替えバー
+  const bulkBar=document.createElement('div');
+  bulkBar.className='bulk-bar';
+  bulkBar.style.cssText='grid-column:1/-1';
+  [[1,'×1'],[10,'×10'],[100,'×100'],[0,'MAX']].forEach(([mode,label])=>{
+    const btn=document.createElement('button');
+    btn.className='bulk-btn'+(bulkMode===mode?' active':'');
+    btn.textContent=label;
+    btn.dataset.mode=mode;
+    btn.onclick=()=>setBulkMode(mode);
+    bulkBar.appendChild(btn);
+  });
+  grid.appendChild(bulkBar);
   const maxLv=getMaxLevel();
   const disc=state.eventDiscount<1;
   const unlockedAreas = state.unlockedAreas || [1];
@@ -114,7 +126,8 @@ function renderShop() {
     const lv=state.buildings[b.id].level;
     const cost=getBuildingCost(b);
     const isMax=lv>=maxLv;
-    const canAfford=!isMax&&state.coins>=cost;
+    const bulk=!isMax?getBulkInfo(b):{count:0,totalCost:0};
+    const canAfford=bulk.count>0;
     const msReached=state.buildings[b.id].msReached||[];
     const msCount=msReached.length;
     const nextMs=getNextMilestone(lv,maxLv);
@@ -136,7 +149,9 @@ function renderShop() {
     }).join('');
 
     const sale=disc&&!isMax?`<span style="font-size:9px;color:#e53935;font-weight:800"> SALE</span>`:'';
-    const btnText=isMax?`✨ MAX Lv${maxLv}`:lv===0?`🪙${fmt(cost)} 建設`:`🪙${fmt(cost)} 強化`;
+    const bulkLabel=bulk.count>1?` +${bulk.count}Lv`:'';
+    const btnCost=bulk.count>0?fmt(bulk.totalCost):fmt(cost);
+    const btnText=isMax?`✨ MAX Lv${maxLv}`:lv===0?`🪙${btnCost} 建設${bulkLabel}`:`🪙${btnCost} 強化${bulkLabel}`;
     const btnClass=isMax?'maxed-btn':lv>0?'upgrade':'';
 
     const div=document.createElement('div');

@@ -21,15 +21,10 @@ function getPhaseLabel(lv) {
   return `転生拡張(${state.prestigeCount}世代)`;
 }
 
-function getBuildingCost(b) {
-  const lv = state.buildings[b.id].level;
+function _buildingCostAtLv(b, lv) {
   const maxLv = getMaxLevel();
   if (lv >= maxLv) return Infinity;
-
-  let cost = b.baseCost;
-  let remaining = lv;
-  let phaseStart = 0;
-
+  let cost = b.baseCost, remaining = lv, phaseStart = 0;
   for (const p of PHASES) {
     const phaseEnd = Math.min(p.maxLv, maxLv);
     const lvInPhase = Math.max(0, Math.min(remaining, phaseEnd - phaseStart));
@@ -39,10 +34,29 @@ function getBuildingCost(b) {
     phaseStart = phaseEnd;
     if (remaining <= 0) break;
   }
-  if (remaining > 0) {
-    cost *= Math.pow(PHASES[PHASES.length - 1].mult, remaining);
-  }
+  if (remaining > 0) cost *= Math.pow(PHASES[PHASES.length - 1].mult, remaining);
   return Math.floor(cost * (state.eventDiscount || 1) * getSkillCostMult());
+}
+
+function getBuildingCost(b) {
+  return _buildingCostAtLv(b, state.buildings[b.id].level);
+}
+
+// 一括購入情報: { count, totalCost }
+function getBulkInfo(b) {
+  const maxLv = getMaxLevel();
+  const startLv = state.buildings[b.id].level;
+  const want = bulkMode === 0 ? (maxLv - startLv) : bulkMode;
+  const cap = Math.min(want, maxLv - startLv);
+  let coins = state.coins, count = 0, totalCost = 0;
+  for (let i = 0; i < cap; i++) {
+    const c = _buildingCostAtLv(b, startLv + i);
+    if (coins < c) break;
+    coins -= c;
+    totalCost += c;
+    count++;
+  }
+  return { count, totalCost };
 }
 
 function getBuildingCps(b) {

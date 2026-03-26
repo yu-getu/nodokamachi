@@ -247,7 +247,7 @@
     max-width: none;
     padding: 0 24px 40px;
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 450px 1fr;
     grid-template-rows: auto auto auto auto auto auto auto auto;
     column-gap: 20px;
     row-gap: 12px;

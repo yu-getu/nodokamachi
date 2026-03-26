@@ -36,7 +36,7 @@ function loadGame() {
     if (!state.research) state.research = {};
     state.quests = d.quests || null;
     state.skills = d.skills || {};
-    const offSec = Math.min((Date.now() - d.savedAt) / 1000, 8 * 3600);
+    const offSec = Math.min((Date.now() - d.savedAt) / 1000, 24 * 3600);
     if (offSec > 30 && getCps() > 0) {
       const earned = Math.floor(getEffectiveCps() * offSec * .5);
       state.coins += earned; state.totalEarned += earned;
