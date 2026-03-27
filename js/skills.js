@@ -34,6 +34,7 @@ function unlockSkill(id) {
   if (!sk || !canUnlockSkill(sk)) return;
   if (!state.skills) state.skills = {};
   state.skills[id] = true;
+  playUnlockSfx();
   addLog(`🌟 スキル習得：${sk.emoji}${sk.name}！${sk.desc}`);
   renderSkills();
   renderStats();
@@ -72,22 +73,22 @@ function getSkillBeautyMult() {
 // ── ツリー型レイアウト設定 ──
 // x: コンテナ幅に対する割合（0〜1）、tier: 段（1〜6）
 const SKILL_POS = {
-  farm_mastery:   { x: 0.17, tier: 1 },
+  farm_mastery:   { x: 0.19, tier: 1 },
   commerce_art:   { x: 0.50, tier: 1 },
-  quick_hands:    { x: 0.83, tier: 1 },
-  beauty_power:   { x: 0.17, tier: 2 },
+  quick_hands:    { x: 0.81, tier: 1 },
+  beauty_power:   { x: 0.19, tier: 2 },
   culture_bloom:  { x: 0.50, tier: 2 },
-  thrift:         { x: 0.83, tier: 2 },
-  healing_spirit: { x: 0.17, tier: 3 },
+  thrift:         { x: 0.81, tier: 2 },
+  healing_spirit: { x: 0.19, tier: 3 },
   city_dream:     { x: 0.50, tier: 3 },
-  research_gift:  { x: 0.83, tier: 3 },
-  town_vitality:  { x: 0.33, tier: 4 },
-  space_ambition: { x: 0.67, tier: 4 },
+  research_gift:  { x: 0.81, tier: 3 },
+  town_vitality:  { x: 0.34, tier: 4 },
+  space_ambition: { x: 0.66, tier: 4 },
   miracle_town:   { x: 0.50, tier: 5 },
   galaxy_civ:     { x: 0.50, tier: 6 },
 };
-const SKILL_ROW_H = 100;
-const SKILL_TOP_PAD = 10;
+const SKILL_ROW_H = 130;
+const SKILL_TOP_PAD = 16;
 
 function renderSkills() {
   const avail = getAvailableSkillPoints();
@@ -164,8 +165,13 @@ function renderSkills() {
 
   container.appendChild(wrap);
 
-  // DOM確定後にSVG線を描画
-  requestAnimationFrame(() => _drawSkillLines());
+  // DOM確定後にSVG線を描画。リサイズ時も再描画
+  requestAnimationFrame(() => {
+    _drawSkillLines();
+    if (window._skillTreeRO) window._skillTreeRO.disconnect();
+    window._skillTreeRO = new ResizeObserver(() => _drawSkillLines());
+    window._skillTreeRO.observe(wrap);
+  });
 }
 
 function _skillY(tier) {
@@ -174,62 +180,54 @@ function _skillY(tier) {
 
 function _drawSkillLines() {
   const wrap = document.getElementById('skillTreeWrap');
-  const svg = document.getElementById('skillTreeSvg');
+  const svg  = document.getElementById('skillTreeSvg');
   if (!wrap || !svg) return;
 
   svg.innerHTML = '';
-  svg.setAttribute('width', wrap.offsetWidth);
+  const wrapRect = wrap.getBoundingClientRect();
+  svg.setAttribute('width',  wrapRect.width);
   svg.setAttribute('height', wrap.offsetHeight);
 
   SKILLS.forEach(sk => {
     const childEl = wrap.querySelector(`.skill-node[data-id="${sk.id}"]`);
     if (!childEl) return;
-
-    // offsetLeft/Top = visual center (transform: translate(-50%,-50%) 考慮済み)
-    const cx = childEl.offsetLeft;
-    const cy = childEl.offsetTop;
-    const ch = childEl.offsetHeight;
-
+    const cr = childEl.getBoundingClientRect();
+    const cx     = cr.left - wrapRect.left + cr.width  / 2;  // 子の中心X
+    const cy_top = cr.top  - wrapRect.top;                   // 子の上辺Y（transform後）
     const childUnlocked = !!state.skills?.[sk.id];
 
     sk.requires.forEach(reqId => {
       const parentEl = wrap.querySelector(`.skill-node[data-id="${reqId}"]`);
       if (!parentEl) return;
-
-      const px = parentEl.offsetLeft;
-      const py = parentEl.offsetTop;
-      const ph = parentEl.offsetHeight;
-
+      const pr = parentEl.getBoundingClientRect();
+      const px      = pr.left - wrapRect.left + pr.width  / 2;  // 親の中心X
+      const py_bot  = pr.top  - wrapRect.top  + pr.height;      // 親の下辺Y（transform後）
       const parentUnlocked = !!state.skills?.[reqId];
 
-      // ベジェ曲線：親ノード底辺 → 子ノード上辺
-      const startX = px, startY = py + ph / 2 + 2;
-      const endX = cx, endY = cy - ch / 2 - 2;
-      const midY = (startY + endY) / 2;
-
       let color, dash, strokeW;
-      if (childUnlocked && parentUnlocked) {
-        color = '#4caf50'; dash = ''; strokeW = '3';
-      } else if (parentUnlocked) {
-        color = '#9c27b0'; dash = ''; strokeW = '2.5';
-      } else {
-        color = '#bbb'; dash = '5,4'; strokeW = '1.5';
-      }
+      if (childUnlocked && parentUnlocked) { color = '#4caf50'; dash = ''; strokeW = 3; }
+      else if (parentUnlocked)             { color = '#9c27b0'; dash = ''; strokeW = 2.5; }
+      else                                 { color = '#bbb';    dash = '5,4'; strokeW = 1.5; }
+
+      // 直角ルート: 親ボトム → midY → 子X → 子トップ
+      const midY = (py_bot + cy_top) / 2;
+      const d = `M ${px} ${py_bot} L ${px} ${midY} L ${cx} ${midY} L ${cx} ${cy_top}`;
 
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`);
+      path.setAttribute('d', d);
       path.setAttribute('stroke', color);
       path.setAttribute('stroke-width', strokeW);
       path.setAttribute('fill', 'none');
       path.setAttribute('stroke-linecap', 'round');
+      path.setAttribute('stroke-linejoin', 'round');
       if (dash) path.setAttribute('stroke-dasharray', dash);
       svg.appendChild(path);
 
-      // 矢印（子ノードの直上）
+      // 矢印（子トップ直上）
       const aw = 5;
       const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
       arrow.setAttribute('points',
-        `${endX},${endY} ${endX - aw},${endY - aw * 1.6} ${endX + aw},${endY - aw * 1.6}`);
+        `${cx},${cy_top} ${cx - aw},${cy_top - aw * 1.6} ${cx + aw},${cy_top - aw * 1.6}`);
       arrow.setAttribute('fill', color);
       svg.appendChild(arrow);
     });

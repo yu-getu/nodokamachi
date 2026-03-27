@@ -18,6 +18,7 @@ function buyResearch(id) {
   state.coins -= cost;
   state.research[id] = true;
   spawnFloatCoins(`-${fmt(cost)}`);
+  playUnlockSfx();
   addLog(`🔬 研究完了：${r.name}！${r.desc}`);
   checkAchievements();
   renderResearch();

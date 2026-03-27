@@ -54,6 +54,7 @@ function buyDecoration(id) {
   state.coins -= d.cost;
   state.decorations[id] = true;
   spawnFloatCoins(`-${fmt(d.cost)}`);
+  playUnlockSfx();
   addLog(`🌺 ${d.emoji}${d.name}を設置！美観+${d.beautyPts} / ${d.effectDesc}`);
   renderDeco();
   renderTown();

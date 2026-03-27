@@ -24,7 +24,7 @@ function getEffectiveCpsWithoutMs() {
   const base = BUILDINGS.reduce((s, b) => {
     const lv = state.buildings[b.id]?.level || 0;
     if (!lv) return s;
-    const baseCps = b.baseCps * lv * (1 + lv * 0.15);
+    const baseCps = b.baseCps * lv * (1 + lv * 0.10);
     return s + baseCps * getResearchMult(b.id) * getSkillCpsMult(b)
              * getDecoAreaMult(b.area) * getDecoBuildingMult(b.id);
   }, 0);
@@ -55,7 +55,7 @@ function buyBuilding(id) {
 }
 
 function manualHarvest() {
-  const clickMult = Math.max(1, 30 / (1 + getTotalLv() / 30));
+  const clickMult = Math.max(1, 8 / (1 + getTotalLv() / 40));
   const bonus = Math.max(1, getEffectiveCpsWithoutMs() * clickMult * getSkillCollectMult() * getDecoCollectMult());
   state.coins += bonus; state.totalEarned += bonus;
   spawnFloatCoins(`+${fmt(bonus)}`);
@@ -113,6 +113,8 @@ function tick() {
   }
 
   tickCount++;
+  updateEventBadge();
+  if (document.getElementById('panel-prestige')?.style.display !== 'none') updatePrestigeProgress();
   if (tickCount % 150 === 0) { saveGame(); updateSaveStatus(); }
   if (tickCount % 50 === 0) updateSaveStatus();
   if (tickCount % 100 === 0) { checkAchievements(); renderQuests(); }

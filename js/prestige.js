@@ -2,7 +2,7 @@
 //  プレステージ転生システム
 // ══════════════════════════════
 function getPrestigeMult() {
-  const rate = 0.2 + getPrestigeSkillEffect('prestige_cps_rate');
+  const rate = 0.15 + getPrestigeSkillEffect('prestige_cps_rate');
   return 1 + state.prestigeCount * rate;
 }
 function getPrestigeRequired() { return 5000000000 * Math.pow(5, state.prestigeCount); }
@@ -11,7 +11,7 @@ function confirmPrestige() {
   const req = getPrestigeRequired();
   if (state.totalEarned < req) return;
   const newMax = BASE_MAX_LV + (state.prestigeCount + 1) * PRESTIGE_LV_BONUS;
-  const rate = 0.2 + getPrestigeSkillEffect('prestige_cps_rate');
+  const rate = 0.15 + getPrestigeSkillEffect('prestige_cps_rate');
   const nextMult = (1 + (state.prestigeCount + 1) * rate).toFixed(1);
   document.getElementById('prestigeConfirmList').innerHTML =
     `✅ 転生後のCPS永続倍率：×${nextMult}<br>` +
@@ -40,10 +40,8 @@ function doPrestige() {
 }
 
 function renderPrestige() {
-  const req = getPrestigeRequired(), can = state.totalEarned >= req;
-  const prog = Math.min(100, (state.totalEarned / req) * 100);
   const newMax = BASE_MAX_LV + (state.prestigeCount + 1) * PRESTIGE_LV_BONUS;
-  const rate = 0.2 + getPrestigeSkillEffect('prestige_cps_rate');
+  const rate = 0.15 + getPrestigeSkillEffect('prestige_cps_rate');
   const nextMult = (1 + (state.prestigeCount + 1) * rate).toFixed(1);
   const curMult = getPrestigeMult().toFixed(1);
   document.getElementById('prestigeInfo').innerHTML =
@@ -55,14 +53,25 @@ function renderPrestige() {
      <div class="prestige-bonus-item"><span class="pb-icon">💎</span>世代SP → +3 PSP獲得</div>
      <div class="prestige-bonus-item"><span class="pb-icon">📌</span>実績・転生回数・世代スキルは引き継ぎ</div>
      <div class="prestige-bonus-item"><span class="pb-icon">🔄</span>コイン・建物・研究・通常スキル・マイルストーンはリセット</div>`;
-  document.getElementById('prestigeReq').innerHTML =
-    `転生条件：累計コイン <strong style="color:var(--prestige2)">${fmt(req)}</strong> 以上<br>
-     現在：${fmt(state.totalEarned)} ${can ? '✅ 転生可能！' : '（あと ' + fmt(req - state.totalEarned) + '）'}`;
-  document.getElementById('prestigeProgressBar').style.width = `${prog}%`;
-  document.getElementById('btnPrestige').disabled = !can;
   document.getElementById('prestigeHistory').innerHTML =
     state.prestigeCount > 0 ? '⭐'.repeat(Math.min(state.prestigeCount, 10)) + ` ${state.prestigeCount}回転生済み` : 'まだ転生したことがありません';
+  updatePrestigeProgress();
   renderPrestigeSkillTree();
+}
+
+function updatePrestigeProgress() {
+  const req = getPrestigeRequired();
+  const can = state.totalEarned >= req;
+  const prog = Math.min(100, (state.totalEarned / req) * 100);
+  const reqEl  = document.getElementById('prestigeReq');
+  const barEl  = document.getElementById('prestigeProgressBar');
+  const btnEl  = document.getElementById('btnPrestige');
+  if (!reqEl) return;
+  reqEl.innerHTML =
+    `転生条件：累計コイン <strong style="color:var(--prestige2)">${fmt(req)}</strong> 以上<br>
+     現在：${fmt(state.totalEarned)} ${can ? '✅ 転生可能！' : '（あと ' + fmt(req - state.totalEarned) + '）'}`;
+  barEl.style.width = `${prog}%`;
+  btnEl.disabled = !can;
 }
 
 // ── 世代スキルツリー ──
@@ -84,6 +93,7 @@ function unlockPrestigeSkill(id) {
   if (!sk || !canUnlockPrestigeSkill(sk)) return;
   if (!state.prestigeSkills) state.prestigeSkills = {};
   state.prestigeSkills[id] = true;
+  playUnlockSfx();
   addLog(`🌌 世代スキル習得：${sk.emoji}${sk.name}！${sk.desc}`);
   saveGame();
   renderPrestige();
@@ -99,7 +109,7 @@ function renderPrestigeSkillTree() {
   const container = document.getElementById('prestigeSkillTree');
   container.innerHTML = '';
 
-  const TIER_H = 100, TOP_PAD = 10;
+  const TIER_H = 130, TOP_PAD = 16;
   const wrap = document.createElement('div');
   wrap.className = 'skill-tree-wrap';
   wrap.id = 'pskTreeWrap';
@@ -142,7 +152,12 @@ function renderPrestigeSkillTree() {
   });
 
   container.appendChild(wrap);
-  requestAnimationFrame(() => _drawPrestigeSkillLines());
+  requestAnimationFrame(() => {
+    _drawPrestigeSkillLines();
+    if (window._pskTreeRO) window._pskTreeRO.disconnect();
+    window._pskTreeRO = new ResizeObserver(() => _drawPrestigeSkillLines());
+    window._pskTreeRO.observe(wrap);
+  });
 }
 
 function _drawPrestigeSkillLines() {
@@ -150,42 +165,47 @@ function _drawPrestigeSkillLines() {
   const svg  = document.getElementById('pskTreeSvg');
   if (!wrap || !svg) return;
   svg.innerHTML = '';
-  svg.setAttribute('width',  wrap.offsetWidth);
+  const wrapRect = wrap.getBoundingClientRect();
+  svg.setAttribute('width',  wrapRect.width);
   svg.setAttribute('height', wrap.offsetHeight);
 
   PRESTIGE_SKILLS.forEach(sk => {
     const childEl = wrap.querySelector(`.skill-node[data-id="${sk.id}"]`);
     if (!childEl) return;
-    const cx = childEl.offsetLeft, cy = childEl.offsetTop, ch = childEl.offsetHeight;
+    const cr = childEl.getBoundingClientRect();
+    const cx     = cr.left - wrapRect.left + cr.width  / 2;
+    const cy_top = cr.top  - wrapRect.top;
     const childUnlocked = !!state.prestigeSkills?.[sk.id];
 
     sk.requires.forEach(reqId => {
       const parentEl = wrap.querySelector(`.skill-node[data-id="${reqId}"]`);
       if (!parentEl) return;
-      const px = parentEl.offsetLeft, py = parentEl.offsetTop, ph = parentEl.offsetHeight;
+      const pr = parentEl.getBoundingClientRect();
+      const px     = pr.left - wrapRect.left + pr.width  / 2;
+      const py_bot = pr.top  - wrapRect.top  + pr.height;
       const parentUnlocked = !!state.prestigeSkills?.[reqId];
 
-      const startX = px, startY = py + ph / 2 + 2;
-      const endX   = cx, endY   = cy - ch / 2 - 2;
-      const midY   = (startY + endY) / 2;
-
       let color, dash, strokeW;
-      if (childUnlocked && parentUnlocked) { color = '#f5c430'; dash = '';    strokeW = '3';   }
-      else if (parentUnlocked)             { color = '#9c27b0'; dash = '';    strokeW = '2.5'; }
-      else                                 { color = '#bbb';    dash = '5,4'; strokeW = '1.5'; }
+      if (childUnlocked && parentUnlocked) { color = '#f5c430'; dash = '';    strokeW = 3;   }
+      else if (parentUnlocked)             { color = '#9c27b0'; dash = '';    strokeW = 2.5; }
+      else                                 { color = '#bbb';    dash = '5,4'; strokeW = 1.5; }
+
+      const midY = (py_bot + cy_top) / 2;
+      const d = `M ${px} ${py_bot} L ${px} ${midY} L ${cx} ${midY} L ${cx} ${cy_top}`;
 
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`);
+      path.setAttribute('d', d);
       path.setAttribute('stroke', color);
       path.setAttribute('stroke-width', strokeW);
       path.setAttribute('fill', 'none');
       path.setAttribute('stroke-linecap', 'round');
+      path.setAttribute('stroke-linejoin', 'round');
       if (dash) path.setAttribute('stroke-dasharray', dash);
       svg.appendChild(path);
 
       const aw = 5;
       const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      arrow.setAttribute('points', `${endX},${endY} ${endX-aw},${endY-aw*1.6} ${endX+aw},${endY-aw*1.6}`);
+      arrow.setAttribute('points', `${cx},${cy_top} ${cx-aw},${cy_top-aw*1.6} ${cx+aw},${cy_top-aw*1.6}`);
       arrow.setAttribute('fill', color);
       svg.appendChild(arrow);
     });

@@ -72,19 +72,19 @@
 
   /* スキルノード：少し小さく */
   .skill-node {
-    width: 76px;
+    width: 84px;
   }
 
   .sk-icon {
-    font-size: 17px;
+    font-size: 19px;
   }
 
   .sk-name {
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .sk-eff {
-    font-size: 7px;
+    font-size: 8px;
   }
 
   .sk-btn {

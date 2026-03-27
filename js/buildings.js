@@ -31,9 +31,9 @@ function _buildingCostAtLv(b, lv) {
     if (remaining <= 0) break;
   }
   if (remaining > 0) cost *= Math.pow(PHASES[PHASES.length - 1].mult, remaining);
-  // cost_perm 効果：最低10%コストは保証、最大90%割引
+  // cost_perm 効果：最大90%割引まで・最低でも元コストの10%は保証
   const costPermEffect = getPrestigeSkillEffect('cost_perm');
-  const costPerm = Math.max(0.1, Math.min(0.9, 1 - costPermEffect));
+  const costPerm = Math.max(0.1, 1 - costPermEffect);
   return Math.floor(cost * (state.eventDiscount || 1) * getSkillCostMult() * costPerm);
 }
 
@@ -62,7 +62,7 @@ function getBuildingCps(b) {
   const lv = state.buildings[b.id] ? state.buildings[b.id].level : 0;
   if (lv === 0) return 0;
   const msCount = (state.buildings[b.id].msReached || []).length;
-  const base = b.baseCps * lv * (1 + lv * 0.15);
+  const base = b.baseCps * lv * (1 + lv * 0.10);
   const msBase = 2 + getPrestigeSkillEffect('ms_base');
   return base * Math.pow(msBase, msCount) * getResearchMult(b.id) * getSkillCpsMult(b)
     * getDecoAreaMult(b.area) * getDecoBuildingMult(b.id);

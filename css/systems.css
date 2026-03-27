@@ -656,10 +656,10 @@
 
 .skill-node {
     position: absolute;
-    width: 84px;
+    width: 100px;
     transform: translate(-50%, -50%);
     border-radius: 12px;
-    padding: 7px 5px 6px;
+    padding: 8px 6px 7px;
     text-align: center;
     z-index: 1;
     border: 2px solid;
@@ -698,20 +698,20 @@
 }
 
 .sk-icon {
-    font-size: 20px;
+    font-size: 22px;
     line-height: 1.2
 }
 
 .sk-name {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 800;
     color: var(--text);
-    margin: 2px 0 2px;
+    margin: 3px 0 2px;
     line-height: 1.2
 }
 
 .sk-eff {
-    font-size: 8px;
+    font-size: 9px;
     color: var(--muted);
     line-height: 1.4;
     margin-bottom: 4px;
@@ -732,7 +732,7 @@
     color: white;
     border: none;
     border-radius: 7px;
-    padding: 3px 0;
+    padding: 4px 0;
     font-size: 10px;
     font-weight: 800;
     font-family: 'M PLUS Rounded 1c', sans-serif;

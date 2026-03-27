@@ -45,3 +45,22 @@ function showEventToast(ev) {
 function scheduleNextEvent() {
   setTimeout(() => { triggerRandomEvent(); scheduleNextEvent(); }, (45 + Math.random() * 75) * 1000);
 }
+
+function updateEventBadge() {
+  const badge = document.getElementById('eventBadge');
+  if (!badge) return;
+  const ae = state.activeEvent;
+  if (!ae || ae.dur === 0) { badge.style.display = 'none'; return; }
+
+  const remaining = Math.max(0, Math.ceil((ae.endsAt - Date.now()) / 1000));
+  if (remaining <= 0) { badge.style.display = 'none'; return; }
+
+  const ev = EVENTS.find(e => e.id === ae.eventId);
+  if (!ev) { badge.style.display = 'none'; return; }
+
+  badge.style.display = 'flex';
+  badge.className = `event-badge ev-${ev.type}`;
+  document.getElementById('eventBadgeIcon').textContent  = ev.icon;
+  document.getElementById('eventBadgeTitle').textContent = ev.title;
+  document.getElementById('eventBadgeTimer').textContent = `残り ${remaining}秒`;
+}

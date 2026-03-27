@@ -267,7 +267,7 @@ function renderLvDesign() {
   document.getElementById('lvDesignContent').innerHTML=html;
 }
 
-function render() { renderStats(); renderTown(); renderShop(); renderSeason(); renderWeekendBadge(); }
+function render() { renderStats(); renderTown(); renderShop(); renderSeason(); renderWeekendBadge(); updateEventBadge(); }
 
 function addLog(msg) {
   const log=document.getElementById('log'), now=new Date();

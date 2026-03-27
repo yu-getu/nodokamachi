@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════
 //  定数・データ定義・ゲーム状態
 // ═══════════════════════════════════════
-const SAVE_KEY = 'nodokamachi_v5';
+const SAVE_KEY = 'nodokamachi_v6';
 
 // デイリーボーナス定義
 // cpsHours: 現在CPS × 3600秒 × cpsHours 分のコインを支給（最低保証: minCoins）
@@ -21,11 +21,14 @@ const PHASES = [
   { maxLv: 25,  mult: 1.15, name: '成長期',   colorClass: 'phase-2', dot: 'dot-p2' },
   { maxLv: 50,  mult: 1.15, name: '円熟期',   colorClass: 'phase-3', dot: 'dot-p3' },
   { maxLv: 100, mult: 1.15, name: 'レジェンド', colorClass: 'phase-4', dot: 'dot-p4' },
+  { maxLv: 150, mult: 1.18, name: '転生拡張I',  colorClass: 'phase-4', dot: 'dot-p4' },
+  { maxLv: 250, mult: 1.20, name: '転生拡張II', colorClass: 'phase-4', dot: 'dot-p4' },
+  { maxLv: 9999,mult: 1.22, name: '転生拡張III',colorClass: 'phase-4', dot: 'dot-p4' },
 ];
 
 const MILESTONES = [10, 25, 50, 100];
 const BASE_MAX_LV   = 100;
-const PRESTIGE_LV_BONUS = 25;
+const PRESTIGE_LV_BONUS = 20;
 
 // ゲーム内時間定数
 const GAME_DAY_REAL_SECS = 600; // 10リアル分 = 1ゲーム日
@@ -33,48 +36,48 @@ const GAME_SEASON_DAYS   = 30;  // 30ゲーム日 = 1シーズン
 
 // 建物定義
 const BUILDINGS = [
-  // ── 第1区「農村」──
-  {id:'field',        name:'畑',               emoji:'🥕', baseCost:30,             baseCps:0.3,          desc:'野菜を育てる小さな畑',      area:1},
-  {id:'coop',         name:'鶏小屋',           emoji:'🐓', baseCost:100,            baseCps:1.0,          desc:'卵を産む可愛い鶏たち',      area:1},
-  {id:'bakery',       name:'パン屋',           emoji:'🥐', baseCost:320,            baseCps:3.2,          desc:'焼きたてパンの香り',        area:1},
-  {id:'farmcoop',     name:'農協',             emoji:'🌾', baseCost:1000,           baseCps:10,           desc:'農家を支える地域組合',      area:1},
-  {id:'orchard',      name:'果樹園',           emoji:'🍎', baseCost:3000,           baseCps:30,           desc:'実り豊かな果樹の農園',      area:1},
-  {id:'ranch',        name:'牧場',             emoji:'🐄', baseCost:9000,           baseCps:90,           desc:'のどかな草原の牧場',        area:1},
-  // ── 第2区「商店街」（回収90秒）──
-  {id:'candyshop',    name:'駄菓子屋',         emoji:'🍬', baseCost:3500,           baseCps:39,           desc:'懐かしい甘いお菓子',        area:2},
-  {id:'cafe',         name:'喫茶店',           emoji:'☕', baseCost:12000,          baseCps:133,          desc:'ゆったりコーヒータイム',    area:2},
-  {id:'greengrocer',  name:'八百屋',           emoji:'🥦', baseCost:40000,          baseCps:444,          desc:'新鮮な野菜が並ぶ',          area:2},
-  {id:'inn',          name:'旅館',             emoji:'🏨', baseCost:130000,         baseCps:1444,         desc:'旅人を温かくもてなす',      area:2},
-  {id:'flowershop',   name:'花屋',             emoji:'💐', baseCost:420000,         baseCps:4667,         desc:'四季折々の花を届ける',      area:2},
-  {id:'bookstore',    name:'書店',             emoji:'📖', baseCost:1400000,        baseCps:15556,        desc:'知識と物語が集まる店',      area:2},
-  // ── 第3区「文化の丘」（回収80秒）──
-  {id:'library',      name:'図書館',           emoji:'📚', baseCost:500000,         baseCps:6250,         desc:'知識の宝庫',                area:3},
-  {id:'artmuseum',    name:'美術館',           emoji:'🎨', baseCost:1800000,        baseCps:22500,        desc:'芸術が集まる場所',          area:3},
-  {id:'shrine',       name:'神社',             emoji:'⛩️', baseCost:6000000,        baseCps:75000,        desc:'古くから守られた社',        area:3},
-  {id:'theater',      name:'劇場',             emoji:'🎭', baseCost:20000000,       baseCps:250000,       desc:'感動の舞台',                area:3},
-  {id:'museum',       name:'博物館',           emoji:'🏛️', baseCost:65000000,       baseCps:812500,       desc:'歴史と文化の宝庫',          area:3},
-  {id:'university',   name:'大学',             emoji:'🎓', baseCost:210000000,      baseCps:2625000,      desc:'未来を担う知の殿堂',        area:3},
-  // ── 第4区「いやしの里」（回収75秒）──
-  {id:'herbgarden',   name:'薬草園',           emoji:'🌿', baseCost:80000000,       baseCps:1066667,      desc:'癒やしの香り漂う庭園',      area:4},
-  {id:'onsen',        name:'温泉旅館',         emoji:'♨️', baseCost:280000000,      baseCps:3733333,      desc:'名湯が湧き出す宿',          area:4},
-  {id:'spa',          name:'スパ',             emoji:'🧖', baseCost:900000000,      baseCps:12000000,     desc:'至高の癒やし体験',          area:4},
-  {id:'zengarden',    name:'禅の庭',           emoji:'🪨', baseCost:3000000000,     baseCps:40000000,     desc:'静寂の中の悟り',            area:4},
-  {id:'naturepark',   name:'自然公園',         emoji:'🌲', baseCost:9500000000,     baseCps:127000000,    desc:'緑あふれる大自然の憩い',    area:4},
-  {id:'meditforest',  name:'瞑想の森',         emoji:'🧘', baseCost:30000000000,    baseCps:400000000,    desc:'深い静寂が心を癒す',        area:4},
-  // ── 第5区「夢の都市」（回収70秒）──
-  {id:'castle',       name:'城',               emoji:'🏯', baseCost:10000000000,    baseCps:143000000,    desc:'街のシンボルたる大城',      area:5},
-  {id:'amusement',    name:'遊園地',           emoji:'🎡', baseCost:35000000000,    baseCps:500000000,    desc:'夢と笑顔があふれる',        area:5},
-  {id:'stadium',      name:'スタジアム',       emoji:'🏟️', baseCost:120000000000,   baseCps:1714000000,   desc:'熱狂の競技場',              area:5},
-  {id:'skyscraper',   name:'摩天楼',           emoji:'🏢', baseCost:400000000000,   baseCps:5714000000,   desc:'空に届く超高層ビル',        area:5},
-  {id:'airport',      name:'国際空港',         emoji:'✈️', baseCost:1300000000000,  baseCps:18600000000,  desc:'世界をつなぐ玄関口',        area:5},
-  {id:'megaresort',   name:'メガリゾート',     emoji:'🌴', baseCost:4200000000000,  baseCps:60000000000,  desc:'夢のような超大型複合施設',  area:5},
-  // ── 第6区「宇宙の夢」（回収65秒）──
-  {id:'rocket',       name:'宇宙基地',         emoji:'🚀', baseCost:1500000000000,  baseCps:23000000000,  desc:'宇宙へ飛び立つ拠点',        area:6},
-  {id:'spaceport',    name:'宇宙港',           emoji:'🛸', baseCost:5500000000000,  baseCps:85000000000,  desc:'銀河をつなぐ港',            area:6},
-  {id:'colony',       name:'スペースコロニー', emoji:'🌌', baseCost:20000000000000, baseCps:308000000000, desc:'宇宙に浮かぶ楽園',          area:6},
-  {id:'dysonring',    name:'ダイソンリング',   emoji:'💫', baseCost:65000000000000, baseCps:1000000000000,desc:'恒星のエネルギーを収穫',    area:6},
-  {id:'galaxystation',name:'銀河ステーション', emoji:'🌠', baseCost:210000000000000,baseCps:3230000000000,desc:'銀河の交差点',              area:6},
-  {id:'spaceciv',     name:'宇宙文明',         emoji:'🌍', baseCost:680000000000000,baseCps:10500000000000,desc:'宇宙に広がる新文明',       area:6},
+  // ── 第1区「農村」（×5比）──
+  {id:'field',        name:'畑',               emoji:'🥕', baseCost:30,               baseCps:0.3,           desc:'野菜を育てる小さな畑',      area:1},
+  {id:'coop',         name:'鶏小屋',           emoji:'🐓', baseCost:150,              baseCps:1.0,           desc:'卵を産む可愛い鶏たち',      area:1},
+  {id:'bakery',       name:'パン屋',           emoji:'🥐', baseCost:750,              baseCps:3.2,           desc:'焼きたてパンの香り',        area:1},
+  {id:'farmcoop',     name:'農協',             emoji:'🌾', baseCost:3750,             baseCps:10,            desc:'農家を支える地域組合',      area:1},
+  {id:'orchard',      name:'果樹園',           emoji:'🍎', baseCost:18000,            baseCps:30,            desc:'実り豊かな果樹の農園',      area:1},
+  {id:'ranch',        name:'牧場',             emoji:'🐄', baseCost:90000,            baseCps:90,            desc:'のどかな草原の牧場',        area:1},
+  // ── 第2区「商店街」（×5比）──
+  {id:'candyshop',    name:'駄菓子屋',         emoji:'🍬', baseCost:3500,             baseCps:39,            desc:'懐かしい甘いお菓子',        area:2},
+  {id:'cafe',         name:'喫茶店',           emoji:'☕', baseCost:17500,            baseCps:133,           desc:'ゆったりコーヒータイム',    area:2},
+  {id:'greengrocer',  name:'八百屋',           emoji:'🥦', baseCost:87000,            baseCps:444,           desc:'新鮮な野菜が並ぶ',          area:2},
+  {id:'inn',          name:'旅館',             emoji:'🏨', baseCost:435000,           baseCps:1444,          desc:'旅人を温かくもてなす',      area:2},
+  {id:'flowershop',   name:'花屋',             emoji:'💐', baseCost:2175000,          baseCps:4667,          desc:'四季折々の花を届ける',      area:2},
+  {id:'bookstore',    name:'書店',             emoji:'📖', baseCost:10875000,         baseCps:15556,         desc:'知識と物語が集まる店',      area:2},
+  // ── 第3区「文化の丘」（×5比）──
+  {id:'library',      name:'図書館',           emoji:'📚', baseCost:500000,           baseCps:6250,          desc:'知識の宝庫',                area:3},
+  {id:'artmuseum',    name:'美術館',           emoji:'🎨', baseCost:2500000,          baseCps:22500,         desc:'芸術が集まる場所',          area:3},
+  {id:'shrine',       name:'神社',             emoji:'⛩️', baseCost:12500000,         baseCps:75000,         desc:'古くから守られた社',        area:3},
+  {id:'theater',      name:'劇場',             emoji:'🎭', baseCost:62500000,         baseCps:250000,        desc:'感動の舞台',                area:3},
+  {id:'museum',       name:'博物館',           emoji:'🏛️', baseCost:312000000,        baseCps:812500,        desc:'歴史と文化の宝庫',          area:3},
+  {id:'university',   name:'大学',             emoji:'🎓', baseCost:1560000000,       baseCps:2625000,       desc:'未来を担う知の殿堂',        area:3},
+  // ── 第4区「いやしの里」（×5比）──
+  {id:'herbgarden',   name:'薬草園',           emoji:'🌿', baseCost:80000000,         baseCps:1066667,       desc:'癒やしの香り漂う庭園',      area:4},
+  {id:'onsen',        name:'温泉旅館',         emoji:'♨️', baseCost:400000000,        baseCps:3733333,       desc:'名湯が湧き出す宿',          area:4},
+  {id:'spa',          name:'スパ',             emoji:'🧖', baseCost:2000000000,       baseCps:12000000,      desc:'至高の癒やし体験',          area:4},
+  {id:'zengarden',    name:'禅の庭',           emoji:'🪨', baseCost:10000000000,      baseCps:40000000,      desc:'静寂の中の悟り',            area:4},
+  {id:'naturepark',   name:'自然公園',         emoji:'🌲', baseCost:50000000000,      baseCps:127000000,     desc:'緑あふれる大自然の憩い',    area:4},
+  {id:'meditforest',  name:'瞑想の森',         emoji:'🧘', baseCost:250000000000,     baseCps:400000000,     desc:'深い静寂が心を癒す',        area:4},
+  // ── 第5区「夢の都市」（×5比）──
+  {id:'castle',       name:'城',               emoji:'🏯', baseCost:10000000000,      baseCps:143000000,     desc:'街のシンボルたる大城',      area:5},
+  {id:'amusement',    name:'遊園地',           emoji:'🎡', baseCost:50000000000,      baseCps:500000000,     desc:'夢と笑顔があふれる',        area:5},
+  {id:'stadium',      name:'スタジアム',       emoji:'🏟️', baseCost:250000000000,     baseCps:1714000000,    desc:'熱狂の競技場',              area:5},
+  {id:'skyscraper',   name:'摩天楼',           emoji:'🏢', baseCost:1250000000000,    baseCps:5714000000,    desc:'空に届く超高層ビル',        area:5},
+  {id:'airport',      name:'国際空港',         emoji:'✈️', baseCost:6250000000000,    baseCps:18600000000,   desc:'世界をつなぐ玄関口',        area:5},
+  {id:'megaresort',   name:'メガリゾート',     emoji:'🌴', baseCost:31000000000000,   baseCps:60000000000,   desc:'夢のような超大型複合施設',  area:5},
+  // ── 第6区「宇宙の夢」（×5比）──
+  {id:'rocket',       name:'宇宙基地',         emoji:'🚀', baseCost:1500000000000,    baseCps:23000000000,   desc:'宇宙へ飛び立つ拠点',        area:6},
+  {id:'spaceport',    name:'宇宙港',           emoji:'🛸', baseCost:7500000000000,    baseCps:85000000000,   desc:'銀河をつなぐ港',            area:6},
+  {id:'colony',       name:'スペースコロニー', emoji:'🌌', baseCost:37500000000000,   baseCps:308000000000,  desc:'宇宙に浮かぶ楽園',          area:6},
+  {id:'dysonring',    name:'ダイソンリング',   emoji:'💫', baseCost:187500000000000,  baseCps:1000000000000, desc:'恒星のエネルギーを収穫',    area:6},
+  {id:'galaxystation',name:'銀河ステーション', emoji:'🌠', baseCost:937500000000000,  baseCps:3230000000000, desc:'銀河の交差点',              area:6},
+  {id:'spaceciv',     name:'宇宙文明',         emoji:'🌍', baseCost:4687500000000000, baseCps:10500000000000,desc:'宇宙に広がる新文明',        area:6},
 ];
 
 // エリア定義

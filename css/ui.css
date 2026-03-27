@@ -51,6 +51,60 @@
     }
 }
 
+/* ── 町エリア内イベントバッジ ── */
+.event-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, .88);
+    backdrop-filter: blur(4px);
+    border-radius: 12px;
+    padding: 5px 10px 5px 7px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .14);
+    border-left: 4px solid var(--ev-color, #4caf50);
+    animation: badgePop .3s cubic-bezier(.34, 1.56, .64, 1)
+}
+
+@keyframes badgePop {
+    from { opacity: 0; transform: scale(.8) translateY(-4px) }
+    to   { opacity: 1; transform: scale(1)  translateY(0)    }
+}
+
+.event-badge.ev-good  { --ev-color: #4caf50 }
+.event-badge.ev-great { --ev-color: #f5c430 }
+.event-badge.ev-bad   { --ev-color: #e53935 }
+.event-badge.ev-info  { --ev-color: #42a5f5 }
+
+.event-badge-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    line-height: 1
+}
+
+.event-badge-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1px
+}
+
+.event-badge-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.2
+}
+
+.event-badge-timer {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 700;
+    line-height: 1
+}
+
 .event-toast {
     position: fixed;
     top: 80px;

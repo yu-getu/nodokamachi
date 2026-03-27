@@ -2,15 +2,40 @@
 header {
     width: 100%;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
+    flex-direction: column;
+    padding: 10px 16px 10px;
     background: var(--panel);
     border-radius: 0 0 20px 20px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, .08);
     margin-bottom: 12px;
+    gap: 0
+}
+
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 8px;
     flex-wrap: wrap
+}
+
+.header-bottom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 1px solid rgba(0, 0, 0, .07)
+}
+
+.header-save {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    font-size: 11px;
+    color: var(--muted);
+    flex-shrink: 0
 }
 
 .title {
@@ -174,19 +199,6 @@ header {
     gap: 6px
 }
 
-.save-bar {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--panel);
-    border-radius: 14px;
-    padding: 9px 14px;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
-    font-size: 12px;
-    color: var(--muted)
-}
 
 .btn-save {
     background: var(--green);
@@ -201,21 +213,43 @@ header {
 }
 
 .log {
-    width: 100%;
-    background: var(--panel);
-    border-radius: 16px;
-    padding: 11px 14px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
-    max-height: 110px;
-    overflow-y: auto
+    flex: 1;
+    min-width: 0;
+    background: rgba(0, 0, 0, .035);
+    border-radius: 10px;
+    padding: 4px 10px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: max-height .25s ease
+}
+
+/* 通常：1行のみ */
+.log:not(.log-expanded) {
+    max-height: 22px
+}
+
+/* 展開時 */
+.log.log-expanded {
+    max-height: 140px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,.15) transparent
 }
 
 .log-entry {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--muted);
-    padding: 3px 0;
+    padding: 2px 0;
     border-bottom: 1px solid rgba(0, 0, 0, .05);
-    animation: fadeSlide .4s ease
+    animation: fadeSlide .4s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+/* 非展開時は最初の1件以外を非表示 */
+.log:not(.log-expanded) .log-entry:not(:first-child) {
+    display: none
 }
 
 @keyframes fadeSlide {
