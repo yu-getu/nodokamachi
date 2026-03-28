@@ -135,7 +135,7 @@ header {
     width: 100%;
     display: flex;
     gap: 8px;
-    margin-bottom: 4px
+    margin-bottom: 12px
 }
 
 .stat-card-cps {
