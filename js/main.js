@@ -55,7 +55,7 @@ function manualHarvest() {
   const now = Date.now();
   _harvestTimestamps.push(now);
   _harvestTimestamps = _harvestTimestamps.filter(t => now - t <= 30000);
-  if (_harvestTimestamps.length >= 10) state.rapidHarvested = true;
+  if (_harvestTimestamps.length >= 100) state.rapidHarvested = true;
 
   checkAchievements(); renderQuests(); render();
 }
