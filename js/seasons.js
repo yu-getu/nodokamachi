@@ -121,12 +121,19 @@ function initWeather() {
   setInterval(() => setWeather(getSeasonWeather()), 3 * 60 * 1000);
 }
 
+// 現在の表示エリアIDを取得
+function _getCurrentAreaId() {
+  return parseInt(document.getElementById('townArea')?.dataset.area || '1', 10);
+}
+
 // 住人システム
 function spawnResident() {
   const totalLv = getTotalLv();
   if (totalLv < 3) return;
   const town = document.getElementById('townArea');
-  const type = RESIDENT_TYPES[Math.floor(Math.random() * RESIDENT_TYPES.length)];
+  const areaId = _getCurrentAreaId();
+  const pool = AREA_RESIDENTS[areaId] || RESIDENT_TYPES;
+  const type = pool[Math.floor(Math.random() * pool.length)];
   const duration = 9 + Math.random() * 9;
   const rtl = Math.random() < 0.3;
 
@@ -161,32 +168,39 @@ function spawnResident() {
 }
 
 // ── 特別住人（クリックでイベント発動） ──
-const SPECIAL_VISITORS = ['🧙','🎪','👑','🔮','🎭','🌟','🧝','🦊'];
+const SPECIAL_VISITORS_GOOD = ['🧙','🎪','👑','🔮','🎭','🌟','🧝','🦊'];
+const SPECIAL_VISITORS_BAD  = ['👹','👿','🦇','🌪️','☠️'];
 
 function spawnSpecialResident() {
   if (getTotalLv() < 1) return;
   const town = document.getElementById('townArea');
   if (!town) return;
-  const emoji = SPECIAL_VISITORS[Math.floor(Math.random() * SPECIAL_VISITORS.length)];
+
+  const areaId = _getCurrentAreaId();
+  const isBad = Math.random() < 0.3;
+  const goodPool = AREA_VISITORS_GOOD[areaId] || SPECIAL_VISITORS_GOOD;
+  const badPool  = AREA_VISITORS_BAD[areaId]  || SPECIAL_VISITORS_BAD;
+  const visitorPool = isBad ? badPool : goodPool;
+  const emoji = visitorPool[Math.floor(Math.random() * visitorPool.length)];
   const duration = 10 + Math.random() * 8;
   const rtl = Math.random() < 0.4;
 
   const el = document.createElement('div');
-  el.className = 'resident special-resident' + (rtl ? ' rtl' : '');
+  el.className = 'resident special-resident' + (isBad ? ' special-bad' : '') + (rtl ? ' rtl' : '');
   el.style.animationDuration = duration + 's';
   el.style.bottom = (48 + Math.random() * 16) + 'px';
 
   el.innerHTML = `
-    <div class="special-res-badge">!</div>
+    <div class="special-res-badge${isBad ? ' special-res-badge-bad' : ''}">!</div>
     <span class="res-emoji">${emoji}</span>`;
 
   let clicked = false;
   el.addEventListener('click', () => {
     if (clicked) return;
     clicked = true;
-    triggerRandomEvent();
-    el.classList.add('special-res-clicked');
-    setTimeout(() => el.remove(), 400);
+    triggerRandomEvent(isBad ? 'bad' : 'good');
+    el.classList.add(isBad ? 'special-res-clicked-bad' : 'special-res-clicked');
+    setTimeout(() => el.remove(), 500);
   });
 
   town.appendChild(el);

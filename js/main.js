@@ -123,6 +123,7 @@ function tick() {
 
   tickCount++;
   updateEventBadge();
+  checkPrestigeNotify();
   if (document.getElementById('panel-prestige')?.style.display !== 'none') updatePrestigeProgress();
   // 深夜判定（0〜4時）
   const hour = new Date().getHours();

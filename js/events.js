@@ -1,9 +1,18 @@
 // ══════════════════════════════
 //  イベントシステム
 // ══════════════════════════════
+// activeEventのendsAtをスキルを考慮して動的計算
+function _calcEndsAt(ae) {
+  if (ae.startedAt && ae.baseDur > 0) {
+    const durMult = 1 + getSkillEffect('event_dur');
+    return ae.startedAt + ae.baseDur * 1000 * durMult;
+  }
+  return ae.endsAt;
+}
+
 function getEventMult() {
   const now = Date.now();
-  state.activeEvents = (state.activeEvents || []).filter(ae => now <= ae.endsAt);
+  state.activeEvents = (state.activeEvents || []).filter(ae => now <= _calcEndsAt(ae));
   state.eventDiscount = state.activeEvents.reduce((best, ae) => Math.min(best, ae.discount || 1), 1);
   if (!state.activeEvents.length) return 1;
   const m = state.activeEvents.reduce((prod, ae) => prod * (ae.mult || 1), 1);
@@ -13,21 +22,29 @@ function getEventMult() {
 }
 
 let eventToastTimer = null;
-function triggerRandomEvent() {
+function triggerRandomEvent(typeFilter) {
   if (getTotalLv() < 1) return;
-  const ev = EVENTS[Math.floor(Math.random() * EVENTS.length)];
+  const pool = typeFilter === 'bad'
+    ? EVENTS.filter(e => e.type === 'bad')
+    : typeFilter === 'good'
+      ? EVENTS.filter(e => e.type !== 'bad')
+      : EVENTS;
+  const ev = pool[Math.floor(Math.random() * pool.length)];
   state.eventCount++;
   if (ev.id === 'storm' || ev.id === 'lightning') state.stormCount++;
   const now = Date.now();
   if (!state.activeEvents) state.activeEvents = [];
-  const durMult = 1 + getSkillEffect('event_dur');
-  const newEndsAt = ev.dur > 0 ? now + ev.dur * 1000 * durMult : now;
   const existing = state.activeEvents.find(ae => ae.eventId === ev.id);
   if (existing) {
-    existing.endsAt = newEndsAt;
+    existing.startedAt = now;
+    existing.baseDur = ev.dur;
+    existing.endsAt = ev.dur > 0 ? now + ev.dur * 1000 * (1 + getSkillEffect('event_dur')) : now;
   } else {
-    state.activeEvents.push({ eventId: ev.id, endsAt: newEndsAt, mult: ev.mult || 1, discount: ev.discount || 1 });
-    if (state.activeEvents.filter(ae => now <= ae.endsAt).length >= 3) state.eventStack3 = true;
+    const entry = { eventId: ev.id, mult: ev.mult || 1, discount: ev.discount || 1,
+      startedAt: now, baseDur: ev.dur,
+      endsAt: ev.dur > 0 ? now + ev.dur * 1000 * (1 + getSkillEffect('event_dur')) : now };
+    state.activeEvents.push(entry);
+    if (state.activeEvents.filter(ae => now <= _calcEndsAt(ae)).length >= 3) state.eventStack3 = true;
   }
   if (ev.bonus === 'cps' || ev.bonus === 'cps30') {
     const sec = ev.bonusSec || 30;
@@ -79,7 +96,7 @@ function updateEventBadge() {
   const container = document.getElementById('eventBadgeContainer');
   if (!container) return;
   const now = Date.now();
-  const active = (state.activeEvents || []).filter(ae => ae.endsAt > now + 100);
+  const active = (state.activeEvents || []).filter(ae => _calcEndsAt(ae) > now + 100);
 
   // 不要になったバッジを削除
   container.querySelectorAll('.event-badge').forEach(el => {
@@ -90,7 +107,7 @@ function updateEventBadge() {
   active.forEach(ae => {
     const ev = EVENTS.find(e => e.id === ae.eventId);
     if (!ev) return;
-    const remaining = Math.max(0, Math.ceil((ae.endsAt - now) / 1000));
+    const remaining = Math.max(0, Math.ceil((_calcEndsAt(ae) - now) / 1000));
     let badge = container.querySelector(`[data-event-id="${ae.eventId}"]`);
     if (!badge) {
       badge = document.createElement('div');

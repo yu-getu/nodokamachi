@@ -1,6 +1,23 @@
 // ══════════════════════════════
 //  プレステージ転生システム
 // ══════════════════════════════
+let _prestigeReadyNotified = false;
+
+function checkPrestigeNotify() {
+  const can = state.totalEarned >= getPrestigeRequired();
+  const tabBtn = document.getElementById('tab-prestige');
+  if (can) {
+    if (!_prestigeReadyNotified) {
+      _prestigeReadyNotified = true;
+      addLog('⭐ 転生できるようになりました！転生タブを確認しよう！');
+      playAchievSfx();
+    }
+    if (tabBtn) tabBtn.classList.add('tab-notify');
+  } else {
+    if (tabBtn) tabBtn.classList.remove('tab-notify');
+  }
+}
+
 function getPrestigeMult() {
   const rate = 0.15 + getPrestigeSkillEffect('prestige_cps_rate');
   return 1 + state.prestigeCount * rate;
@@ -25,9 +42,11 @@ function confirmPrestige() {
 
 function doPrestige() {
   closeModal('prestigeModal');
+  _prestigeReadyNotified = false;
   if (getCurrentSeason().id === 'winter') state.prestigeInWinter = true;
   state.prestigeCount++;
   state.prestigeSp = (state.prestigeSp || 0) + 3;
+  state.allTimeTotalEarned = (state.allTimeTotalEarned || 0) + (state.totalEarned || 0);
   state.coins = 50; state.totalEarned = 0;
   BUILDINGS.forEach(b => { state.buildings[b.id] = { level: 0 }; });
   state.activeEvents = []; state.eventDiscount = 1; state.skills = {}; state.research = {};
@@ -101,6 +120,43 @@ function unlockPrestigeSkill(id) {
   renderStats();
 }
 
+function _getUnlearnedPrestigePrereqsInOrder(id) {
+  const ancestors = _getPrestigeSkillAncestors(id);
+  const unlearned = [...ancestors].filter(rid => !state.prestigeSkills?.[rid]);
+  const sorted = [];
+  const visited = new Set();
+  function visit(sid) {
+    if (visited.has(sid)) return;
+    visited.add(sid);
+    const s = PRESTIGE_SKILLS.find(x => x.id === sid);
+    if (s) s.requires.forEach(r => { if (unlearned.includes(r)) visit(r); });
+    if (unlearned.includes(sid)) sorted.push(sid);
+  }
+  unlearned.forEach(visit);
+  return sorted;
+}
+
+function unlockPrestigeSkillWithPrereqs(id) {
+  const prereqs = _getUnlearnedPrestigePrereqsInOrder(id);
+  const sk = PRESTIGE_SKILLS.find(s => s.id === id);
+  if (!sk) return;
+  const allIds = [...prereqs, id];
+  const totalCost = allIds.reduce((sum, sid) => {
+    const s = PRESTIGE_SKILLS.find(x => x.id === sid);
+    return sum + (s && !state.prestigeSkills?.[sid] ? s.cost : 0);
+  }, 0);
+  if (getAvailablePrestigeSp() < totalCost) return;
+  if (!state.prestigeSkills) state.prestigeSkills = {};
+  allIds.forEach(sid => {
+    const s = PRESTIGE_SKILLS.find(x => x.id === sid);
+    if (s && !state.prestigeSkills[sid]) state.prestigeSkills[sid] = true;
+  });
+  playUnlockSfx();
+  addLog(`🌌 世代スキル習得（${allIds.length}件）：${sk.emoji}${sk.name} まで一括取得！`);
+  saveGame(); renderPrestige(); renderStats();
+  showPrestigeSkillDetail(id);
+}
+
 function renderPrestigeSkillTree() {
   const avail = getAvailablePrestigeSp();
   const total = state.prestigeSp || 0;
@@ -148,26 +204,31 @@ function renderPrestigeSkillTree() {
     wrap.appendChild(node);
   });
 
-  container.appendChild(wrap);
-
-  // 詳細パネル（ツリー下部にsticky）
+  // 詳細パネルをツリー上部エリアに配置
   const prevOpen = document.getElementById('pskDetailPanel')?.dataset.openId;
-  const detail = document.createElement('div');
-  detail.id = 'pskDetailPanel';
-  detail.className = 'skill-detail-panel';
-  detail.style.display = 'none';
-  detail.innerHTML = `
-    <button class="skill-detail-close" onclick="closePskDetail()">✕</button>
-    <div class="skill-detail-header">
-      <span class="skill-detail-emoji" id="psdEmoji"></span>
-      <div>
-        <div class="skill-detail-name" id="psdName"></div>
-        <div class="skill-detail-cost" id="psdCost"></div>
+  const detailArea = document.getElementById('pskDetailArea');
+  if (detailArea) {
+    detailArea.innerHTML = '';
+    const detail = document.createElement('div');
+    detail.id = 'pskDetailPanel';
+    detail.className = 'skill-detail-panel';
+    detail.style.display = 'none';
+    detail.innerHTML = `
+      <button class="skill-detail-close" onclick="closePskDetail()">✕</button>
+      <div class="skill-detail-header">
+        <span class="skill-detail-emoji" id="psdEmoji"></span>
+        <div>
+          <div class="skill-detail-name" id="psdName"></div>
+          <div class="skill-detail-cost" id="psdCost"></div>
+        </div>
       </div>
-    </div>
-    <div class="skill-detail-desc" id="psdDesc"></div>
-    <button class="sk-btn" id="psdBtn"></button>`;
-  container.appendChild(detail);
+      <div class="skill-detail-desc" id="psdDesc"></div>
+      <button class="sk-btn" id="psdBtn"></button>
+      <button class="sk-btn sk-btn-all" id="psdBtnAll" style="display:none"></button>`;
+    detailArea.appendChild(detail);
+  }
+
+  container.appendChild(wrap);
 
   if (prevOpen) showPrestigeSkillDetail(prevOpen);
 }
@@ -179,6 +240,7 @@ function showPrestigeSkillDetail(id) {
 
   const unlocked  = !!state.prestigeSkills?.[sk.id];
   const canUnlock = canUnlockPrestigeSkill(sk);
+  const prereqMet = sk.requires.every(r => state.prestigeSkills?.[r]);
   const avail = getAvailablePrestigeSp();
 
   panel.dataset.openId = id;
@@ -188,21 +250,42 @@ function showPrestigeSkillDetail(id) {
   document.getElementById('psdCost').textContent  =
     unlocked ? '✅ 習得済み' : `必要PSP: ${sk.cost}（残り ${avail} PSP）`;
 
-  const btn = document.getElementById('psdBtn');
+  const btn    = document.getElementById('psdBtn');
+  const btnAll = document.getElementById('psdBtnAll');
+
   if (unlocked) {
     btn.textContent = '✅ 習得済み';
     btn.className = 'sk-btn sk-done';
     btn.disabled = true;
+    if (btnAll) btnAll.style.display = 'none';
   } else if (canUnlock) {
     btn.textContent = `💎 習得する（${sk.cost} PSP）`;
     btn.className = 'sk-btn';
     btn.disabled = false;
     btn.onclick = () => { unlockPrestigeSkill(id); showPrestigeSkillDetail(id); };
+    if (btnAll) btnAll.style.display = 'none';
   } else {
-    btn.textContent = !sk.requires.every(r => state.prestigeSkills?.[r])
-      ? '🔒 前提スキル未習得' : '💎 PSP不足';
-    btn.className = 'sk-btn';
-    btn.disabled = true;
+    if (!prereqMet) {
+      const prereqs = _getUnlearnedPrestigePrereqsInOrder(id);
+      const totalCost = [...prereqs, id].reduce((sum, sid) => {
+        const s = PRESTIGE_SKILLS.find(x => x.id === sid);
+        return sum + (s && !state.prestigeSkills?.[sid] ? s.cost : 0);
+      }, 0);
+      btn.textContent = '🔒 前提スキル未習得';
+      btn.className = 'sk-btn';
+      btn.disabled = true;
+      if (btnAll) {
+        btnAll.style.display = 'block';
+        btnAll.textContent = `⚡ まとめて習得（計 ${totalCost} PSP / ${prereqs.length + 1}件）`;
+        btnAll.disabled = avail < totalCost;
+        btnAll.onclick = () => unlockPrestigeSkillWithPrereqs(id);
+      }
+    } else {
+      btn.textContent = '💎 PSP不足';
+      btn.className = 'sk-btn';
+      btn.disabled = true;
+      if (btnAll) btnAll.style.display = 'none';
+    }
   }
 
   panel.style.display = 'block';

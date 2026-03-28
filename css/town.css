@@ -3,9 +3,9 @@
     width: 100%;
     background: linear-gradient(180deg, #d4edda 0%, #e8f5e9 65%, #c8e6c9 100%);
     border-radius: 20px;
-    padding: 20px 44px 12px;
-    margin-bottom: 12px;
-    min-height: 180px;
+    padding: 12px 44px 12px;
+    margin-bottom: 0;
+    min-height: 130px;
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, .06);
@@ -220,13 +220,17 @@
     transition: opacity 0.4s ease;
 }
 
-/* ── ひと稼ぎ行（上段） ── */
+/* ── ひと稼ぎ行（stats-bar上部） ── */
 .harvest-row {
     display: flex;
     justify-content: center;
-    position: relative;
-    z-index: 1;
-    padding: 4px 0 0;
+    align-items: center;
+    background: linear-gradient(135deg, #fffde7, #fff8e1);
+    border: 2px solid #f5c430;
+    border-radius: 16px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    gap: 8px;
 }
 
 /* ── ひと稼ぎ建物 ── */
@@ -333,15 +337,28 @@
     margin: -20px;
 }
 
+.special-resident.special-bad {
+    filter: drop-shadow(0 0 8px rgba(229, 57, 53, .9));
+}
+
 .special-resident .res-emoji {
     font-size: 38px;
     display: inline-block;
     animation: specialBob 0.7s ease-in-out infinite;
 }
 
+.special-resident.special-bad .res-emoji {
+    animation: specialShiver 0.4s ease-in-out infinite;
+}
+
 @keyframes specialBob {
     0%, 100% { transform: translateY(0)   scale(1);    }
     50%       { transform: translateY(-6px) scale(1.12); }
+}
+
+@keyframes specialShiver {
+    0%, 100% { transform: translateX(0)   rotate(-4deg); }
+    50%       { transform: translateX(3px) rotate(4deg);  }
 }
 
 .special-res-badge {
@@ -363,16 +380,36 @@
     pointer-events: none;
 }
 
+.special-res-badge.special-res-badge-bad {
+    background: #e53935;
+    color: #fff;
+}
+
 @keyframes badgePulse {
     0%, 100% { transform: translateX(-50%) scale(1);   }
     50%       { transform: translateX(-50%) scale(1.25); }
 }
 
+/* good クリック：拡大フェード */
 .special-resident.special-res-clicked {
     animation: none !important;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: transform 0.35s ease, opacity 0.35s ease;
     transform: scale(1.8) !important;
     opacity: 0 !important;
+}
+
+/* bad クリック：横揺れ → フェード */
+.special-resident.special-res-clicked-bad {
+    animation: badClickShake 0.4s ease forwards !important;
+}
+
+@keyframes badClickShake {
+    0%   { transform: translateX(0)    scale(1);   opacity: 1; }
+    20%  { transform: translateX(-8px) scale(1.1); opacity: 1; }
+    40%  { transform: translateX(8px)  scale(1.1); opacity: 1; }
+    60%  { transform: translateX(-5px) scale(1);   opacity: 0.6; }
+    80%  { transform: translateX(5px)  scale(0.9); opacity: 0.3; }
+    100% { transform: translateX(0)    scale(0.6); opacity: 0; }
 }
 
 /* ── セリフ吹き出し ── */

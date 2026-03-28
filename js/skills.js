@@ -10,7 +10,7 @@ function getTotalSkillPoints() {
   const basePrestigeBonus = Math.max(0, state.prestigeCount || 0);
   const extraBonus = getPrestigeSkillEffect('prestige_sp_bonus');
   const spBonus = Math.floor(basePrestigeBonus + extraBonus * (state.prestigeCount || 0));
-  return fromBuildings + fromAchiev + spBonus;
+  return fromBuildings + fromAchiev + spBonus + (state.debugSkillSp || 0);
 }
 
 function getPrestigeSkillEffect(effect) {
@@ -177,23 +177,27 @@ function renderSkills() {
   container.appendChild(wrap);
 
   const prevOpen = document.getElementById('skillDetailPanel')?.dataset.openId;
-  const detail = document.createElement('div');
-  detail.id = 'skillDetailPanel';
-  detail.className = 'skill-detail-panel';
-  detail.style.display = 'none';
-  detail.innerHTML = `
-    <button class="skill-detail-close" onclick="closeSkillDetail()">✕</button>
-    <div class="skill-detail-header">
-      <span class="skill-detail-emoji" id="sdEmoji"></span>
-      <div>
-        <div class="skill-detail-name" id="sdName"></div>
-        <div class="skill-detail-cost" id="sdCost"></div>
+  const detailArea = document.getElementById('skillDetailArea');
+  if (detailArea) {
+    detailArea.innerHTML = '';
+    const detail = document.createElement('div');
+    detail.id = 'skillDetailPanel';
+    detail.className = 'skill-detail-panel';
+    detail.style.display = 'none';
+    detail.innerHTML = `
+      <button class="skill-detail-close" onclick="closeSkillDetail()">✕</button>
+      <div class="skill-detail-header">
+        <span class="skill-detail-emoji" id="sdEmoji"></span>
+        <div>
+          <div class="skill-detail-name" id="sdName"></div>
+          <div class="skill-detail-cost" id="sdCost"></div>
+        </div>
       </div>
-    </div>
-    <div class="skill-detail-desc" id="sdDesc"></div>
-    <button class="sk-btn" id="sdBtn"></button>
-    <button class="sk-btn sk-btn-all" id="sdBtnAll" style="display:none"></button>`;
-  container.appendChild(detail);
+      <div class="skill-detail-desc" id="sdDesc"></div>
+      <button class="sk-btn" id="sdBtn"></button>
+      <button class="sk-btn sk-btn-all" id="sdBtnAll" style="display:none"></button>`;
+    detailArea.appendChild(detail);
+  }
 
   if (prevOpen) showSkillDetail(prevOpen);
 }

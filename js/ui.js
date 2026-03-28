@@ -187,17 +187,18 @@ function renderTown() {
   // ひと稼ぎ（上段）
   const harvestRow = document.getElementById('harvestRow');
   harvestRow.innerHTML = '';
+  harvestRow.style.cursor = 'pointer';
   const hNode = document.createElement('div');
   hNode.className = 'harvest-building';
   hNode.id = 'harvestSpot';
   hNode.innerHTML = `<div class="hv-coin">🪙</div>
     <div class="building-name">ひと稼ぎ</div>
     <div class="building-rate">タップ！</div>`;
-  hNode.addEventListener('click', () => {
+  harvestRow.onclick = () => {
     manualHarvest();
     hNode.classList.add('harvest-click');
     setTimeout(() => hNode.classList.remove('harvest-click'), 300);
-  });
+  };
   harvestRow.appendChild(hNode);
 
   // 建物列（下段）
@@ -377,7 +378,8 @@ function renderRecord() {
   const rows = [
     { icon:'📅', label:'プレイ開始日', value: fmtDate(state.firstPlayedAt) },
     { icon:'⏱️', label:'総プレイ時間', value: fmtSec(state.totalPlaySecs || 0) },
-    { icon:'🪙', label:'総収入', value: fmt(state.totalEarned || 0) },
+    { icon:'🪙', label:'総収入（今世代）', value: fmt(state.totalEarned || 0) },
+    { icon:'💫', label:'総収入（全世代合計）', value: fmt((state.allTimeTotalEarned || 0) + (state.totalEarned || 0)) },
     { icon:'💸', label:'総支出', value: fmt(state.totalSpent || 0) },
     { icon:'👆', label:'総ひと稼ぎ回数', value: `${(state.totalHarvestCount || 0).toLocaleString()} 回` },
     { icon:'⚡', label:'最高CPS', value: fmt(state.maxCps || 0) + '/秒' },

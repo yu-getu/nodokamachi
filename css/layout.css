@@ -136,6 +136,21 @@ header {
     border-color: var(--brown)
 }
 
+.tab.tab-notify {
+    border-color: var(--prestige);
+    color: var(--prestige);
+    animation: tabNotifyPulse 1.4s ease-in-out infinite
+}
+
+.tab.tab-notify.active {
+    color: white
+}
+
+@keyframes tabNotifyPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(156,39,176,0) }
+    50%       { box-shadow: 0 0 0 4px rgba(156,39,176,0.35) }
+}
+
 .stats-bar {
     width: 100%;
     display: flex;

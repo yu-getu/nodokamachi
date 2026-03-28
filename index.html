@@ -68,12 +68,13 @@
       <button class="town-nav-btn" id="townNavNext" onclick="changeTownArea(1)">▶</button>
       <div class="town-area-tag" id="townAreaLabel"></div>
       <div class="town-center-icon" id="townCenterIcon"></div>
-      <div class="harvest-row" id="harvestRow"></div>
       <div id="townContent">
         <div class="buildings-row" id="buildingsRow"></div>
       </div>
       <div class="event-badge-container" id="eventBadgeContainer"></div>
     </div>
+
+    <div class="harvest-row" id="harvestRow"></div>
 
     <div class="stats-bar">
       <div class="stat-card stat-card-cps" id="statCpsCard" onclick="toggleCpsDetail()" title="クリックでバフ詳細を表示">
@@ -171,6 +172,7 @@
           <span class="psk-sp-label" style="color:var(--muted)">総獲得：<span id="pskSpTotal">0</span> PSP</span>
         </div>
         <p style="font-size:10px;color:var(--muted);margin-bottom:8px">転生するたびに3 PSP獲得。世代スキルは転生後も永続します。</p>
+        <div id="pskDetailArea"></div>
         <div id="prestigeSkillTree"></div>
       </div>
     </div>
@@ -188,6 +190,7 @@
       </div>
       <p style="font-size:10px;color:var(--muted);margin-bottom:10px">建物1種がLv10に初到達するごとに+1SP・実績10件ごとに+1SP・転生ごとに+3SP。スキルは転生でリセットされます。
       </p>
+      <div id="skillDetailArea"></div>
       <div id="skillTreeContent"></div>
     </div>
 

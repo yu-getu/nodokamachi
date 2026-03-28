@@ -241,7 +241,7 @@
   }
 }
 
-/* ── PCレイアウト（960px〜）：町エリア全幅 ＋ 2カラムグリッド ── */
+/* ── PCレイアウト（960px〜）：上段=ひと稼ぎ左・町右、下段=元の2カラム ── */
 @media (min-width: 960px) {
   .game-wrap {
     max-width: none;
@@ -262,16 +262,24 @@
     margin-bottom: 4px;
   }
 
-  /* 町エリア：全幅・画面上部に広く */
-  .town-area {
-    grid-column: 1 / -1;
+  /* 上段左：ひと稼ぎ */
+  .harvest-row {
+    grid-column: 1;
     grid-row: 2;
-    min-height: 280px;
+    margin: 0;
+    align-self: stretch;
+  }
+
+  /* 上段右：町エリア */
+  .town-area {
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 250px;
     margin-bottom: 0;
     border-radius: 20px;
   }
 
-  /* 左列：統計 → デイリー → クエスト → セーブ → ログ */
+  /* 左列：統計 → デイリー → クエスト */
   .stats-bar {
     grid-column: 1;
     grid-row: 3;
@@ -297,19 +305,7 @@
     margin-bottom: 0;
   }
 
-  .save-bar {
-    grid-column: 1;
-    grid-row: 7;
-    margin-bottom: 0;
-  }
-
-  .log {
-    grid-column: 1;
-    grid-row: 8;
-    max-height: 160px;
-  }
-
-  /* 右列：タブ（row3）→ パネルがすぐ下（row4〜）*/
+  /* 右列：タブ */
   .tabs {
     grid-column: 2;
     grid-row: 3;
@@ -323,6 +319,7 @@
     padding: 8px 10px;
   }
 
+  /* 右列：パネル */
   #panel-shop,
   #panel-research,
   #panel-deco,
