@@ -35,6 +35,7 @@ function buyResearch(bid, tier) {
   state.coins -= cost;
   state.research[key] = true;
   state.totalSpent = (state.totalSpent || 0) + cost;
+  state.totalResearchSpent = (state.totalResearchSpent || 0) + cost;
   spawnFloatCoins(`-${fmt(cost)}`);
   playUnlockSfx();
   addLog(`🔬 研究完了：${b.emoji}${b.name} ${t.label}（CPS ×${t.mult}）`);
@@ -56,6 +57,7 @@ function buyResearchAll(bid) {
   if (state.coins < totalCost) return;
   state.coins -= totalCost;
   state.totalSpent = (state.totalSpent || 0) + totalCost;
+  state.totalResearchSpent = (state.totalResearchSpent || 0) + totalCost;
   unlockedTiers.forEach(t => { state.research[`${bid}_${t.tier}`] = true; });
   spawnFloatCoins(`-${fmt(totalCost)}`);
   playUnlockSfx();

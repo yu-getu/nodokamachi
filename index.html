@@ -154,15 +154,14 @@
     </div>
 
     <div class="prestige-panel" id="panel-prestige" style="display:none">
-      <div class="panel-title">⭐ プレステージ転生</div>
-      <div class="prestige-info" id="prestigeInfo"></div>
-      <div class="prestige-bonus-list" id="prestigeBonusList"></div>
+      <div class="panel-title">⭐ 転生</div>
       <div class="prestige-req" id="prestigeReq"></div>
-      <div class="progress-bar-wrap">
+      <div class="progress-bar-wrap" style="margin:6px 0 6px">
         <div class="progress-bar" id="prestigeProgressBar" style="width:0%"></div>
+        <div class="prestige-bonus-bar" id="prestigeBonusBar"></div>
       </div>
-      <button class="btn-prestige" id="btnPrestige" onclick="confirmPrestige()" disabled>⭐ プレステージ転生する</button>
-      <div class="prestige-history" id="prestigeHistory"></div>
+      <div id="prestigeBonusSpInfo" style="display:none"></div>
+      <button class="btn-prestige" id="btnPrestige" onclick="confirmPrestige()" disabled>⭐ 転生する</button>
 
       <!-- 世代スキルツリー -->
       <div class="psk-section">
@@ -171,7 +170,7 @@
           <span class="psk-sp-label">PSP残り：<strong id="pskSpAvail">0</strong></span>
           <span class="psk-sp-label" style="color:var(--muted)">総獲得：<span id="pskSpTotal">0</span> PSP</span>
         </div>
-        <p style="font-size:10px;color:var(--muted);margin-bottom:8px">転生するたびに3 PSP獲得。世代スキルは転生後も永続します。</p>
+        <p style="font-size:10px;color:var(--muted);margin-bottom:8px">転生するたびに1 PSP獲得（ボーナス最大+3）。世代スキルは転生後も永続します。</p>
         <div id="pskDetailArea"></div>
         <div id="prestigeSkillTree"></div>
       </div>
@@ -249,12 +248,13 @@
   <div class="modal-overlay" id="prestigeModal">
     <div class="modal">
       <div class="modal-icon">⭐</div>
-      <h2>プレステージ転生</h2>
-      <div class="prestige-confirm-list" id="prestigeConfirmList"></div>
-      <p>本当に転生しますか？</p>
+      <h2>転生</h2>
+      <div class="prestige-info" id="prestigeInfo"></div>
+      <div class="prestige-bonus-list" id="prestigeBonusList"></div>
+      <div class="prestige-history" id="prestigeHistory"></div>
       <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
-        <button class="btn-modal" onclick="closeModal('prestigeModal')">やめる</button>
-        <button class="btn-modal purple" onclick="doPrestige()">転生する！</button>
+        <button class="btn-modal" onclick="closeModal('prestigeModal')">閉じる</button>
+        <button class="btn-modal purple" id="btnPrestigeConfirm" onclick="doPrestige()" disabled>転生する！</button>
       </div>
     </div>
   </div>

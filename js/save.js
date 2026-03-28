@@ -17,6 +17,14 @@ function saveGame() {
       idledAtStart: state.idledAtStart,
       boughtDuringDiscount: state.boughtDuringDiscount, wentBroke: state.wentBroke,
       eventStack3: state.eventStack3, prestigeInWinter: state.prestigeInWinter,
+      prestigeInSpring: state.prestigeInSpring, prestigeInSummer: state.prestigeInSummer,
+      prestigeInAutumn: state.prestigeInAutumn, nightPrestige: state.nightPrestige,
+      silentPrestige: state.silentPrestige, gotMaxPrestigeBonus: state.gotMaxPrestigeBonus,
+      morningPlayed: state.morningPlayed, eveningPlayed: state.eveningPlayed,
+      totalResearchSpent: state.totalResearchSpent,
+      lucky7777: state.lucky7777, zoromeCoins: state.zoromeCoins,
+      longOffline: state.longOffline, hourlyPlay: state.hourlyPlay,
+      perfectPrestige: state.perfectPrestige,
       totalHarvestCount: state.totalHarvestCount, totalSpent: state.totalSpent,
       totalPlaySecs: state.totalPlaySecs, maxCps: state.maxCps, maxCoins: state.maxCoins,
       firstPlayedAt: state.firstPlayedAt,
@@ -59,6 +67,20 @@ function loadGame() {
     state.wentBroke = d.wentBroke || false;
     state.eventStack3 = d.eventStack3 || false;
     state.prestigeInWinter = d.prestigeInWinter || false;
+    state.prestigeInSpring = d.prestigeInSpring || false;
+    state.prestigeInSummer = d.prestigeInSummer || false;
+    state.prestigeInAutumn = d.prestigeInAutumn || false;
+    state.nightPrestige = d.nightPrestige || false;
+    state.silentPrestige = d.silentPrestige || false;
+    state.gotMaxPrestigeBonus = d.gotMaxPrestigeBonus || false;
+    state.morningPlayed = d.morningPlayed || false;
+    state.eveningPlayed = d.eveningPlayed || false;
+    state.totalResearchSpent = d.totalResearchSpent || 0;
+    state.lucky7777 = d.lucky7777 || false;
+    state.zoromeCoins = d.zoromeCoins || false;
+    state.longOffline = d.longOffline || false;
+    state.hourlyPlay = d.hourlyPlay || false;
+    state.perfectPrestige = d.perfectPrestige || false;
     state.totalHarvestCount = d.totalHarvestCount || 0;
     state.totalSpent = d.totalSpent || 0;
     state.totalPlaySecs = d.totalPlaySecs || 0;
@@ -66,6 +88,7 @@ function loadGame() {
     state.maxCoins = d.maxCoins || 0;
     state.firstPlayedAt = d.firstPlayedAt || Date.now();
     const offSec = Math.min((Date.now() - d.savedAt) / 1000, 24 * 3600);
+    if (offSec >= 8 * 3600) state.longOffline = true;
     if (offSec > 30 && getCps() > 0) {
       // オフライン効率：基本50% + 世代スキル効果（上限100%）
       const baseOffMult = 0.5;

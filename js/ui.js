@@ -344,28 +344,41 @@ function _makeAchievCard(a) {
   return div;
 }
 
+const _achievCollapsed = new Set();
+
 function renderAchiev() {
-  const normal  = ACHIEVEMENTS.filter(a => !a.hidden);
-  const hidden  = ACHIEVEMENTS.filter(a =>  a.hidden);
   const unlocked = ACHIEVEMENTS.filter(a => state.achievements[a.id]).length;
   document.getElementById('achievSummary').textContent = `${unlocked} / ${ACHIEVEMENTS.length} 件解除`;
 
   const grid = document.getElementById('achievGrid');
   grid.innerHTML = '';
 
-  const makeSection = (title, list) => {
+  ACHIEV_CATEGORIES.forEach(cat => {
+    const list = ACHIEVEMENTS.filter(a => a.cat === cat.id);
+    if (list.length === 0) return;
+    const unlockedInCat = list.filter(a => state.achievements[a.id]).length;
+    const isCollapsed = _achievCollapsed.has(cat.id);
+
     const sec = document.createElement('div');
-    sec.className = 'achiev-section';
+    sec.className = 'achiev-section' + (isCollapsed ? ' collapsed' : '');
+
     const hdr = document.createElement('div');
     hdr.className = 'achiev-section-title';
-    hdr.textContent = title;
+    hdr.innerHTML = `<span>${cat.label}　<span style="font-weight:400;font-size:11px;color:var(--muted)">${unlockedInCat}/${list.length}</span></span><span class="achiev-toggle-arrow">▼</span>`;
+    hdr.addEventListener('click', () => {
+      if (_achievCollapsed.has(cat.id)) _achievCollapsed.delete(cat.id);
+      else _achievCollapsed.add(cat.id);
+      renderAchiev();
+    });
     sec.appendChild(hdr);
-    list.forEach(a => sec.appendChild(_makeAchievCard(a)));
-    grid.appendChild(sec);
-  };
 
-  makeSection('🏅 通常実績', normal);
-  makeSection('🔍 隠し実績', hidden);
+    const cards = document.createElement('div');
+    cards.className = 'achiev-cards';
+    list.forEach(a => cards.appendChild(_makeAchievCard(a)));
+    sec.appendChild(cards);
+
+    grid.appendChild(sec);
+  });
 }
 
 

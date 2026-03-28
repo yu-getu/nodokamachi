@@ -1,5 +1,5 @@
 // ══════════════════════════════
-//  プレステージ転生システム
+//  転生システム
 // ══════════════════════════════
 let _prestigeReadyNotified = false;
 
@@ -16,6 +16,17 @@ function checkPrestigeNotify() {
   } else {
     if (tabBtn) tabBtn.classList.remove('tab-notify');
   }
+  updatePrestigeProgress();
+}
+
+function getPrestigeBonusSp() {
+  const req = getPrestigeRequired();
+  if (state.totalEarned < req) return 0;
+  const ratio = state.totalEarned / req;
+  if (ratio >= 30) return 3;
+  if (ratio >= 10) return 2;
+  if (ratio >= 3)  return 1;
+  return 0;
 }
 
 function getPrestigeMult() {
@@ -25,18 +36,7 @@ function getPrestigeMult() {
 function getPrestigeRequired() { return 5000000000 * Math.pow(5, state.prestigeCount); }
 
 function confirmPrestige() {
-  const req = getPrestigeRequired();
-  if (state.totalEarned < req) return;
-  const newMax = BASE_MAX_LV + (state.prestigeCount + 1) * PRESTIGE_LV_BONUS;
-  const rate = 0.15 + getPrestigeSkillEffect('prestige_cps_rate');
-  const nextMult = (1 + (state.prestigeCount + 1) * rate).toFixed(1);
-  document.getElementById('prestigeConfirmList').innerHTML =
-    `✅ 転生後のCPS永続倍率：×${nextMult}<br>` +
-    `✅ レベル上限が <strong>Lv${newMax}</strong> に拡張<br>` +
-    `✅ 世代SP +3 獲得<br>` +
-    `✅ 実績・転生回数・世代スキルは引き継ぎ<br>` +
-    `❌ コイン・建物レベルがリセット<br>` +
-    `❌ 研究・通常スキル・マイルストーン達成状況もリセット`;
+  renderPrestige();
   document.getElementById('prestigeModal').classList.add('show');
 }
 
@@ -44,15 +44,26 @@ function doPrestige() {
   closeModal('prestigeModal');
   _prestigeReadyNotified = false;
   if (getCurrentSeason().id === 'winter') state.prestigeInWinter = true;
+  const bonusSp = getPrestigeBonusSp();
+  const seasonId = getCurrentSeason().id;
+  const hourNow = new Date().getHours();
+  if (seasonId === 'spring') state.prestigeInSpring = true;
+  if (seasonId === 'summer') state.prestigeInSummer = true;
+  if (seasonId === 'autumn') state.prestigeInAutumn = true;
+  if (hourNow >= 0 && hourNow < 4) state.nightPrestige = true;
+  if (!_bgmOn && !_sfxOn) state.silentPrestige = true;
+  if (bonusSp >= 3) state.gotMaxPrestigeBonus = true;
+  if (BUILDINGS.every(b => (state.buildings[b.id]?.level || 0) >= 100)) state.perfectPrestige = true;
   state.prestigeCount++;
-  state.prestigeSp = (state.prestigeSp || 0) + 3;
+  state.prestigeSp = (state.prestigeSp || 0) + 1 + bonusSp;
   state.allTimeTotalEarned = (state.allTimeTotalEarned || 0) + (state.totalEarned || 0);
   state.coins = 0; state.totalEarned = 0;
   BUILDINGS.forEach(b => { state.buildings[b.id] = { level: 0 }; });
   state.activeEvents = []; state.eventDiscount = 1; state.skills = {}; state.research = {};
   const newMax = getMaxLevel();
   const curMult = getPrestigeMult().toFixed(1);
-  addLog(`⭐ プレステージ転生(${state.prestigeCount}回目)！Lv上限→${newMax}、CPS倍率×${curMult}、世代SP+3`);
+  const spGain = 1 + bonusSp;
+  addLog(`⭐ 転生(${state.prestigeCount}回目)！Lv上限→${newMax}、CPS倍率×${curMult}、世代SP+${spGain}${bonusSp > 0 ? `（ボーナス+${bonusSp}）` : ''}`);
   saveGame(); checkAchievements(); render(); renderPrestige();
   document.getElementById('prestigeBadge').style.display = 'flex';
   document.getElementById('prestigeCount').textContent = state.prestigeCount;
@@ -67,10 +78,12 @@ function renderPrestige() {
   document.getElementById('prestigeInfo').innerHTML =
     `現在の永続CPS倍率：<strong style="color:var(--prestige2)">×${curMult}</strong><br>
      現在のレベル上限：<strong style="color:var(--prestige2)">Lv${getMaxLevel()}</strong>`;
+  const bonusSp = getPrestigeBonusSp();
+  const spLabel = bonusSp > 0 ? `+${1 + bonusSp} PSP獲得（ボーナス+${bonusSp}）` : '+1 PSP獲得';
   document.getElementById('prestigeBonusList').innerHTML =
     `<div class="prestige-bonus-item"><span class="pb-icon">⭐</span>永続CPS倍率 → ×<strong>${nextMult}</strong></div>
      <div class="prestige-bonus-item"><span class="pb-icon">📈</span>レベル上限 → <strong>Lv${newMax}</strong>（+${PRESTIGE_LV_BONUS}）</div>
-     <div class="prestige-bonus-item"><span class="pb-icon">💎</span>世代SP → +3 PSP獲得</div>
+     <div class="prestige-bonus-item"><span class="pb-icon">💎</span>世代SP → ${spLabel}</div>
      <div class="prestige-bonus-item"><span class="pb-icon">📌</span>実績・転生回数・世代スキルは引き継ぎ</div>
      <div class="prestige-bonus-item"><span class="pb-icon">🔄</span>コイン・建物・研究・通常スキル・マイルストーンはリセット</div>`;
   document.getElementById('prestigeHistory').innerHTML =
@@ -83,15 +96,52 @@ function updatePrestigeProgress() {
   const req = getPrestigeRequired();
   const can = state.totalEarned >= req;
   const prog = Math.min(100, (state.totalEarned / req) * 100);
-  const reqEl  = document.getElementById('prestigeReq');
-  const barEl  = document.getElementById('prestigeProgressBar');
-  const btnEl  = document.getElementById('btnPrestige');
+  const reqEl      = document.getElementById('prestigeReq');
+  const barEl      = document.getElementById('prestigeProgressBar');
+  const bonusBarEl = document.getElementById('prestigeBonusBar');
+  const btnEl      = document.getElementById('btnPrestigeConfirm');
+  const bonusEl    = document.getElementById('prestigeBonusSpInfo');
   if (!reqEl) return;
   reqEl.innerHTML =
     `転生条件：累計コイン <strong style="color:var(--prestige2)">${fmt(req)}</strong> 以上<br>
      現在：${fmt(state.totalEarned)} ${can ? '✅ 転生可能！' : '（あと ' + fmt(req - state.totalEarned) + '）'}`;
-  barEl.style.width = `${prog}%`;
-  btnEl.disabled = !can;
+  if (barEl) barEl.style.width = `${prog}%`;
+  if (btnEl) btnEl.disabled = !can;
+  const mainBtnEl = document.getElementById('btnPrestige');
+  if (mainBtnEl) mainBtnEl.disabled = !can;
+  if (bonusBarEl) {
+    if (!can) {
+      bonusBarEl.style.display = 'none';
+    } else {
+      bonusBarEl.style.display = 'block';
+      const ratio = state.totalEarned / req;
+      let bonusProg;
+      if (ratio >= 30)      bonusProg = 100;
+      else if (ratio >= 10) bonusProg = 66 + ((ratio - 10) / 20) * 34;
+      else if (ratio >= 3)  bonusProg = 33 + ((ratio - 3)  /  7) * 33;
+      else                  bonusProg =       ((ratio - 1)  /  2) * 33;
+      bonusBarEl.style.width = `${Math.min(100, bonusProg).toFixed(1)}%`;
+    }
+  }
+  if (bonusEl) {
+    if (!can) {
+      bonusEl.style.display = 'none';
+    } else {
+      bonusEl.style.display = 'block';
+      const bonusSp = getPrestigeBonusSp();
+      const ratio = state.totalEarned / req;
+      const milestones = [3, 10, 30];
+      const next = milestones.find(m => ratio < m);
+      let html = `<span class="prestige-bonus-sp-label">💎 ボーナスPSP：<strong>+${bonusSp}</strong>　`;
+      if (next) {
+        html += `条件×${next}（${fmt(req * next)}）達成で +${bonusSp + 1}PSP`;
+      } else {
+        html += `🏅 最大ボーナス達成！`;
+      }
+      html += `</span>`;
+      bonusEl.innerHTML = html;
+    }
+  }
 }
 
 // ── 世代スキルツリー ──

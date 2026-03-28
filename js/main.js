@@ -125,9 +125,19 @@ function tick() {
   updateEventBadge();
   checkPrestigeNotify();
   if (document.getElementById('panel-prestige')?.style.display !== 'none') updatePrestigeProgress();
-  // 深夜判定（0〜4時）
-  const hour = new Date().getHours();
-  if (hour >= 0 && hour < 4) state.nightPlayed = true;
+  // 時間帯判定
+  const _now = new Date();
+  const hour = _now.getHours();
+  if (hour >= 0 && hour < 4)   state.nightPlayed = true;
+  if (hour >= 5 && hour < 8)   state.morningPlayed = true;
+  if (hour >= 17 && hour < 20) state.eveningPlayed = true;
+  if (_now.getMinutes() === 0 && _now.getSeconds() < 4) state.hourlyPlay = true;
+
+  // コイン値判定（隠し実績）
+  const _fc = Math.floor(state.coins);
+  if (_fc === 7777) state.lucky7777 = true;
+  const _last4 = _fc % 10000;
+  if (_last4 >= 1111 && _last4 % 1111 === 0 && _last4 <= 9999) state.zoromeCoins = true;
 
   // 無音プレイ追跡（BGM・SFX両方オフ）
   if (!_bgmOn && !_sfxOn) {
