@@ -237,23 +237,42 @@ function renderShop() {
   });
 }
 
+function _makeAchievCard(a) {
+  const ok = !!state.achievements[a.id];
+  const isHidden = !!a.hidden && !ok;
+  const div = document.createElement('div');
+  div.className = 'achiev-card' + (ok ? ' unlocked' : ' locked') + (isHidden ? ' hidden-achiev' : '');
+  div.innerHTML = `<div class="achiev-icon">${isHidden ? '❓' : a.icon}</div><div>
+    <div class="achiev-name">${isHidden ? '???' : a.name}</div>
+    <div class="achiev-desc">${ok ? a.desc : (isHidden ? '隠し実績 — 解除条件は秘密です' : '???')}</div>
+    <div class="achiev-reward">🎁 ${ok ? a.reward : '???'}</div>
+    ${ok ? '<span class="unlocked-stamp">✅ 解除済み</span>' : ''}
+  </div>`;
+  return div;
+}
+
 function renderAchiev() {
-  const unlocked=ACHIEVEMENTS.filter(a=>state.achievements[a.id]).length;
-  document.getElementById('achievSummary').textContent=`${unlocked} / ${ACHIEVEMENTS.length} 件解除`;
-  const grid=document.getElementById('achievGrid'); grid.innerHTML='';
-  ACHIEVEMENTS.forEach(a=>{
-    const ok=!!state.achievements[a.id];
-    const isHidden=!!a.hidden&&!ok;
-    const div=document.createElement('div');
-    div.className='achiev-card'+(ok?' unlocked':' locked')+(isHidden?' hidden-achiev':'');
-    div.innerHTML=`<div class="achiev-icon">${isHidden?'❓':a.icon}</div><div>
-      <div class="achiev-name">${isHidden?'???':a.name}</div>
-      <div class="achiev-desc">${ok?a.desc:(isHidden?'隠し実績 — 解除条件は秘密です':'???')}</div>
-      <div class="achiev-reward">🎁 ${ok?a.reward:'???'}</div>
-      ${ok?'<span class="unlocked-stamp">✅ 解除済み</span>':''}
-    </div>`;
-    grid.appendChild(div);
-  });
+  const normal  = ACHIEVEMENTS.filter(a => !a.hidden);
+  const hidden  = ACHIEVEMENTS.filter(a =>  a.hidden);
+  const unlocked = ACHIEVEMENTS.filter(a => state.achievements[a.id]).length;
+  document.getElementById('achievSummary').textContent = `${unlocked} / ${ACHIEVEMENTS.length} 件解除`;
+
+  const grid = document.getElementById('achievGrid');
+  grid.innerHTML = '';
+
+  const makeSection = (title, list) => {
+    const sec = document.createElement('div');
+    sec.className = 'achiev-section';
+    const hdr = document.createElement('div');
+    hdr.className = 'achiev-section-title';
+    hdr.textContent = title;
+    sec.appendChild(hdr);
+    list.forEach(a => sec.appendChild(_makeAchievCard(a)));
+    grid.appendChild(sec);
+  };
+
+  makeSection('🏅 通常実績', normal);
+  makeSection('🔍 隠し実績', hidden);
 }
 
 
