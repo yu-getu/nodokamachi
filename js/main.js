@@ -28,6 +28,8 @@ function buyBuilding(id) {
   const wasZero = state.buildings[id].level === 0;
   state.coins -= totalCost;
   state.totalSpent = (state.totalSpent || 0) + totalCost;
+  if (state.eventDiscount < 1) state.boughtDuringDiscount = true;
+  if (state.coins < 10) state.wentBroke = true;
   state.buildings[id].level += count;
   const nl = state.buildings[id].level;
 

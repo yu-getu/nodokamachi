@@ -283,6 +283,35 @@ const ACHIEVEMENTS = [
   {id:'research_3',    icon:'🔬', name:'研究者',       desc:'3つの研究を完了',    reward:'称号',    check:s=>Object.keys(s.research||{}).length>=3},
   {id:'research_all',  icon:'🧪', name:'科学の申し子', desc:'全研究を完了',       reward:'称号',    check:s=>Object.keys(s.research||{}).length>=RESEARCH.length},
   {id:'weekend',       icon:'🎉', name:'週末の楽しみ', desc:'週末ボーナス中に遊んだ', reward:'記念称号', check:s=>getWeekendMult()>1&&getTotalLv()>=1},
+  // CPS
+  {id:'cps_1',         icon:'⏱️', name:'コイン生産開始',   desc:'CPS 1/秒を達成',          reward:'称号', check:s=>(s.maxCps||0)>=1},
+  {id:'cps_100',       icon:'⚡', name:'高速生産',          desc:'CPS 100/秒を達成',        reward:'称号', check:s=>(s.maxCps||0)>=100},
+  {id:'cps_10k',       icon:'🌊', name:'怒涛の生産力',      desc:'CPS 1万/秒を達成',        reward:'称号', check:s=>(s.maxCps||0)>=10000},
+  {id:'cps_1m',        icon:'🌌', name:'宇宙的生産速度',    desc:'CPS 100万/秒を達成',      reward:'称号', check:s=>(s.maxCps||0)>=1000000},
+  // コイン
+  {id:'coins_1m',      icon:'💰', name:'百万長者',          desc:'累計100万コインを達成',   reward:'称号', check:s=>s.totalEarned>=1000000},
+  {id:'coins_1b',      icon:'🏦', name:'億万長者',          desc:'累計10億コインを達成',    reward:'称号', check:s=>s.totalEarned>=1000000000},
+  {id:'coins_1t',      icon:'💎', name:'兆を超えた者',      desc:'累計1兆コインを達成',     reward:'称号', check:s=>s.totalEarned>=1000000000000},
+  // 総レベル
+  {id:'total_lv_100',  icon:'🏘️', name:'成長する街',        desc:'建物の総Lvが100に到達',   reward:'称号', check:_s=>getTotalLv()>=100},
+  {id:'total_lv_1000', icon:'🌆', name:'大都市',            desc:'建物の総Lvが1000に到達',  reward:'称号', check:_s=>getTotalLv()>=1000},
+  // クエスト
+  {id:'quest_10',      icon:'🎯', name:'クエスト達成者',    desc:'クエストを10件完了',      reward:'称号', check:s=>(s.quests?.completedTotal||0)>=10},
+  {id:'quest_50',      icon:'🎖️', name:'クエストマスター',  desc:'クエストを50件完了',      reward:'称号', check:s=>(s.quests?.completedTotal||0)>=50},
+  // イベント
+  {id:'events_10',     icon:'🎪', name:'イベント好き',      desc:'イベントを10回経験',      reward:'称号', check:s=>(s.eventCount||0)>=10},
+  {id:'events_50',     icon:'🎆', name:'イベント常連',      desc:'イベントを50回経験',      reward:'称号', check:s=>(s.eventCount||0)>=50},
+  // 転生
+  {id:'prestige_5',    icon:'💫', name:'五世代目',          desc:'5回プレステージ転生',     reward:'称号', check:s=>s.prestigeCount>=5},
+  {id:'prestige_10',   icon:'🌠', name:'十世代の末裔',      desc:'10回プレステージ転生',    reward:'称号', check:s=>s.prestigeCount>=10},
+  // ひと稼ぎ
+  {id:'harvest_100',   icon:'👆', name:'ひと稼ぎ職人',      desc:'ひと稼ぎを100回した',     reward:'称号', check:s=>(s.totalHarvestCount||0)>=100},
+  {id:'harvest_1000',  icon:'💪', name:'ひと稼ぎの達人',    desc:'ひと稼ぎを1000回した',    reward:'称号', check:s=>(s.totalHarvestCount||0)>=1000},
+  // プレイ時間
+  {id:'playtime_1h',   icon:'⏰', name:'1時間プレイヤー',   desc:'累計1時間プレイした',     reward:'称号', check:s=>(s.totalPlaySecs||0)>=3600},
+  {id:'playtime_10h',  icon:'🕰️', name:'10時間プレイヤー',  desc:'累計10時間プレイした',    reward:'称号', check:s=>(s.totalPlaySecs||0)>=36000},
+  // スキル
+  {id:'skill_5',       icon:'🌟', name:'スキル磨き',        desc:'スキルを5個習得した',     reward:'称号', check:s=>Object.keys(s.skills||{}).length>=5},
   // 隠し実績
   {id:'storm_harvest', icon:'⚡', name:'嵐チェイサー',    desc:'嵐の中でひと稼ぎした',              reward:'称号', hidden:true, check:s=>s.stormHarvested},
   {id:'save_maniac',   icon:'💾', name:'過保護セーバー',  desc:'手動保存ボタンを20回押した',         reward:'称号', hidden:true, check:s=>(s.manualSaveCount||0)>=20},
@@ -292,6 +321,10 @@ const ACHIEVEMENTS = [
   {id:'rapid_harvest', icon:'⚡', name:'落ち着きのない人', desc:'30秒以内にひと稼ぎを100回押した',    reward:'称号', hidden:true, check:s=>s.rapidHarvested},
   {id:'silent_town',   icon:'🗑️', name:'消えた音',        desc:'BGMとSFXを両方オフにして5分プレイした', reward:'称号', hidden:true, check:s=>(s.silentMinutes||0)>=5},
   {id:'idle_start',    icon:'🏚️', name:'廃村の夢',        desc:'何も建てないまま1分間放置した',      reward:'称号', hidden:true, check:s=>s.idledAtStart},
+  {id:'buy_discount',  icon:'🛒', name:'お買い得ハンター', desc:'行商人の値引き中に建物を購入した',    reward:'称号', hidden:true, check:s=>s.boughtDuringDiscount},
+  {id:'went_broke',    icon:'💸', name:'一文無し',         desc:'所持コインが一桁まで減った',          reward:'称号', hidden:true, check:s=>s.wentBroke},
+  {id:'event_stack_3', icon:'🌀', name:'嵐の目の中で',     desc:'3種類のイベントを同時に重ねた',       reward:'称号', hidden:true, check:s=>s.eventStack3},
+  {id:'winter_prestige',icon:'❄️',name:'冬の決断',         desc:'冬の季節にプレステージ転生した',      reward:'称号', hidden:true, check:s=>s.prestigeInWinter},
 ];
 
 // ゲーム状態
@@ -320,6 +353,10 @@ let state = {
   rapidHarvested: false,
   silentMinutes: 0,
   idledAtStart: false,
+  boughtDuringDiscount: false,
+  wentBroke: false,
+  eventStack3: false,
+  prestigeInWinter: false,
   // ゲーム内時間（0=春の1日目 朝8時スタート）
   gameDay: 0,
   gameDayProgress: 8 / 24,

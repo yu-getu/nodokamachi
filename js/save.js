@@ -15,6 +15,8 @@ function saveGame() {
       stormHarvested: state.stormHarvested, nightPlayed: state.nightPlayed,
       rapidHarvested: state.rapidHarvested, silentMinutes: state.silentMinutes,
       idledAtStart: state.idledAtStart,
+      boughtDuringDiscount: state.boughtDuringDiscount, wentBroke: state.wentBroke,
+      eventStack3: state.eventStack3, prestigeInWinter: state.prestigeInWinter,
       totalHarvestCount: state.totalHarvestCount, totalSpent: state.totalSpent,
       totalPlaySecs: state.totalPlaySecs, maxCps: state.maxCps, maxCoins: state.maxCoins,
       firstPlayedAt: state.firstPlayedAt,
@@ -53,6 +55,10 @@ function loadGame() {
     state.rapidHarvested = d.rapidHarvested || false;
     state.silentMinutes = d.silentMinutes || 0;
     state.idledAtStart = d.idledAtStart || false;
+    state.boughtDuringDiscount = d.boughtDuringDiscount || false;
+    state.wentBroke = d.wentBroke || false;
+    state.eventStack3 = d.eventStack3 || false;
+    state.prestigeInWinter = d.prestigeInWinter || false;
     state.totalHarvestCount = d.totalHarvestCount || 0;
     state.totalSpent = d.totalSpent || 0;
     state.totalPlaySecs = d.totalPlaySecs || 0;

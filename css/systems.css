@@ -6,9 +6,25 @@
 }
 
 .achiev-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px
+}
+
+.achiev-section {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px
+}
+
+.achiev-section-title {
+    grid-column: 1 / -1;
+    font-family: 'Kaisei Decol', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brown);
+    padding: 4px 0 6px;
+    border-bottom: 2px solid #e8d8b0
 }
 
 .achiev-card {

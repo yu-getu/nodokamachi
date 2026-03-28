@@ -25,6 +25,7 @@ function confirmPrestige() {
 
 function doPrestige() {
   closeModal('prestigeModal');
+  if (getCurrentSeason().id === 'winter') state.prestigeInWinter = true;
   state.prestigeCount++;
   state.prestigeSp = (state.prestigeSp || 0) + 3;
   state.coins = 50; state.totalEarned = 0;

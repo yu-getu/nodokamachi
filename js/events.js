@@ -26,6 +26,7 @@ function triggerRandomEvent() {
     existing.endsAt = newEndsAt;
   } else {
     state.activeEvents.push({ eventId: ev.id, endsAt: newEndsAt, mult: ev.mult || 1, discount: ev.discount || 1 });
+    if (state.activeEvents.filter(ae => now <= ae.endsAt).length >= 3) state.eventStack3 = true;
   }
   if (ev.bonus === 'cps' || ev.bonus === 'cps30') {
     const sec = ev.bonusSec || 30;
