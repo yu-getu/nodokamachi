@@ -9,6 +9,7 @@ function getBeautyMult() { return (1 + getBeautyScore() * 0.01) * getSkillBeauty
 
 // エリアシナジー（area_cps + all_cps を合算）
 function getDecoAreaMult(areaId) {
+  const dm = 1 + getSkillEffect('deco_mult');
   let bonus = 0;
   DECORATIONS.forEach(d => {
     if (!state.decorations[d.id]) return;
@@ -16,36 +17,39 @@ function getDecoAreaMult(areaId) {
     if (e.type === 'area_cps' && e.area === areaId) bonus += e.value;
     if (e.type === 'all_cps') bonus += e.value;
   });
-  return 1 + bonus;
+  return 1 + bonus * dm;
 }
 
 // 建物個別シナジー
 function getDecoBuildingMult(buildingId) {
+  const dm = 1 + getSkillEffect('deco_mult');
   let bonus = 0;
   DECORATIONS.forEach(d => {
     if (!state.decorations[d.id]) return;
     const e = d.effect;
     if (e.type === 'building_cps' && e.targets.includes(buildingId)) bonus += e.value;
   });
-  return 1 + bonus;
+  return 1 + bonus * dm;
 }
 
 // 手動収穫シナジー
 function getDecoCollectMult() {
+  const dm = 1 + getSkillEffect('deco_mult');
   let bonus = 0;
   DECORATIONS.forEach(d => {
     if (state.decorations[d.id] && d.effect.type === 'collect') bonus += d.effect.value;
   });
-  return 1 + bonus;
+  return 1 + bonus * dm;
 }
 
 // イベントシナジー
 function getDecoEventBonus() {
+  const dm = 1 + getSkillEffect('deco_mult');
   let bonus = 0;
   DECORATIONS.forEach(d => {
     if (state.decorations[d.id] && d.effect.type === 'event_bonus') bonus += d.effect.value;
   });
-  return bonus;
+  return bonus * dm;
 }
 
 function buyDecoration(id) {

@@ -110,16 +110,19 @@ function renderPrestigeSkillTree() {
   const container = document.getElementById('prestigeSkillTree');
   container.innerHTML = '';
 
-  const TIER_H = 170, TOP_PAD = 24;
+  const TIER_H = 130, TOP_PAD = 16;
   const wrap = document.createElement('div');
   wrap.className = 'skill-tree-wrap';
   wrap.id = 'pskTreeWrap';
   wrap.style.height = (4 * TIER_H + TOP_PAD * 2) + 'px';
 
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.className = 'skill-tree-svg';
-  svg.id = 'pskTreeSvg';
-  wrap.appendChild(svg);
+  for (let t = 1; t <= 4; t++) {
+    const lbl = document.createElement('div');
+    lbl.className = 'sk-tier-label';
+    lbl.textContent = `T${t}`;
+    lbl.style.top = (TOP_PAD + (t - 0.5) * TIER_H) + 'px';
+    wrap.appendChild(lbl);
+  }
 
   PRESTIGE_SKILLS.forEach(sk => {
     const pos = PRESTIGE_SKILL_POS[sk.id];
@@ -167,13 +170,6 @@ function renderPrestigeSkillTree() {
   container.appendChild(detail);
 
   if (prevOpen) showPrestigeSkillDetail(prevOpen);
-
-  requestAnimationFrame(() => {
-    _drawPrestigeSkillLines();
-    if (window._pskTreeRO) window._pskTreeRO.disconnect();
-    window._pskTreeRO = new ResizeObserver(() => _drawPrestigeSkillLines());
-    window._pskTreeRO.observe(wrap);
-  });
 }
 
 function showPrestigeSkillDetail(id) {
@@ -210,61 +206,38 @@ function showPrestigeSkillDetail(id) {
   }
 
   panel.style.display = 'block';
+  _highlightPrestigeSkillChain(id);
 }
 
 function closePskDetail() {
   const panel = document.getElementById('pskDetailPanel');
   if (panel) { panel.style.display = 'none'; delete panel.dataset.openId; }
+  _highlightPrestigeSkillChain(null);
 }
 
-function _drawPrestigeSkillLines() {
-  const wrap = document.getElementById('pskTreeWrap');
-  const svg  = document.getElementById('pskTreeSvg');
-  if (!wrap || !svg) return;
-  svg.innerHTML = '';
-  const wrapRect = wrap.getBoundingClientRect();
-  svg.setAttribute('width',  wrapRect.width);
-  svg.setAttribute('height', wrap.offsetHeight);
-
-  PRESTIGE_SKILLS.forEach(sk => {
-    const childEl = wrap.querySelector(`.skill-node[data-id="${sk.id}"]`);
-    if (!childEl) return;
-    const cr = childEl.getBoundingClientRect();
-    const cx     = cr.left - wrapRect.left + cr.width  / 2;
-    const cy_top = cr.top  - wrapRect.top;
-    const childUnlocked = !!state.prestigeSkills?.[sk.id];
-
+function _getPrestigeSkillAncestors(id) {
+  const ancestors = new Set();
+  function traverse(skillId) {
+    const sk = PRESTIGE_SKILLS.find(s => s.id === skillId);
+    if (!sk) return;
     sk.requires.forEach(reqId => {
-      const parentEl = wrap.querySelector(`.skill-node[data-id="${reqId}"]`);
-      if (!parentEl) return;
-      const pr = parentEl.getBoundingClientRect();
-      const px     = pr.left - wrapRect.left + pr.width  / 2;
-      const py_bot = pr.top  - wrapRect.top  + pr.height;
-      const parentUnlocked = !!state.prestigeSkills?.[reqId];
-
-      let color, dash, strokeW;
-      if (childUnlocked && parentUnlocked) { color = '#f5c430'; dash = '';    strokeW = 3;   }
-      else if (parentUnlocked)             { color = '#9c27b0'; dash = '';    strokeW = 2.5; }
-      else                                 { color = '#bbb';    dash = '5,4'; strokeW = 1.5; }
-
-      const midY = (py_bot + cy_top) / 2;
-      const d = `M ${px} ${py_bot} L ${px} ${midY} L ${cx} ${midY} L ${cx} ${cy_top}`;
-
-      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', d);
-      path.setAttribute('stroke', color);
-      path.setAttribute('stroke-width', strokeW);
-      path.setAttribute('fill', 'none');
-      path.setAttribute('stroke-linecap', 'round');
-      path.setAttribute('stroke-linejoin', 'round');
-      if (dash) path.setAttribute('stroke-dasharray', dash);
-      svg.appendChild(path);
-
-      const aw = 5;
-      const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      arrow.setAttribute('points', `${cx},${cy_top} ${cx-aw},${cy_top-aw*1.6} ${cx+aw},${cy_top-aw*1.6}`);
-      arrow.setAttribute('fill', color);
-      svg.appendChild(arrow);
+      if (!ancestors.has(reqId)) { ancestors.add(reqId); traverse(reqId); }
     });
+  }
+  if (id) traverse(id);
+  return ancestors;
+}
+
+function _highlightPrestigeSkillChain(selectedId) {
+  const wrap = document.getElementById('pskTreeWrap');
+  if (!wrap) return;
+  const ancestors = _getPrestigeSkillAncestors(selectedId);
+  wrap.querySelectorAll('.skill-node').forEach(node => {
+    const nid = node.dataset.id;
+    node.classList.remove('sk-highlight-selected', 'sk-highlight-chain', 'sk-highlight-dim');
+    if (!selectedId) return;
+    if (nid === selectedId)       node.classList.add('sk-highlight-selected');
+    else if (ancestors.has(nid))  node.classList.add('sk-highlight-chain');
+    else                          node.classList.add('sk-highlight-dim');
   });
 }

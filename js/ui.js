@@ -335,7 +335,7 @@ function showOfflineModal(sec,coins) {
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
 function spawnFloatCoins(text) {
-  const btn=document.getElementById('harvestBtn'), r=btn.getBoundingClientRect();
+  const btn=document.getElementById('harvestSpot'), r=btn.getBoundingClientRect();
   const el=document.createElement('div'); el.className='float-coin';
   el.textContent=`🪙${text}`; el.style.left=(r.left+r.width/2-20)+'px'; el.style.top=(r.top-10)+'px';
   document.body.appendChild(el); setTimeout(()=>el.remove(),1300);

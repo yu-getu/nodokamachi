@@ -74,40 +74,60 @@ function getSkillBeautyMult() {
   const add = getSkillEffect('beauty_mult');
   return 1 + add;
 }
+function getSkillClickMult() {
+  return 1 + getSkillEffect('click_mult');
+}
+function getSkillQuestMult() {
+  return 1 + getSkillEffect('quest_reward');
+}
 
-// ── ツリー型レイアウト設定 ──
-// x: コンテナ幅に対する割合（0〜1）、tier: 段（1〜6）
+
 const SKILL_POS = {
   // ── Tier 1 ──
-  farm_mastery:    { x: 0.19, tier: 1 },
+  farm_mastery:    { x: 0.17, tier: 1 },
   commerce_art:    { x: 0.50, tier: 1 },
-  quick_hands:     { x: 0.81, tier: 1 },
+  quick_hands:     { x: 0.83, tier: 1 },
   // ── Tier 2 ──
-  beauty_power:    { x: 0.10, tier: 2 },
-  farm_market:     { x: 0.32, tier: 2 },
-  culture_bloom:   { x: 0.54, tier: 2 },
-  master_hands:    { x: 0.70, tier: 2 },
-  thrift:          { x: 0.88, tier: 2 },
+  beauty_power:    { x: 0.06, tier: 2 },
+  nature_beauty:   { x: 0.20, tier: 2 },
+  farm_market:     { x: 0.34, tier: 2 },
+  culture_bloom:   { x: 0.50, tier: 2 },
+  master_hands:    { x: 0.64, tier: 2 },
+  event_sense:     { x: 0.78, tier: 2 },
+  thrift:          { x: 0.92, tier: 2 },
   // ── Tier 3 ──
-  healing_spirit:  { x: 0.10, tier: 3 },
-  culture_healing: { x: 0.32, tier: 3 },
-  city_dream:      { x: 0.54, tier: 3 },
-  research_gift:   { x: 0.88, tier: 3 },
+  healing_spirit:  { x: 0.06, tier: 3 },
+  culture_healing: { x: 0.22, tier: 3 },
+  city_dream:      { x: 0.42, tier: 3 },
+  harvest_master:  { x: 0.60, tier: 3 },
+  offline_master:  { x: 0.76, tier: 3 },
+  research_gift:   { x: 0.92, tier: 3 },
   // ── Tier 4 ──
-  town_vitality:   { x: 0.26, tier: 4 },
-  city_space:      { x: 0.50, tier: 4 },
+  town_vitality:   { x: 0.08, tier: 4 },
+  beauty_all:      { x: 0.24, tier: 4 },
+  city_space:      { x: 0.40, tier: 4 },
+  event_lord:      { x: 0.56, tier: 4 },
   space_ambition:  { x: 0.74, tier: 4 },
+  quest_wisdom:    { x: 0.90, tier: 4 },
   // ── Tier 5 ──
-  miracle_town:    { x: 0.18, tier: 5 },
-  deep_sea_power:  { x: 0.50, tier: 5 },
-  all_harmony:     { x: 0.82, tier: 5 },
+  miracle_town:    { x: 0.14, tier: 5 },
+  harvest_limit:   { x: 0.36, tier: 5 },
+  deep_sea_power:  { x: 0.62, tier: 5 },
+  all_harmony:     { x: 0.84, tier: 5 },
   // ── Tier 6 ──
   achiev_eye:      { x: 0.20, tier: 6 },
   dim_mastery:     { x: 0.50, tier: 6 },
   galaxy_civ:      { x: 0.80, tier: 6 },
+  // ── Tier 7 ──
+  cosmos_wisdom:   { x: 0.35, tier: 7 },
+  dim_enlighten:   { x: 0.65, tier: 7 },
 };
-const SKILL_ROW_H = 170;
-const SKILL_TOP_PAD = 24;
+const SKILL_ROW_H = 130;
+const SKILL_TOP_PAD = 16;
+
+function _skillY(tier) {
+  return SKILL_TOP_PAD + (tier - 0.5) * SKILL_ROW_H;
+}
 
 function renderSkills() {
   const avail = getAvailableSkillPoints();
@@ -120,47 +140,28 @@ function renderSkills() {
   const container = document.getElementById('skillTreeContent');
   container.innerHTML = '';
 
-  // 凡例
-  const legend = document.createElement('div');
-  legend.classList.add('sk-legend');
-  legend.innerHTML = `
-    <div class="sk-legend-item"><div class="sk-legend-line" style="background:#4caf50"></div>習得済み</div>
-    <div class="sk-legend-item"><div class="sk-legend-line" style="background:#9c27b0"></div>習得可能</div>
-    <div class="sk-legend-item"><div class="sk-legend-line" style="background:#ccc;border-top:2px dashed #bbb;height:0"></div>前提未達</div>`;
-  container.appendChild(legend);
-
-  // ツリーコンテナ
   const wrap = document.createElement('div');
   wrap.className = 'skill-tree-wrap';
   wrap.id = 'skillTreeWrap';
-  wrap.style.height = (6 * SKILL_ROW_H + SKILL_TOP_PAD * 2) + 'px';
+  wrap.style.height = (7 * SKILL_ROW_H + SKILL_TOP_PAD * 2) + 'px';
 
-  // SVGオーバーレイ（コネクター線）
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.className = 'skill-tree-svg';
-  svg.id = 'skillTreeSvg';
-  wrap.appendChild(svg);
-
-  // Tierラベル（左端）
-  for (let t = 1; t <= 6; t++) {
+  for (let t = 1; t <= 7; t++) {
     const lbl = document.createElement('div');
     lbl.className = 'sk-tier-label';
     lbl.textContent = `T${t}`;
-    lbl.style.top = (_skillY(t)) + 'px';
+    lbl.style.top = _skillY(t) + 'px';
     wrap.appendChild(lbl);
   }
 
-  // スキルノード
   SKILLS.forEach(sk => {
     const pos = SKILL_POS[sk.id];
     if (!pos) return;
-
-    const unlocked = !!state.skills?.[sk.id];
+    const unlocked  = !!state.skills?.[sk.id];
     const canUnlock = canUnlockSkill(sk);
     const prereqMet = sk.requires.every(r => state.skills?.[r]);
 
     let stateClass = 'sk-locked';
-    if (unlocked) stateClass = 'sk-unlocked';
+    if (unlocked)       stateClass = 'sk-unlocked';
     else if (canUnlock) stateClass = 'sk-available';
     else if (prereqMet) stateClass = 'sk-prereq';
 
@@ -168,16 +169,13 @@ function renderSkills() {
     node.className = `skill-node ${stateClass}`;
     node.dataset.id = sk.id;
     node.style.cssText = `left:${pos.x * 100}%;top:${_skillY(pos.tier)}px;cursor:pointer`;
-    node.innerHTML = `
-      <div class="sk-icon">${sk.emoji}</div>
-      <div class="sk-name">${sk.name}</div>`;
+    node.innerHTML = `<div class="sk-icon">${sk.emoji}</div><div class="sk-name">${sk.name}</div>`;
     node.addEventListener('click', e => { e.stopPropagation(); showSkillDetail(sk.id); });
     wrap.appendChild(node);
   });
 
   container.appendChild(wrap);
 
-  // 詳細パネル（ツリー下部にsticky）
   const prevOpen = document.getElementById('skillDetailPanel')?.dataset.openId;
   const detail = document.createElement('div');
   detail.id = 'skillDetailPanel';
@@ -197,14 +195,6 @@ function renderSkills() {
   container.appendChild(detail);
 
   if (prevOpen) showSkillDetail(prevOpen);
-
-  // DOM確定後にSVG線を描画。リサイズ時も再描画
-  requestAnimationFrame(() => {
-    _drawSkillLines();
-    if (window._skillTreeRO) window._skillTreeRO.disconnect();
-    window._skillTreeRO = new ResizeObserver(() => _drawSkillLines());
-    window._skillTreeRO.observe(wrap);
-  });
 }
 
 function showSkillDetail(id) {
@@ -241,69 +231,42 @@ function showSkillDetail(id) {
   }
 
   panel.style.display = 'block';
+  _highlightSkillChain(id);
 }
 
 function closeSkillDetail() {
   const panel = document.getElementById('skillDetailPanel');
   if (panel) { panel.style.display = 'none'; delete panel.dataset.openId; }
+  _highlightSkillChain(null);
 }
 
-function _skillY(tier) {
-  return SKILL_TOP_PAD + (tier - 0.5) * SKILL_ROW_H;
-}
-
-function _drawSkillLines() {
-  const wrap = document.getElementById('skillTreeWrap');
-  const svg  = document.getElementById('skillTreeSvg');
-  if (!wrap || !svg) return;
-
-  svg.innerHTML = '';
-  const wrapRect = wrap.getBoundingClientRect();
-  svg.setAttribute('width',  wrapRect.width);
-  svg.setAttribute('height', wrap.offsetHeight);
-
-  SKILLS.forEach(sk => {
-    const childEl = wrap.querySelector(`.skill-node[data-id="${sk.id}"]`);
-    if (!childEl) return;
-    const cr = childEl.getBoundingClientRect();
-    const cx     = cr.left - wrapRect.left + cr.width  / 2;  // 子の中心X
-    const cy_top = cr.top  - wrapRect.top;                   // 子の上辺Y（transform後）
-    const childUnlocked = !!state.skills?.[sk.id];
-
+// 選択スキルの全祖先IDを再帰的に取得
+function _getSkillAncestors(id) {
+  const ancestors = new Set();
+  function traverse(skillId) {
+    const sk = SKILLS.find(s => s.id === skillId);
+    if (!sk) return;
     sk.requires.forEach(reqId => {
-      const parentEl = wrap.querySelector(`.skill-node[data-id="${reqId}"]`);
-      if (!parentEl) return;
-      const pr = parentEl.getBoundingClientRect();
-      const px      = pr.left - wrapRect.left + pr.width  / 2;  // 親の中心X
-      const py_bot  = pr.top  - wrapRect.top  + pr.height;      // 親の下辺Y（transform後）
-      const parentUnlocked = !!state.skills?.[reqId];
-
-      let color, dash, strokeW;
-      if (childUnlocked && parentUnlocked) { color = '#4caf50'; dash = ''; strokeW = 3; }
-      else if (parentUnlocked)             { color = '#9c27b0'; dash = ''; strokeW = 2.5; }
-      else                                 { color = '#bbb';    dash = '5,4'; strokeW = 1.5; }
-
-      // 直角ルート: 親ボトム → midY → 子X → 子トップ
-      const midY = (py_bot + cy_top) / 2;
-      const d = `M ${px} ${py_bot} L ${px} ${midY} L ${cx} ${midY} L ${cx} ${cy_top}`;
-
-      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', d);
-      path.setAttribute('stroke', color);
-      path.setAttribute('stroke-width', strokeW);
-      path.setAttribute('fill', 'none');
-      path.setAttribute('stroke-linecap', 'round');
-      path.setAttribute('stroke-linejoin', 'round');
-      if (dash) path.setAttribute('stroke-dasharray', dash);
-      svg.appendChild(path);
-
-      // 矢印（子トップ直上）
-      const aw = 5;
-      const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      arrow.setAttribute('points',
-        `${cx},${cy_top} ${cx - aw},${cy_top - aw * 1.6} ${cx + aw},${cy_top - aw * 1.6}`);
-      arrow.setAttribute('fill', color);
-      svg.appendChild(arrow);
+      if (!ancestors.has(reqId)) { ancestors.add(reqId); traverse(reqId); }
     });
+  }
+  if (id) traverse(id);
+  return ancestors;
+}
+
+// ノードの枠を強調・減光してチェーンを視覚化
+function _highlightSkillChain(selectedId) {
+  const wrap = document.getElementById('skillTreeWrap');
+  if (!wrap) return;
+
+  const ancestors = _getSkillAncestors(selectedId);
+
+  wrap.querySelectorAll('.skill-node').forEach(node => {
+    const nid = node.dataset.id;
+    node.classList.remove('sk-highlight-selected', 'sk-highlight-chain', 'sk-highlight-dim');
+    if (!selectedId) return;
+    if (nid === selectedId)       node.classList.add('sk-highlight-selected');
+    else if (ancestors.has(nid))  node.classList.add('sk-highlight-chain');
+    else                          node.classList.add('sk-highlight-dim');
   });
 }

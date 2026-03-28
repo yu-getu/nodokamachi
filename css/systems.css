@@ -662,19 +662,36 @@
     color: var(--prestige)
 }
 
-/* ── スキルツリー（ツリー型） ── */
 .skill-tree-wrap {
     position: relative;
     width: 100%;
     overflow: visible
 }
 
-.skill-tree-svg {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: visible
+/* 選択中ノード：金色の強調枠（位置は動かさない） */
+.skill-node.sk-highlight-selected {
+    border-color: #f5c430 !important;
+    box-shadow: 0 0 0 3px rgba(245,196,48,.5), 0 4px 16px rgba(245,196,48,.4) !important;
+    z-index: 2
+}
+
+/* 強調中はホバーで動かない */
+.skill-node.sk-highlight-selected:hover,
+.skill-node.sk-highlight-chain:hover {
+    transform: translate(-50%, -50%) !important
+}
+
+/* 前提チェーンノード：紫の強調枠 */
+.skill-node.sk-highlight-chain {
+    border-color: #9c27b0 !important;
+    box-shadow: 0 0 0 2px rgba(156,39,176,.4), 0 2px 10px rgba(156,39,176,.3) !important;
+    opacity: 1 !important
+}
+
+/* 無関係ノード：減光 */
+.skill-node.sk-highlight-dim {
+    opacity: 0.3 !important;
+    filter: grayscale(60%)
 }
 
 .skill-node {

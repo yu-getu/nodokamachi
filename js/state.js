@@ -155,26 +155,37 @@ const SKILLS = [
   // Tier 2（2SP）
   {id:'master_hands',   name:'名人の手さばき', emoji:'⚡', cost:2, tier:2, requires:['quick_hands'],            effect:'click_sec',     value:4,    desc:'ひと稼ぎ +4秒分（合計10秒）'},
   {id:'beauty_power',   name:'美の力',       emoji:'🌺', cost:2, tier:2, requires:['farm_mastery'],           effect:'beauty_mult',   value:0.5,  desc:'美観ボーナス ×1.5'},
+  {id:'nature_beauty',  name:'自然の美',     emoji:'🌿', cost:2, tier:2, requires:['farm_mastery'],           effect:'deco_mult',     value:0.25, desc:'全デコレーション効果 +25%'},
   {id:'culture_bloom',  name:'文化の花開き', emoji:'📚', cost:2, tier:2, requires:['commerce_art'],           effect:'cps_area3',     value:0.40, desc:'文化エリア全建物のCPS +40%'},
   {id:'thrift',         name:'節約の極意',   emoji:'✂️', cost:2, tier:2, requires:['quick_hands'],            effect:'cost_down',     value:0.15, desc:'全建物のコスト -15%'},
+  {id:'event_sense',    name:'イベント感知', emoji:'🎪', cost:2, tier:2, requires:['quick_hands'],            effect:'event_mult',    value:0.30, desc:'イベント効果倍率 +30%'},
   {id:'farm_market',    name:'農商連携',     emoji:'🤝', cost:2, tier:2, requires:['farm_mastery','commerce_art'], effect:'cps_synergy', areas:[1,2], value:0.25, desc:'農村・商店街エリアが互いに+25%（両区解放時）'},
-  // Tier 3（2SP）
+  // Tier 3（2〜3SP）
   {id:'healing_spirit', name:'癒やしの精神', emoji:'🌿', cost:2, tier:3, requires:['beauty_power'],           effect:'cps_area4',     value:0.50, desc:'癒やしエリア全建物のCPS +50%'},
   {id:'city_dream',     name:'都市の夢',     emoji:'🏙️', cost:2, tier:3, requires:['culture_bloom'],          effect:'cps_area5',     value:0.50, desc:'娯楽エリア全建物のCPS +50%'},
+  {id:'harvest_master', name:'豊作の神髄',   emoji:'🌾', cost:3, tier:3, requires:['master_hands','event_sense'], effect:'click_mult', value:1.0,  desc:'手動収穫量 ×2'},
+  {id:'offline_master', name:'倹約の境地',   emoji:'💤', cost:2, tier:3, requires:['thrift'],                 effect:'offline_mult',  value:0.25, desc:'オフライン効率 +25%'},
   {id:'research_gift',  name:'研究の才能',   emoji:'🔬', cost:2, tier:3, requires:['thrift'],                 effect:'research_cost', value:0.25, desc:'研究コスト -25%'},
   {id:'culture_healing',name:'文癒融合',     emoji:'🌿', cost:3, tier:3, requires:['farm_market'],            effect:'cps_synergy', areas:[3,4], value:0.30, desc:'文化・癒やしエリアが互いに+30%（両区解放時）'},
-  // Tier 4（3SP）
+  // Tier 4（2〜3SP）
   {id:'town_vitality',  name:'街の活気',     emoji:'✨', cost:3, tier:4, requires:['healing_spirit','city_dream'], effect:'cps_all',  value:0.30, desc:'全建物のCPS +30%'},
-  {id:'space_ambition', name:'宇宙への野望', emoji:'🚀', cost:3, tier:4, requires:['research_gift'],              effect:'cps_area6', value:0.80, desc:'宇宙エリア全建物のCPS +80%'},
+  {id:'beauty_all',     name:'美と力の融合', emoji:'💫', cost:3, tier:4, requires:['nature_beauty','beauty_power'], effect:'cps_all', value:0.20, desc:'全建物のCPS +20%'},
   {id:'city_space',     name:'都宙連帯',     emoji:'🌌', cost:3, tier:4, requires:['culture_healing'],            effect:'cps_synergy', areas:[5,6], value:0.35, desc:'都市・宇宙エリアが互いに+35%（両区解放時）'},
-  // Tier 5（3SP / 4SP）
+  {id:'event_lord',     name:'祭典の主',     emoji:'🎆', cost:3, tier:4, requires:['event_sense'],               effect:'event_dur',   value:0.50, desc:'イベント継続時間 +50%'},
+  {id:'space_ambition', name:'宇宙への野望', emoji:'🚀', cost:3, tier:4, requires:['research_gift'],              effect:'cps_area6', value:0.80, desc:'宇宙エリア全建物のCPS +80%'},
+  {id:'quest_wisdom',   name:'知恵の報酬',   emoji:'📜', cost:2, tier:4, requires:['research_gift'],             effect:'quest_reward', value:0.40, desc:'クエスト報酬 +40%'},
+  // Tier 5（3〜4SP）
   {id:'miracle_town',   name:'奇跡の街',     emoji:'🌟', cost:3, tier:5, requires:['town_vitality','space_ambition'], effect:'cps_all', value:0.50, desc:'全建物のCPS +50%'},
+  {id:'harvest_limit',  name:'収穫の境地',   emoji:'⚡', cost:4, tier:5, requires:['harvest_master'],          effect:'click_mult',  value:2.0,  desc:'手動収穫量さらに強化（累積×4）'},
   {id:'deep_sea_power', name:'深海の覇権',   emoji:'🌊', cost:3, tier:5, requires:['space_ambition'],         effect:'cps_area7',   value:0.60, desc:'深海エリア全建物のCPS +60%'},
   {id:'all_harmony',    name:'全区調和',     emoji:'🌐', cost:4, tier:5, requires:['city_space'],              effect:'cps_synergy', areas:[1,2,3,4,5,6,7,8], value:0.20, desc:'全エリアが互いに+20%（全区解放時）'},
-  // Tier 6（3SP / 4SP）
+  // Tier 6（3〜4SP）
   {id:'achiev_eye',     name:'実績の目',     emoji:'👁️', cost:3, tier:6, requires:['miracle_town'],           effect:'achiev_cps',  value:0.02, desc:'実績1件ごとに全CPS +2%'},
   {id:'dim_mastery',    name:'異次元の理',   emoji:'🔮', cost:3, tier:6, requires:['deep_sea_power'],         effect:'cps_area8',   value:0.70, desc:'異次元エリア全建物のCPS +70%'},
   {id:'galaxy_civ',     name:'銀河文明',     emoji:'🌌', cost:4, tier:6, requires:['achiev_eye'],             effect:'cps_mult',    value:1.0,  desc:'全建物のCPS ×2'},
+  // Tier 7（5SP）
+  {id:'cosmos_wisdom',  name:'宇宙の全知',   emoji:'🌠', cost:5, tier:7, requires:['all_harmony','achiev_eye'], effect:'cps_mult',  value:0.50, desc:'全建物のCPS ×1.5'},
+  {id:'dim_enlighten',  name:'異次元の悟り', emoji:'💎', cost:5, tier:7, requires:['galaxy_civ','dim_mastery'], effect:'cps_mult',  value:2.0,  desc:'全建物のCPS ×3'},
 ];
 
 const EVENTS = [

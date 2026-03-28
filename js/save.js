@@ -69,7 +69,7 @@ function loadGame() {
     if (offSec > 30 && getCps() > 0) {
       // オフライン効率：基本50% + 世代スキル効果（上限100%）
       const baseOffMult = 0.5;
-      const offlineSkillEffect = getPrestigeSkillEffect('offline_mult');
+      const offlineSkillEffect = getPrestigeSkillEffect('offline_mult') + getSkillEffect('offline_mult');
       const offMult = Math.max(0.5, Math.min(1.0, baseOffMult + offlineSkillEffect));
       const earned = Math.floor(getEffectiveCps() * offSec * offMult);
       state.coins += earned; state.totalEarned += earned;

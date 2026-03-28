@@ -27,8 +27,9 @@ function generateQuests() {
   });
 
   const totalSecs = { 5: 60, 15: 90, 30: 120, 60: 180, 100: 240, 150: 300, 230: 420, 350: 600, 500: 900 };
+  const curTotalLv = getTotalLv();
   [5, 15, 30, 60, 100, 150, 230, 350, 500].forEach(t => {
-    if (getTotalLv() < t) pool.push({
+    if (curTotalLv < t && t <= curTotalLv + 80) pool.push({
       id: `total_${t}`, emoji: '🏘️', label: `建物の総レベルを${t}にする`,
       type: 'total_level', target: t,
       reward: reward(totalSecs[t] || 120),
@@ -36,7 +37,7 @@ function generateQuests() {
   });
 
   [1000, 50000, 1000000, 50000000, 1000000000, 50000000000, 1000000000000].forEach(t => {
-    if (state.totalEarned < t) pool.push({
+    if (state.totalEarned < t && t <= Math.max(1000, state.totalEarned * 100)) pool.push({
       id: `earn_${t}`, emoji: '💰', label: `累計${fmt(t)}コインを稼ぐ`,
       type: 'earn', target: t,
       // フロア: 目標額の5%
@@ -80,7 +81,7 @@ function generateQuests() {
 
   const curMaxCps = state.maxCps || 0;
   [1, 5, 10, 50, 100, 500, 1000, 5000, 1e4, 5e4, 1e5, 5e5, 1e6, 5e6, 1e7, 5e7, 1e8, 5e8].forEach(t => {
-    if (curMaxCps < t) pool.push({
+    if (curMaxCps < t && t <= Math.max(5, curMaxCps * 100)) pool.push({
       id: `cps_${t}`, emoji: '⚡',
       label: `CPS ${fmt(t)}/秒 を達成する`,
       type: 'cps', target: t,
@@ -89,8 +90,9 @@ function generateQuests() {
     });
   });
 
+  const maxUnlockedArea = Math.max(...(state.unlockedAreas || [1]));
   [2, 3, 4, 5, 6].forEach(areaId => {
-    if (!(state.unlockedAreas || [1]).includes(areaId)) {
+    if (!(state.unlockedAreas || [1]).includes(areaId) && areaId <= maxUnlockedArea + 1) {
       const area = AREAS.find(a => a.id === areaId);
       if (!area) return;
       pool.push({
@@ -134,10 +136,11 @@ function claimQuest(i) {
   const q = (state.quests?.active || [])[i];
   if (!q || q.claimed || getQuestProgress(q) < q.target) return;
   q.claimed = true;
-  state.coins += q.reward; state.totalEarned += q.reward;
+  const actualReward = Math.floor(q.reward * getSkillQuestMult());
+  state.coins += actualReward; state.totalEarned += actualReward;
   state.quests.completedTotal = (state.quests.completedTotal || 0) + 1;
-  spawnFloatCoins(`+${fmt(q.reward)}`);
-  addLog(`🎯 クエスト完了：${q.label} +${fmt(q.reward)}コイン！`);
+  spawnFloatCoins(`+${fmt(actualReward)}`);
+  addLog(`🎯 クエスト完了：${q.label} +${fmt(actualReward)}コイン！`);
   playQuestSfx();
   checkAchievements(); renderQuests(); render(); saveGame();
 }

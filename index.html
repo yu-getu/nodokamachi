@@ -70,6 +70,10 @@
       <div id="weatherLayer"></div>
       <div class="buildings-row" id="buildingsRow"></div>
       <div class="event-badge-container" id="eventBadgeContainer"></div>
+      <div class="harvest-spot" id="harvestSpot" onclick="manualHarvest();this.classList.add('harvest-click');setTimeout(()=>this.classList.remove('harvest-click'),300)">
+        <div class="harvest-spot-coin">🪙</div>
+        <div class="harvest-spot-label">ひと稼ぎ</div>
+      </div>
     </div>
 
     <div class="stats-bar">
@@ -199,9 +203,6 @@
     </div>
 
   </div>
-
-  <button class="harvest-btn" id="harvestBtn" onclick="manualHarvest()">🪙<span
-      class="harvest-label">ひと稼ぎ</span></button>
 
   <div class="event-toast" id="eventToast">
     <div class="event-toast-icon" id="eventIcon"></div>

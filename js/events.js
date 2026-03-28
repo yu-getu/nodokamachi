@@ -7,8 +7,8 @@ function getEventMult() {
   state.eventDiscount = state.activeEvents.reduce((best, ae) => Math.min(best, ae.discount || 1), 1);
   if (!state.activeEvents.length) return 1;
   const m = state.activeEvents.reduce((prod, ae) => prod * (ae.mult || 1), 1);
-  // 花火台シナジー：合計倍率がプラスの場合のみ強化
-  if (m > 1) return m * (1 + getDecoEventBonus());
+  // 花火台シナジー + イベント感知スキル：合計倍率がプラスの場合のみ強化
+  if (m > 1) return m * (1 + getSkillEffect('event_mult')) * (1 + getDecoEventBonus());
   return m;
 }
 
@@ -20,7 +20,8 @@ function triggerRandomEvent() {
   if (ev.id === 'storm' || ev.id === 'lightning') state.stormCount++;
   const now = Date.now();
   if (!state.activeEvents) state.activeEvents = [];
-  const newEndsAt = ev.dur > 0 ? now + ev.dur * 1000 : now;
+  const durMult = 1 + getSkillEffect('event_dur');
+  const newEndsAt = ev.dur > 0 ? now + ev.dur * 1000 * durMult : now;
   const existing = state.activeEvents.find(ae => ae.eventId === ev.id);
   if (existing) {
     existing.endsAt = newEndsAt;
