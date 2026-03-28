@@ -256,12 +256,12 @@ const DECORATIONS = [
   // ─ 収穫強化（collect）─
   { id:'stage',        name:'野外舞台',       emoji:'🎭', cost:100000,    desc:'ひと稼ぎを応援してくれる舞台',       effect:{type:'collect',    value:1.0},  effectDesc:'手動収穫 ×2' },
   { id:'fireworks',    name:'花火台',         emoji:'🎆', cost:8000000,   desc:'夜空を彩る花火が活力を与える',       effect:{type:'collect',    value:2.0},  effectDesc:'手動収穫 ×3' },
-  // ─ 施設特化（focusOnly: 転生スキル「飾りの極意」解放後に購入可）─
-  { id:'focus_badge',  name:'名工の認定証',   emoji:'🏅', cost:300000,    desc:'名工が認めた施設だけに授けられる証', effect:{type:'self_cps',   value:1.5},  effectDesc:'設置施設 CPS ×2.5', focusOnly:true },
-  { id:'focus_crown',  name:'施設の王冠',     emoji:'👑', cost:3000000,   desc:'王冠を戴いた施設は飛躍的に輝く',    effect:{type:'self_cps',   value:3.0},  effectDesc:'設置施設 CPS ×4',   focusOnly:true },
-  { id:'focus_gem',    name:'秘宝の宝珠',     emoji:'💠', cost:50000000,  desc:'秘宝の力が施設の力を解き放つ',      effect:{type:'self_cps',   value:6.0},  effectDesc:'設置施設 CPS ×7',   focusOnly:true },
-  { id:'focus_star',   name:'星の加護石',     emoji:'🌟', cost:5e12,      desc:'星の力が宿る石が施設を守護する',    effect:{type:'self_cps',   value:12.0}, effectDesc:'設置施設 CPS ×13',  focusOnly:true },
-  { id:'focus_core',   name:'エーテルコア',   emoji:'⚗️', cost:5e18,      desc:'純粋なエーテルエネルギーの核',      effect:{type:'self_cps',   value:30.0}, effectDesc:'設置施設 CPS ×31',  focusOnly:true },
+  // ─ 施設特化（focusOnly: 転生スキル「飾りの極意」解放後に購入可・target施設に設置時のみ効果発動）─
+  { id:'focus_badge',  name:'名工の認定証',   emoji:'🏅', cost:300000,    desc:'農協に認定された施設だけに授けられる証',   effect:{type:'self_cps', value:1.5},  effectDesc:'農協に設置時 CPS ×2.5', focusOnly:true, target:'farmcoop'  },
+  { id:'focus_crown',  name:'施設の王冠',     emoji:'👑', cost:3000000,   desc:'城に掲げられてこそ輝く黄金の王冠',        effect:{type:'self_cps', value:3.0},  effectDesc:'城に設置時 CPS ×4',     focusOnly:true, target:'castle'    },
+  { id:'focus_gem',    name:'秘宝の宝珠',     emoji:'💠', cost:50000000,  desc:'神社の御神体として祀られる秘宝',           effect:{type:'self_cps', value:6.0},  effectDesc:'神社に設置時 CPS ×7',   focusOnly:true, target:'shrine'    },
+  { id:'focus_star',   name:'星の加護石',     emoji:'🌟', cost:5e12,      desc:'宇宙基地の礎となる星のエネルギー石',      effect:{type:'self_cps', value:12.0}, effectDesc:'宇宙基地に設置時 CPS ×13', focusOnly:true, target:'rocket'    },
+  { id:'focus_core',   name:'エーテルコア',   emoji:'⚗️', cost:5e18,      desc:'魔法陣の核として召喚されたエーテルの塊', effect:{type:'self_cps', value:30.0}, effectDesc:'魔法陣に設置時 CPS ×31', focusOnly:true, target:'magicircle'},
 ];
 
 const WEATHER_DEFS = {

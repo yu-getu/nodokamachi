@@ -1,5 +1,5 @@
 // のどかまち Service Worker
-const CACHE_NAME = 'nodokamachi-v1';
+const CACHE_NAME = 'nodokamachi-v2';
 const ASSETS = [
   '/nodokamachi/index.html',
   '/nodokamachi/manifest.json',

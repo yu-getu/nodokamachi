@@ -1,10 +1,26 @@
 /* ── ショップ・レベルバー・エリアヘッダー ── */
 
-/* 一括購入バー */
+/* 一括購入バーラッパー */
+.bulk-bar-wrap {
+    margin-bottom: 6px;
+}
+
+.bulk-bar-wrap:empty {
+    display: none;
+}
+
+/* ショップスクロールエリア（スキルツリーと同様） */
+#shopScrollArea {
+    overflow-y: auto;
+    max-height: 55vh;
+    border: 1.5px solid #e8d8b0;
+    border-radius: 12px;
+    padding: 8px;
+}
+
 .bulk-bar {
     display: flex;
     gap: 6px;
-    margin-bottom: 4px
 }
 
 .bulk-btn {

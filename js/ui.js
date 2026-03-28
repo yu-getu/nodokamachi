@@ -231,12 +231,13 @@ function renderShop() {
   const grid=document.getElementById('shopGrid'); grid.innerHTML='';
 
   // 一括購入モード切り替えバー
-  const bulkBar=document.createElement('div');
-  bulkBar.className='bulk-bar';
-  bulkBar.style.cssText='grid-column:1/-1';
+  const bulkWrap = document.getElementById('bulkBarWrap');
+  bulkWrap.innerHTML = '';
   const bulkUnlocked = !!state.prestigeSkills?.unlock_bulk_lv;
   if (!bulkUnlocked) { bulkMode = 1; }
   if (bulkUnlocked) {
+    const bulkBar=document.createElement('div');
+    bulkBar.className='bulk-bar';
     [[1,'×1'],[10,'×10'],[100,'×100'],[0,'MAX']].forEach(([mode,label])=>{
       const btn=document.createElement('button');
       btn.className='bulk-btn'+(bulkMode===mode?' active':'');
@@ -245,7 +246,7 @@ function renderShop() {
       btn.onclick=()=>setBulkMode(mode);
       bulkBar.appendChild(btn);
     });
-    grid.appendChild(bulkBar);
+    bulkWrap.appendChild(bulkBar);
   }
   const maxLv=getMaxLevel();
   const disc=state.eventDiscount<1;

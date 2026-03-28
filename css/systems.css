@@ -778,6 +778,34 @@
     border-style: dashed
 }
 
+.deco-target-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--prestige2);
+    margin-top: 2px
+}
+
+.deco-wrong-target {
+    display: block;
+    font-size: 9px;
+    color: #e65100;
+    font-weight: 700;
+    margin-top: 1px
+}
+
+.deco-avail-item.wrong-target {
+    opacity: .7
+}
+
+.btn-deco-place.no-effect {
+    background: #ff8f00;
+    border-color: #ff8f00
+}
+
+.btn-deco-place.no-effect:hover {
+    opacity: .85
+}
+
 /* ── 飾りボタン（ショップカード内）── */
 .btn-deco-open {
     width: 100%;

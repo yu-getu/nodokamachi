@@ -29,7 +29,7 @@ function getDecoBuildingMult(buildingId) {
       if (!d) return;
       switch (d.effect.type) {
         case 'self_cps':
-          if (bId === buildingId) bonus += d.effect.value;
+          if (bId === buildingId && (!d.target || d.target === bId)) bonus += d.effect.value;
           break;
         case 'area_cps':
           if (pb.area === b.area) bonus += d.effect.value;
@@ -140,11 +140,15 @@ function renderDecoModal(buildingId) {
     const div = document.createElement('div');
     div.className = `deco-slot ${d ? 'filled' : 'empty'}`;
     if (d) {
+      const isWrongTarget = d.target && d.target !== buildingId;
+      const targetB = d.target ? BUILDINGS.find(x => x.id === d.target) : null;
       div.innerHTML = `
         <span class="deco-slot-emoji">${d.emoji}</span>
         <div class="deco-slot-info">
           <div class="deco-slot-name">${d.name}</div>
-          <div class="deco-slot-effect">${d.effectDesc}</div>
+          <div class="deco-slot-effect">${isWrongTarget
+            ? `<span class="deco-wrong-target">⚠️ 効果なし（${targetB?.emoji}${targetB?.name}専用）</span>`
+            : d.effectDesc}</div>
         </div>
         <button class="btn-deco-remove" onclick="removeDecoration('${buildingId}','${decoId}')">✕</button>`;
     } else {
@@ -184,16 +188,18 @@ function renderDecoModal(buildingId) {
     unplaced.forEach(decoId => {
       const d = DECORATIONS.find(x => x.id === decoId);
       if (!d) return;
+      const isWrongTarget = d.target && d.target !== buildingId;
+      const targetB = d.target ? BUILDINGS.find(x => x.id === d.target) : null;
       const div = document.createElement('div');
-      div.className = 'deco-avail-item';
+      div.className = `deco-avail-item${isWrongTarget ? ' wrong-target' : ''}`;
       div.innerHTML = `
         <span class="deco-slot-emoji">${d.emoji}</span>
         <div class="deco-slot-info">
           <div class="deco-slot-name">${d.name}</div>
-          <div class="deco-slot-effect">${d.effectDesc}</div>
+          <div class="deco-slot-effect">${d.effectDesc}${isWrongTarget ? ` <span class="deco-wrong-target">⚠️ ${targetB?.emoji}${targetB?.name}に設置で効果発動</span>` : ''}</div>
         </div>
-        <button class="btn-deco-place" onclick="placeDecoration('${buildingId}','${decoId}')" ${canPlace ? '' : 'disabled'}>
-          ${canPlace ? '配置' : '満杯'}
+        <button class="btn-deco-place${isWrongTarget ? ' no-effect' : ''}" onclick="placeDecoration('${buildingId}','${decoId}')" ${canPlace ? '' : 'disabled'}>
+          ${canPlace ? (isWrongTarget ? '配置（効果なし）' : '配置') : '満杯'}
         </button>`;
       availEl.appendChild(div);
     });
@@ -211,18 +217,21 @@ function renderDecoModal(buildingId) {
         (state.decoSlots[bid] || []).includes(decoId)
       );
       const curB = BUILDINGS.find(x => x.id === curBId);
+      const isWrongTarget = d.target && d.target !== buildingId;
+      const targetB = d.target ? BUILDINGS.find(x => x.id === d.target) : null;
       const div = document.createElement('div');
-      div.className = 'deco-avail-item placed-elsewhere';
+      div.className = `deco-avail-item placed-elsewhere${isWrongTarget ? ' wrong-target' : ''}`;
       div.innerHTML = `
         <span class="deco-slot-emoji">${d.emoji}</span>
         <div class="deco-slot-info">
           <div class="deco-slot-name">${d.name}</div>
           <div class="deco-slot-effect">${d.effectDesc}
             <span class="deco-cur-building">📍 ${curB?.emoji}${curB?.name}</span>
+            ${isWrongTarget ? `<span class="deco-wrong-target">⚠️ ${targetB?.emoji}${targetB?.name}で効果発動</span>` : ''}
           </div>
         </div>
-        <button class="btn-deco-place move" onclick="placeDecoration('${buildingId}','${decoId}')" ${canPlace ? '' : 'disabled'}>
-          ${canPlace ? '移動' : '満杯'}
+        <button class="btn-deco-place move${isWrongTarget ? ' no-effect' : ''}" onclick="placeDecoration('${buildingId}','${decoId}')" ${canPlace ? '' : 'disabled'}>
+          ${canPlace ? (isWrongTarget ? '移動（効果なし）' : '移動') : '満杯'}
         </button>`;
       availEl.appendChild(div);
     });
@@ -292,6 +301,7 @@ function _renderDecoItem(d, grid, owned, focusUnlocked = true) {
   const div = document.createElement('div');
   div.className = `deco-item ${isOwned ? 'owned' : canAfford ? 'affordable' : ''} ${isLocked ? 'focus-locked' : ''}`;
   div.dataset.decoId = d.id;
+  const targetB = d.target ? BUILDINGS.find(x => x.id === d.target) : null;
   div.innerHTML = `
     <div class="deco-item-top">
       <span class="deco-emoji">${isLocked ? '🔒' : d.emoji}</span>
@@ -300,6 +310,7 @@ function _renderDecoItem(d, grid, owned, focusUnlocked = true) {
         <div class="deco-desc">${isLocked ? '施設特化飾り（要：飾りの極意）' : d.desc}</div>
       </div>
     </div>
+    ${targetB && !isLocked ? `<div class="deco-target-label">🎯 対象施設：${targetB.emoji}${targetB.name}</div>` : ''}
     <div class="deco-synergy">🔗 ${isLocked ? '???' : d.effectDesc}</div>
     ${isOwned
       ? `<div class="deco-placed-info">${placedAt ? `📍 ${placedAt}に設置中` : '⚪ 未配置'}</div>`
