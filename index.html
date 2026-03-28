@@ -68,12 +68,16 @@
 
     <div class="town-area" id="townArea">
       <div id="weatherLayer"></div>
-      <div class="buildings-row" id="buildingsRow"></div>
-      <div class="event-badge-container" id="eventBadgeContainer"></div>
-      <div class="harvest-spot" id="harvestSpot" onclick="manualHarvest();this.classList.add('harvest-click');setTimeout(()=>this.classList.remove('harvest-click'),300)">
-        <div class="harvest-spot-coin">🪙</div>
-        <div class="harvest-spot-label">ひと稼ぎ</div>
+      <button class="town-nav-btn" id="townNavPrev" onclick="changeTownArea(-1)">◀</button>
+      <button class="town-nav-btn" id="townNavNext" onclick="changeTownArea(1)">▶</button>
+      <div class="harvest-row" id="harvestRow"></div>
+      <div id="townContent">
+        <div class="town-nav-bar">
+          <div class="town-area-label" id="townAreaLabel"></div>
+        </div>
+        <div class="buildings-row" id="buildingsRow"></div>
       </div>
+      <div class="event-badge-container" id="eventBadgeContainer"></div>
     </div>
 
     <div class="stats-bar">

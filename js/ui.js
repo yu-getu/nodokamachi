@@ -118,20 +118,98 @@ function renderCpsDetail() {
     </div>`;
 }
 
-function renderTown() {
-  const row=document.getElementById('buildingsRow'); row.innerHTML=''; let any=false;
-  BUILDINGS.forEach((b,i)=>{
-    const lv=state.buildings[b.id].level; if(!lv) return; any=true;
-    const d=document.createElement('div'); d.className='building';
-    d.style.setProperty('--delay',`${i*.4}s`);
-    const cps=getBuildingCps(b).toFixed(1);
-    d.innerHTML=`<div class="building-emoji">${b.emoji}</div>
-      <div class="building-name">${b.name} Lv${lv}</div>
-      <div class="building-rate">+${cps}/秒</div>`;
-    row.appendChild(d);
-  });
-  if(!any) row.innerHTML='<div style="text-align:center;color:var(--muted);font-size:13px;padding:32px 0">🌱 最初の建物を建ててみよう！</div>';
+let _townViewArea = 0;
 
+let _townSliding = false;
+function changeTownArea(dir) {
+  if (_townSliding) return;
+  const unlocked = AREAS.filter(a => (state.unlockedAreas || [1]).includes(a.id));
+  const newIdx = Math.max(0, Math.min(unlocked.length - 1, _townViewArea + dir));
+  if (newIdx === _townViewArea) return;
+
+  _townSliding = true;
+  const content = document.getElementById('townContent');
+  const outClass = dir > 0 ? 'tc-out-left'  : 'tc-out-right';
+  const inClass  = dir > 0 ? 'tc-in-right'  : 'tc-in-left';
+
+  // 背景色をすぐに遷移開始
+  _townViewArea = newIdx;
+  document.getElementById('townArea').dataset.area = unlocked[newIdx].id;
+
+  content.classList.add(outClass);
+  setTimeout(() => {
+    content.classList.remove(outClass);
+    renderTown();
+    content.classList.add(inClass);
+    setTimeout(() => {
+      content.classList.remove(inClass);
+      _townSliding = false;
+    }, 240);
+  }, 180);
+}
+
+function _mkBuildingEl(b, i) {
+  const lv = state.buildings[b.id].level;
+  const d = document.createElement('div');
+  d.className = 'building';
+  d.style.setProperty('--delay', `${i * .4}s`);
+  const cps = getBuildingCps(b).toFixed(1);
+  d.innerHTML = `<div class="building-emoji">${b.emoji}</div>
+    <div class="building-name">${b.name} Lv${lv}</div>
+    <div class="building-rate">+${cps}/秒</div>`;
+  return d;
+}
+
+function renderTown() {
+  const unlockedIds = state.unlockedAreas || [1];
+  const unlocked = AREAS.filter(a => unlockedIds.includes(a.id));
+  _townViewArea = Math.max(0, Math.min(unlocked.length - 1, _townViewArea));
+  const cur = unlocked[_townViewArea];
+
+  // エリア背景
+  document.getElementById('townArea').dataset.area = cur.id;
+
+  // ナビゲーション更新
+  const prevBtn = document.getElementById('townNavPrev');
+  const nextBtn = document.getElementById('townNavNext');
+  const label   = document.getElementById('townAreaLabel');
+  if (prevBtn) prevBtn.disabled = (_townViewArea === 0);
+  if (nextBtn) nextBtn.disabled = (_townViewArea === unlocked.length - 1);
+  if (label) label.innerHTML =
+    `<span class="tna-emoji">${cur.emoji}</span>` +
+    `<span class="tna-name">${cur.name}</span>` +
+    `<span class="tna-desc">${cur.desc}</span>`;
+
+  // ひと稼ぎ（上段）
+  const harvestRow = document.getElementById('harvestRow');
+  harvestRow.innerHTML = '';
+  const hNode = document.createElement('div');
+  hNode.className = 'harvest-building';
+  hNode.id = 'harvestSpot';
+  hNode.innerHTML = `<div class="hv-coin">🪙</div>
+    <div class="building-name">ひと稼ぎ</div>
+    <div class="building-rate">タップ！</div>`;
+  hNode.addEventListener('click', () => {
+    manualHarvest();
+    hNode.classList.add('harvest-click');
+    setTimeout(() => hNode.classList.remove('harvest-click'), 300);
+  });
+  harvestRow.appendChild(hNode);
+
+  // 建物列（下段）
+  const row = document.getElementById('buildingsRow');
+  row.innerHTML = '';
+  const areaBuildings = BUILDINGS.filter(b => b.area === cur.id && (state.buildings[b.id]?.level || 0) > 0);
+  areaBuildings.forEach((b, i) => row.appendChild(_mkBuildingEl(b, i)));
+
+  if (areaBuildings.length === 0) {
+    const hint = document.createElement('div');
+    hint.className = 'town-hint';
+    hint.textContent = '建設タブで建物を建ててみよう！';
+    row.appendChild(hint);
+  }
+
+  // デコ列
   const decoRow = document.getElementById('decoRow');
   if (decoRow) decoRow.remove();
   const owned = DECORATIONS.filter(d => state.decorations[d.id]);

@@ -163,7 +163,7 @@ const SKILLS = [
   // Tier 3（2〜3SP）
   {id:'healing_spirit', name:'癒やしの精神', emoji:'🌿', cost:2, tier:3, requires:['beauty_power'],           effect:'cps_area4',     value:0.50, desc:'癒やしエリア全建物のCPS +50%'},
   {id:'city_dream',     name:'都市の夢',     emoji:'🏙️', cost:2, tier:3, requires:['culture_bloom'],          effect:'cps_area5',     value:0.50, desc:'娯楽エリア全建物のCPS +50%'},
-  {id:'harvest_master', name:'豊作の神髄',   emoji:'🌾', cost:3, tier:3, requires:['master_hands','event_sense'], effect:'click_mult', value:1.0,  desc:'手動収穫量 ×2'},
+  {id:'harvest_master', name:'豊作の神髄',   emoji:'🌾', cost:3, tier:3, requires:['master_hands','event_sense'], effect:'click_mult', value:0.5,  desc:'手動収穫量 ×1.5'},
   {id:'offline_master', name:'倹約の境地',   emoji:'💤', cost:2, tier:3, requires:['thrift'],                 effect:'offline_mult',  value:0.25, desc:'オフライン効率 +25%'},
   {id:'research_gift',  name:'研究の才能',   emoji:'🔬', cost:2, tier:3, requires:['thrift'],                 effect:'research_cost', value:0.25, desc:'研究コスト -25%'},
   {id:'culture_healing',name:'文癒融合',     emoji:'🌿', cost:3, tier:3, requires:['farm_market'],            effect:'cps_synergy', areas:[3,4], value:0.30, desc:'文化・癒やしエリアが互いに+30%（両区解放時）'},
@@ -176,7 +176,7 @@ const SKILLS = [
   {id:'quest_wisdom',   name:'知恵の報酬',   emoji:'📜', cost:2, tier:4, requires:['research_gift'],             effect:'quest_reward', value:0.40, desc:'クエスト報酬 +40%'},
   // Tier 5（3〜4SP）
   {id:'miracle_town',   name:'奇跡の街',     emoji:'🌟', cost:3, tier:5, requires:['town_vitality','space_ambition'], effect:'cps_all', value:0.50, desc:'全建物のCPS +50%'},
-  {id:'harvest_limit',  name:'収穫の境地',   emoji:'⚡', cost:4, tier:5, requires:['harvest_master'],          effect:'click_mult',  value:2.0,  desc:'手動収穫量さらに強化（累積×4）'},
+  {id:'harvest_limit',  name:'収穫の境地',   emoji:'⚡', cost:4, tier:5, requires:['harvest_master'],          effect:'click_mult',  value:0.5,  desc:'手動収穫量さらに強化（累積×2）'},
   {id:'deep_sea_power', name:'深海の覇権',   emoji:'🌊', cost:3, tier:5, requires:['space_ambition'],         effect:'cps_area7',   value:0.60, desc:'深海エリア全建物のCPS +60%'},
   {id:'all_harmony',    name:'全区調和',     emoji:'🌐', cost:4, tier:5, requires:['city_space'],              effect:'cps_synergy', areas:[1,2,3,4,5,6,7,8], value:0.20, desc:'全エリアが互いに+20%（全区解放時）'},
   // Tier 6（3〜4SP）
