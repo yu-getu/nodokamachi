@@ -41,11 +41,80 @@ function renderWeekendBadge() {
 
 function renderStats() {
   document.getElementById('coinCount').textContent=fmt(state.coins);
-  const cps=getEffectiveCps(), m=getEventMult();
+  const cps=getEffectiveCps();
   const fmtCps = n => n>=1e4 ? fmt(n) : n.toFixed(2);
-  document.getElementById('cps').textContent=m!==1?`${fmtCps(cps)}(×${m})`:fmtCps(cps);
+  document.getElementById('cps').textContent=fmtCps(cps);
   document.getElementById('totalEarned').textContent=fmt(state.totalEarned);
   document.getElementById('maxLvCap').textContent=getMaxLevel();
+  if (document.getElementById('cpsDetailBar')?.classList.contains('open')) renderCpsDetail();
+}
+
+let _cpsDetailOpen = false;
+function toggleCpsDetail() {
+  _cpsDetailOpen = !_cpsDetailOpen;
+  const bar = document.getElementById('cpsDetailBar');
+  const hint = document.getElementById('cpsDetailHint');
+  bar.classList.toggle('open', _cpsDetailOpen);
+  if (hint) hint.textContent = _cpsDetailOpen ? '▲' : '▼';
+  if (_cpsDetailOpen) renderCpsDetail();
+}
+
+function renderCpsDetail() {
+  const fmtMult = v => v >= 10 ? `×${v.toFixed(1)}` : `×${v.toFixed(2)}`;
+  const baseCps = getCps() / getAchievCpsBonus() / getPrestigeMult() / (1 + getPrestigeSkillEffect('cps_perm'));
+
+  const buffs = [];
+
+  // 基本CPS
+  buffs.push({ icon:'🏗️', label:'建物CPS', raw: baseCps >= 1e4 ? fmt(baseCps) : baseCps.toFixed(2), type:'base' });
+
+  // 転生倍率
+  const pm = getPrestigeMult();
+  if (pm > 1) buffs.push({ icon:'⭐', label:'転生', raw: fmtMult(pm), type:'buff' });
+
+  // 転生スキル永続ボーナス
+  const cpsPerm = getPrestigeSkillEffect('cps_perm');
+  if (cpsPerm > 0) buffs.push({ icon:'🌌', label:'転生スキル', raw:`+${(cpsPerm*100).toFixed(0)}%`, type:'buff' });
+
+  // 実績ボーナス
+  const am = getAchievCpsBonus();
+  if (am > 1) buffs.push({ icon:'🏅', label:'実績の目', raw: fmtMult(am), type:'buff' });
+
+  // 季節
+  const season = getCurrentSeason();
+  const sm = season.cpsMult;
+  buffs.push({ icon: season.emoji, label: season.name, raw: fmtMult(sm), type: sm >= 1 ? 'buff' : 'debuff' });
+
+  // 美観
+  const bm = getBeautyMult();
+  if (bm > 1.001) buffs.push({ icon:'✨', label:'美観', raw: fmtMult(bm), type:'buff' });
+
+  // 週末
+  const wm = getWeekendMult();
+  if (wm > 1) buffs.push({ icon:'🎉', label:'週末', raw: fmtMult(wm), type:'buff' });
+
+  // イベント
+  const em = getEventMult();
+  if (em !== 1) {
+    const ev = EVENTS.find(e => e.id === state.activeEvent);
+    buffs.push({ icon: ev?.icon || '🎪', label: ev?.title?.replace(/[！。]/g,'') || 'イベント', raw: fmtMult(em), type: em >= 1 ? 'buff' : 'debuff' });
+  }
+
+  // 合計
+  const total = getEffectiveCps();
+
+  const el = document.getElementById('cpsDetailContent');
+  el.innerHTML = buffs.map(b => `
+    <div class="cps-buff-pill cps-buff-${b.type}">
+      <span class="cps-buff-icon">${b.icon}</span>
+      <span class="cps-buff-label">${b.label}</span>
+      <span class="cps-buff-val">${b.raw}</span>
+    </div>`).join('') +
+    `<div class="cps-buff-pill cps-buff-total">
+      <span class="cps-buff-icon">⏱️</span>
+      <span class="cps-buff-label">合計</span>
+      <span class="cps-buff-val">${total >= 1e4 ? fmt(total) : total.toFixed(2)}/秒</span>
+    </div>`;
 }
 
 function renderTown() {
@@ -173,11 +242,12 @@ function renderAchiev() {
   const grid=document.getElementById('achievGrid'); grid.innerHTML='';
   ACHIEVEMENTS.forEach(a=>{
     const ok=!!state.achievements[a.id];
+    const isHidden=!!a.hidden&&!ok;
     const div=document.createElement('div');
-    div.className='achiev-card'+(ok?' unlocked':' locked');
-    div.innerHTML=`<div class="achiev-icon">${a.icon}</div><div>
-      <div class="achiev-name">${a.name}</div>
-      <div class="achiev-desc">${ok?a.desc:'???'}</div>
+    div.className='achiev-card'+(ok?' unlocked':' locked')+(isHidden?' hidden-achiev':'');
+    div.innerHTML=`<div class="achiev-icon">${isHidden?'❓':a.icon}</div><div>
+      <div class="achiev-name">${isHidden?'???':a.name}</div>
+      <div class="achiev-desc">${ok?a.desc:(isHidden?'隠し実績 — 解除条件は秘密です':'???')}</div>
       <div class="achiev-reward">🎁 ${ok?a.reward:'???'}</div>
       ${ok?'<span class="unlocked-stamp">✅ 解除済み</span>':''}
     </div>`;

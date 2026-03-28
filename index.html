@@ -61,7 +61,7 @@
         <div class="log" id="log" onclick="this.classList.toggle('log-expanded')" title="クリックで展開"></div>
         <div class="header-save">
           <span>💾 <span id="saveStatus">未保存</span></span>
-          <button class="btn-save" onclick="saveGame()">保存</button>
+          <button class="btn-save" onclick="state.manualSaveCount=(state.manualSaveCount||0)+1;saveGame();checkAchievements()">保存</button>
         </div>
       </div>
     </header>
@@ -79,8 +79,9 @@
     </div>
 
     <div class="stats-bar">
-      <div class="stat-card"><span class="stat-icon">⏱️</span>
-        <div class="stat-info"><span class="stat-label">コイン/秒</span><span class="stat-value" id="cps">0</span></div>
+      <div class="stat-card stat-card-cps" id="statCpsCard" onclick="toggleCpsDetail()" title="クリックでバフ詳細を表示">
+        <span class="stat-icon">⏱️</span>
+        <div class="stat-info"><span class="stat-label">コイン/秒 <span class="cps-detail-hint" id="cpsDetailHint">▼</span></span><span class="stat-value" id="cps">0</span></div>
       </div>
       <div class="stat-card"><span class="stat-icon">📈</span>
         <div class="stat-info"><span class="stat-label">総収入</span><span class="stat-value" id="totalEarned">0</span></div>
@@ -95,6 +96,10 @@
       <button class="tab" onclick="switchTab('prestige')" id="tab-prestige">⭐ 転生</button>
       <button class="tab" onclick="switchTab('skill')" id="tab-skill">🌟 スキル</button>
       <button class="tab" onclick="switchTab('lvdesign')" id="tab-lvdesign">📊 設計</button>
+    </div>
+
+    <div class="cps-detail-bar" id="cpsDetailBar">
+      <div class="cps-detail-inner" id="cpsDetailContent"></div>
     </div>
 
     <!-- デイリーボーナスバー -->

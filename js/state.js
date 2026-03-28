@@ -258,6 +258,15 @@ const ACHIEVEMENTS = [
   {id:'research_3',    icon:'🔬', name:'研究者',       desc:'3つの研究を完了',    reward:'称号',    check:s=>Object.keys(s.research||{}).length>=3},
   {id:'research_all',  icon:'🧪', name:'科学の申し子', desc:'全研究を完了',       reward:'称号',    check:s=>Object.keys(s.research||{}).length>=RESEARCH.length},
   {id:'weekend',       icon:'🎉', name:'週末の楽しみ', desc:'週末ボーナス中に遊んだ', reward:'記念称号', check:s=>getWeekendMult()>1&&getTotalLv()>=1},
+  // 隠し実績
+  {id:'storm_harvest', icon:'⚡', name:'嵐チェイサー',    desc:'嵐の中でひと稼ぎした',              reward:'称号', hidden:true, check:s=>s.stormHarvested},
+  {id:'save_maniac',   icon:'💾', name:'過保護セーバー',  desc:'手動保存ボタンを20回押した',         reward:'称号', hidden:true, check:s=>(s.manualSaveCount||0)>=20},
+  {id:'dj_farmer',     icon:'🎵', name:'DJ農家',          desc:'BGMを10回切り替えた',                reward:'称号', hidden:true, check:s=>(s.bgmToggleCount||0)>=10},
+  {id:'night_farmer',  icon:'🌙', name:'夜型農家',        desc:'深夜0〜4時にプレイした',             reward:'称号', hidden:true, check:s=>s.nightPlayed},
+  {id:'lv1_collector', icon:'🏗️', name:'一期一会',        desc:'全建物をちょうどLv1にした',          reward:'称号', hidden:true, check:s=>BUILDINGS.every(b=>(s.buildings[b.id]?.level||0)===1)},
+  {id:'rapid_harvest', icon:'⚡', name:'落ち着きのない人', desc:'30秒以内にひと稼ぎを100回押した',    reward:'称号', hidden:true, check:s=>s.rapidHarvested},
+  {id:'silent_town',   icon:'🗑️', name:'消えた音',        desc:'BGMとSFXを両方オフにして5分プレイした', reward:'称号', hidden:true, check:s=>(s.silentMinutes||0)>=5},
+  {id:'idle_start',    icon:'🏚️', name:'廃村の夢',        desc:'何も建てないまま1分間放置した',      reward:'称号', hidden:true, check:s=>s.idledAtStart},
 ];
 
 // ゲーム状態
@@ -279,6 +288,13 @@ let state = {
     streak: 0,
     totalClaimed: 0,
   },
+  manualSaveCount: 0,
+  bgmToggleCount: 0,
+  stormHarvested: false,
+  nightPlayed: false,
+  rapidHarvested: false,
+  silentMinutes: 0,
+  idledAtStart: false,
   // ゲーム内時間（0=春の1日目 朝8時スタート）
   gameDay: 0,
   gameDayProgress: 8 / 24,
