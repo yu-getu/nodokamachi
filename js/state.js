@@ -158,14 +158,17 @@ const SKILLS = [
 ];
 
 const EVENTS = [
-  {id:'sunny',    type:'great',icon:'☀️', title:'晴天ボーナス！',  desc:'1分間コイン収入2倍！',       mult:2,   dur:60},
-  {id:'harvest',  type:'good', icon:'🌟', title:'大繁盛の季節！',  desc:'街が活気づいた！コインを獲得', bonus:'cps30',dur:0},
-  {id:'traveler', type:'good', icon:'🧳', title:'旅人が訪れた！',  desc:'旅人がお土産を持ってきた！', bonus:'flat',amt:200,dur:0},
-  {id:'festival', type:'great',icon:'🎆', title:'お祭り開催！',    desc:'2分間コイン収入1.5倍！',     mult:1.5, dur:120},
-  {id:'storm',    type:'bad',  icon:'⛈️', title:'嵐が来た...',     desc:'30秒間コイン収入半減。',     mult:.5,  dur:30},
-  {id:'drought',  type:'bad',  icon:'🏜️', title:'干ばつ発生...',   desc:'45秒間収入0.7倍。',          mult:.7,  dur:45},
-  {id:'merchant', type:'info', icon:'🛒', title:'行商人が来た！',  desc:'次の購入が20%引きに！',      discount:.8,dur:60},
-  {id:'rain',     type:'good', icon:'🌧️', title:'恵みの雨',        desc:'50秒間収入1.3倍！',          mult:1.3, dur:50},
+  {id:'sunny',    type:'great',icon:'☀️', title:'晴天ボーナス！',        desc:'90秒間コイン収入2倍！',           mult:2,   dur:90},
+  {id:'harvest',  type:'good', icon:'🌟', title:'大繁盛の季節！',        desc:'45秒分のコインをまとめて獲得！',  bonus:'cps', bonusSec:45, dur:0},
+  {id:'traveler', type:'good', icon:'🧳', title:'旅人が訪れた！',        desc:'1分分のコインを落としていった！', bonus:'cps', bonusSec:60, dur:0},
+  {id:'festival', type:'great',icon:'🎆', title:'お祭り開催！',          desc:'3分間コイン収入1.5倍！',          mult:1.5, dur:180},
+  {id:'storm',    type:'bad',  icon:'⛈️', title:'嵐が来た…',            desc:'30秒間コイン収入が半減する。',    mult:.5,  dur:30},
+  {id:'drought',  type:'bad',  icon:'🏜️', title:'干ばつ発生…',          desc:'45秒間収入が0.7倍になる。',       mult:.7,  dur:45},
+  {id:'merchant', type:'info', icon:'🛒', title:'行商人が来た！',        desc:'次の購入が20%引きに！',           discount:.8, dur:60},
+  {id:'rain',     type:'good', icon:'🌧️', title:'恵みの雨',              desc:'60秒間収入1.3倍！',               mult:1.3, dur:60},
+  {id:'rainbow',  type:'great',icon:'🌈', title:'虹の恵み！',            desc:'30秒間コイン収入3倍！',           mult:3,   dur:30},
+  {id:'clover',   type:'great',icon:'🍀', title:'四つ葉のクローバー！', desc:'90秒分のコインをまとめて獲得！',  bonus:'cps', bonusSec:90, dur:0},
+  {id:'lightning',type:'bad',  icon:'⚡', title:'落雷発生！',            desc:'10秒間ほぼ収入が止まる！',        mult:.1,  dur:10},
 ];
 
 const SEASONS = [

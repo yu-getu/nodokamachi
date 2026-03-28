@@ -48,6 +48,21 @@ function playAchievSfx() { playTones([523, 659, 784, 1047], 0.5, 0.22); }
 function playHarvestSfx() { playTones([440, 550], 0.18, 0.18); }
 function playQuestSfx() { playTones([523, 659, 784], 0.4, 0.25); }
 function playUnlockSfx() { playTones([330, 440, 554, 659], 0.45, 0.22); }
+function playEventSfx(type) {
+  if (type === 'great') {
+    // ファンファーレ：上昇アルペジオ＋高音フィナーレ
+    playTones([392, 523, 659, 784, 1047], 0.55, 0.30, 'sine');
+  } else if (type === 'good') {
+    // 明るいチャイム
+    playTones([659, 784, 988], 0.45, 0.24, 'sine');
+  } else if (type === 'bad') {
+    // 不穏な低音：下降
+    playTones([330, 277, 233, 185], 0.5, 0.28, 'sawtooth');
+  } else {
+    // info：短い通知音
+    playTones([523, 659], 0.3, 0.20, 'sine');
+  }
+}
 
 function toggleBgm() {
   _bgmOn = !_bgmOn;
