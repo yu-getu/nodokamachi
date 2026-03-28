@@ -54,6 +54,10 @@ function toggleBgm() {
   if (_bgmOn) _startBgm(); else _stopBgm();
   localStorage.setItem('nodoka_bgm', _bgmOn ? '1' : '0');
   updateSoundBtns();
+  if (typeof state !== 'undefined') {
+    state.bgmToggleCount = (state.bgmToggleCount || 0) + 1;
+    checkAchievements();
+  }
 }
 function toggleSfx() {
   _sfxOn = !_sfxOn;

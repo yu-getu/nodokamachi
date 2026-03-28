@@ -173,11 +173,12 @@ function renderAchiev() {
   const grid=document.getElementById('achievGrid'); grid.innerHTML='';
   ACHIEVEMENTS.forEach(a=>{
     const ok=!!state.achievements[a.id];
+    const isHidden=!!a.hidden&&!ok;
     const div=document.createElement('div');
-    div.className='achiev-card'+(ok?' unlocked':' locked');
-    div.innerHTML=`<div class="achiev-icon">${a.icon}</div><div>
-      <div class="achiev-name">${a.name}</div>
-      <div class="achiev-desc">${ok?a.desc:'???'}</div>
+    div.className='achiev-card'+(ok?' unlocked':' locked')+(isHidden?' hidden-achiev':'');
+    div.innerHTML=`<div class="achiev-icon">${isHidden?'❓':a.icon}</div><div>
+      <div class="achiev-name">${isHidden?'???':a.name}</div>
+      <div class="achiev-desc">${ok?a.desc:(isHidden?'隠し実績 — 解除条件は秘密です':'???')}</div>
       <div class="achiev-reward">🎁 ${ok?a.reward:'???'}</div>
       ${ok?'<span class="unlocked-stamp">✅ 解除済み</span>':''}
     </div>`;

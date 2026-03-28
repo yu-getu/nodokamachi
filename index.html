@@ -61,7 +61,7 @@
         <div class="log" id="log" onclick="this.classList.toggle('log-expanded')" title="クリックで展開"></div>
         <div class="header-save">
           <span>💾 <span id="saveStatus">未保存</span></span>
-          <button class="btn-save" onclick="saveGame()">保存</button>
+          <button class="btn-save" onclick="state.manualSaveCount=(state.manualSaveCount||0)+1;saveGame();checkAchievements()">保存</button>
         </div>
       </div>
     </header>

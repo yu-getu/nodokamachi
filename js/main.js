@@ -40,17 +40,30 @@ function buyBuilding(id) {
   render();
 }
 
+let _harvestTimestamps = [];
 function manualHarvest() {
   const clickSec = (2 + getSkillEffect('click_sec')) * getDecoCollectMult();
   const bonus = Math.max(1, getEffectiveCps() * clickSec);
   state.coins += bonus; state.totalEarned += bonus;
   spawnFloatCoins(`+${fmt(bonus)}`);
   playHarvestSfx();
+
+  // 嵐中ひと稼ぎ
+  if (state.activeEvent === 'storm') state.stormHarvested = true;
+
+  // 急連打（30秒以内に10回）
+  const now = Date.now();
+  _harvestTimestamps.push(now);
+  _harvestTimestamps = _harvestTimestamps.filter(t => now - t <= 30000);
+  if (_harvestTimestamps.length >= 10) state.rapidHarvested = true;
+
   checkAchievements(); renderQuests(); render();
 }
 
 // ── ゲームループ ──
 let tickCount = 0;
+let _silentTick = 0; // 無音tick数
+let _idleStartTick = 0; // 廃村放置tick数
 function tick() {
   const now = Date.now(), dt = (now - state.lastTick) / 1000; state.lastTick = now;
   const earned = getEffectiveCps() * dt;
@@ -101,6 +114,27 @@ function tick() {
   tickCount++;
   updateEventBadge();
   if (document.getElementById('panel-prestige')?.style.display !== 'none') updatePrestigeProgress();
+  // 深夜判定（0〜4時）
+  const hour = new Date().getHours();
+  if (hour >= 0 && hour < 4) state.nightPlayed = true;
+
+  // 無音プレイ追跡（BGM・SFX両方オフ）
+  if (!_bgmOn && !_sfxOn) {
+    _silentTick++;
+    // tick間隔200ms → 5tick/秒 → 300tick=60秒=1分
+    if (_silentTick >= 1500) state.silentMinutes = Math.floor(_silentTick / 300);
+  } else {
+    _silentTick = 0;
+  }
+
+  // 廃村放置（何も建てずに1分放置）
+  if (getTotalLv() === 0) {
+    _idleStartTick++;
+    if (_idleStartTick >= 300) state.idledAtStart = true;
+  } else {
+    _idleStartTick = 0;
+  }
+
   if (tickCount % 150 === 0) { saveGame(); updateSaveStatus(); }
   if (tickCount % 50 === 0) updateSaveStatus();
   if (tickCount % 100 === 0) { checkAchievements(); renderQuests(); }

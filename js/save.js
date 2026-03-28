@@ -11,6 +11,10 @@ function saveGame() {
       unlockedAreas: state.unlockedAreas, research: state.research,
       quests: state.quests, skills: state.skills,
       prestigeSkills: state.prestigeSkills, prestigeSp: state.prestigeSp,
+      manualSaveCount: state.manualSaveCount, bgmToggleCount: state.bgmToggleCount,
+      stormHarvested: state.stormHarvested, nightPlayed: state.nightPlayed,
+      rapidHarvested: state.rapidHarvested, silentMinutes: state.silentMinutes,
+      idledAtStart: state.idledAtStart,
     }));
     state.lastSaved = Date.now(); updateSaveStatus();
     addLog('💾 セーブしました！');
@@ -38,6 +42,13 @@ function loadGame() {
     state.skills = d.skills || {};
     state.prestigeSkills = d.prestigeSkills || {};
     state.prestigeSp = d.prestigeSp || 0;
+    state.manualSaveCount = d.manualSaveCount || 0;
+    state.bgmToggleCount = d.bgmToggleCount || 0;
+    state.stormHarvested = d.stormHarvested || false;
+    state.nightPlayed = d.nightPlayed || false;
+    state.rapidHarvested = d.rapidHarvested || false;
+    state.silentMinutes = d.silentMinutes || 0;
+    state.idledAtStart = d.idledAtStart || false;
     const offSec = Math.min((Date.now() - d.savedAt) / 1000, 24 * 3600);
     if (offSec > 30 && getCps() > 0) {
       // オフライン効率：基本50% + 世代スキル効果（上限100%）
