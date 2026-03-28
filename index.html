@@ -79,12 +79,16 @@
     </div>
 
     <div class="stats-bar">
-      <div class="stat-card"><span class="stat-icon">⏱️</span>
-        <div class="stat-info"><span class="stat-label">コイン/秒</span><span class="stat-value" id="cps">0</span></div>
+      <div class="stat-card stat-card-cps" id="statCpsCard" onclick="toggleCpsDetail()" title="クリックでバフ詳細を表示">
+        <span class="stat-icon">⏱️</span>
+        <div class="stat-info"><span class="stat-label">コイン/秒 <span class="cps-detail-hint" id="cpsDetailHint">▼</span></span><span class="stat-value" id="cps">0</span></div>
       </div>
       <div class="stat-card"><span class="stat-icon">📈</span>
         <div class="stat-info"><span class="stat-label">総収入</span><span class="stat-value" id="totalEarned">0</span></div>
       </div>
+    </div>
+    <div class="cps-detail-bar" id="cpsDetailBar">
+      <div class="cps-detail-inner" id="cpsDetailContent"></div>
     </div>
 
     <div class="tabs">

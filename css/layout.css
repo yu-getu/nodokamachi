@@ -135,8 +135,68 @@ header {
     width: 100%;
     display: flex;
     gap: 8px;
-    margin-bottom: 12px
+    margin-bottom: 4px
 }
+
+.stat-card-cps {
+    cursor: pointer;
+    transition: background .15s
+}
+.stat-card-cps:hover {
+    background: #eef7ee
+}
+.cps-detail-hint {
+    font-size: 8px;
+    opacity: .6;
+    margin-left: 2px
+}
+
+.cps-detail-bar {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .25s ease, margin .25s ease;
+    margin-bottom: 0
+}
+.cps-detail-bar.open {
+    max-height: 120px;
+    margin-bottom: 10px
+}
+.cps-detail-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 6px 2px
+}
+.cps-buff-pill {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap
+}
+.cps-buff-base {
+    background: #e8f5e9;
+    color: #2e7d32
+}
+.cps-buff-buff {
+    background: #fff8e1;
+    color: #f57f17
+}
+.cps-buff-debuff {
+    background: #fce4ec;
+    color: #c62828
+}
+.cps-buff-total {
+    background: #e3f2fd;
+    color: #1565c0;
+    font-size: 12px
+}
+.cps-buff-icon { font-size: 13px }
+.cps-buff-label { opacity: .8 }
+.cps-buff-val { margin-left: 2px }
 
 .stat-card {
     flex: 1;
