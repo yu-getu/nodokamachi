@@ -63,8 +63,14 @@ function getBuildingCps(b) {
   const lv = state.buildings[b.id] ? state.buildings[b.id].level : 0;
   if (lv === 0) return 0;
   const base = b.baseCps * lv * (1 + lv * 0.10);
+  const foundationRate = getSkillEffect('foundation_rate');
+  const foundationMult = foundationRate > 0
+    ? BUILDINGS.filter(x => x.area === 1).reduce((m, x) => {
+        return m * (1 + (state.buildings[x.id]?.level || 0) * foundationRate);
+      }, 1)
+    : 1;
   return base * getResearchMult(b.id) * getSkillCpsMult(b)
-    * getDecoAreaMult(b.area) * getDecoBuildingMult(b.id);
+    * getDecoAreaMult(b.area) * getDecoBuildingMult(b.id) * foundationMult;
 }
 
 function getTotalLv() {

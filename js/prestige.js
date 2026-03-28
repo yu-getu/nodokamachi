@@ -117,7 +117,7 @@ function unlockPrestigeSkill(id) {
   addLog(`🌌 世代スキル習得：${sk.emoji}${sk.name}！${sk.desc}`);
   saveGame();
   renderPrestige();
-  renderStats();
+  render();
 }
 
 function _getUnlearnedPrestigePrereqsInOrder(id) {
@@ -153,7 +153,7 @@ function unlockPrestigeSkillWithPrereqs(id) {
   });
   playUnlockSfx();
   addLog(`🌌 世代スキル習得（${allIds.length}件）：${sk.emoji}${sk.name} まで一括取得！`);
-  saveGame(); renderPrestige(); renderStats();
+  saveGame(); renderPrestige(); render();
   showPrestigeSkillDetail(id);
 }
 
@@ -275,10 +275,15 @@ function showPrestigeSkillDetail(id) {
       btn.className = 'sk-btn';
       btn.disabled = true;
       if (btnAll) {
-        btnAll.style.display = 'block';
-        btnAll.textContent = `⚡ まとめて習得（計 ${totalCost} PSP / ${prereqs.length + 1}件）`;
-        btnAll.disabled = avail < totalCost;
-        btnAll.onclick = () => unlockPrestigeSkillWithPrereqs(id);
+        const bulkSkUnlocked = !!state.prestigeSkills?.unlock_bulk_sk;
+        if (bulkSkUnlocked) {
+          btnAll.style.display = 'block';
+          btnAll.textContent = `⚡ まとめて習得（計 ${totalCost} PSP / ${prereqs.length + 1}件）`;
+          btnAll.disabled = avail < totalCost;
+          btnAll.onclick = () => unlockPrestigeSkillWithPrereqs(id);
+        } else {
+          btnAll.style.display = 'none';
+        }
       }
     } else {
       btn.textContent = '💎 PSP不足';

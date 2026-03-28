@@ -3,13 +3,11 @@
 // ══════════════════════════════
 function getTotalSkillPoints() {
   // 基本SP獲得源：建物Lv10到達 + 実績10件ごと
-  const fromBuildings  = BUILDINGS.filter(b => (state.buildings?.[b.id]?.level || 0) >= 10).length;
+  const fromBuildings  = BUILDINGS.filter(b => (state.buildings?.[b.id]?.level || 0) >= 100).length;
   const achievCount    = Object.values(state.achievements || {}).filter(Boolean).length;
   const fromAchiev     = Math.floor(achievCount / 10);
-  // 転生ボーナス：基本 +1 SP/転生 + 先祖の加護による追加（複数世代スキルがある場合は合算）
-  const basePrestigeBonus = Math.max(0, state.prestigeCount || 0);
-  const extraBonus = getPrestigeSkillEffect('prestige_sp_bonus');
-  const spBonus = Math.floor(basePrestigeBonus + extraBonus * (state.prestigeCount || 0));
+  // 先祖の加護スキルによる転生ボーナス
+  const spBonus = Math.floor(getPrestigeSkillEffect('prestige_sp_bonus') * (state.prestigeCount || 0));
   return fromBuildings + fromAchiev + spBonus + (state.debugSkillSp || 0);
 }
 
@@ -96,7 +94,8 @@ const SKILL_POS = {
   event_sense:     { x: 0.78, tier: 2 },
   thrift:          { x: 0.92, tier: 2 },
   // ── Tier 3 ──
-  healing_spirit:  { x: 0.06, tier: 3 },
+  foundation_1:    { x: 0.06, tier: 3 },
+  healing_spirit:  { x: 0.20, tier: 3 },
   culture_healing: { x: 0.22, tier: 3 },
   city_dream:      { x: 0.42, tier: 3 },
   harvest_master:  { x: 0.60, tier: 3 },
@@ -110,7 +109,8 @@ const SKILL_POS = {
   space_ambition:  { x: 0.74, tier: 4 },
   quest_wisdom:    { x: 0.90, tier: 4 },
   // ── Tier 5 ──
-  miracle_town:    { x: 0.14, tier: 5 },
+  foundation_2:    { x: 0.06, tier: 5 },
+  miracle_town:    { x: 0.24, tier: 5 },
   harvest_limit:   { x: 0.36, tier: 5 },
   deep_sea_power:  { x: 0.62, tier: 5 },
   all_harmony:     { x: 0.84, tier: 5 },
@@ -119,8 +119,9 @@ const SKILL_POS = {
   dim_mastery:     { x: 0.50, tier: 6 },
   galaxy_civ:      { x: 0.80, tier: 6 },
   // ── Tier 7 ──
-  cosmos_wisdom:   { x: 0.35, tier: 7 },
-  dim_enlighten:   { x: 0.65, tier: 7 },
+  foundation_3:    { x: 0.08, tier: 7 },
+  cosmos_wisdom:   { x: 0.40, tier: 7 },
+  dim_enlighten:   { x: 0.70, tier: 7 },
 };
 const SKILL_ROW_H = 130;
 const SKILL_TOP_PAD = 16;
@@ -136,6 +137,16 @@ function renderSkills() {
   document.getElementById('skillSpAvail').textContent = avail;
   document.getElementById('skillSpTotal').textContent = total;
   document.getElementById('skillSpSpent').textContent = spent;
+
+  const descEl = document.getElementById('skillSpDesc');
+  if (descEl) {
+    const hasAncestor = !!state.prestigeSkills?.ancestor_grace;
+    const bonus = getPrestigeSkillEffect('prestige_sp_bonus');
+    const ancestorNote = hasAncestor
+      ? `・🙏 先祖の加護：転生ごとに+${bonus}SP（現在 +${Math.floor(bonus * (state.prestigeCount || 0))}SP）`
+      : '';
+    descEl.textContent = `建物1種がLv100に初到達するごとに+1SP・実績10件ごとに+1SP${ancestorNote}。スキルは転生でリセットされます。`;
+  }
 
   const container = document.getElementById('skillTreeContent');
   container.innerHTML = '';
@@ -286,10 +297,15 @@ function showSkillDetail(id) {
       btn.className = 'sk-btn';
       btn.disabled = true;
       if (btnAll) {
-        btnAll.style.display = 'block';
-        btnAll.textContent = `⚡ まとめて習得（計 ${totalCost} SP / ${prereqs.length + 1}件）`;
-        btnAll.disabled = !canAffordAll;
-        btnAll.onclick = () => unlockSkillWithPrereqs(id);
+        const bulkSkUnlocked = !!state.prestigeSkills?.unlock_bulk_sk;
+        if (bulkSkUnlocked) {
+          btnAll.style.display = 'block';
+          btnAll.textContent = `⚡ まとめて習得（計 ${totalCost} SP / ${prereqs.length + 1}件）`;
+          btnAll.disabled = !canAffordAll;
+          btnAll.onclick = () => unlockSkillWithPrereqs(id);
+        } else {
+          btnAll.style.display = 'none';
+        }
       }
     } else {
       btn.textContent = '💎 SP不足';

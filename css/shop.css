@@ -100,6 +100,17 @@
     color: var(--brown)
 }
 
+.item-cps-share {
+    font-size: 9px;
+    color: var(--muted);
+    font-weight: 700
+}
+
+.item-cps-pct {
+    color: var(--coin2);
+    font-weight: 800
+}
+
 .lv-next-ms {
     font-size: 9px;
     color: var(--muted)

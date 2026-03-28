@@ -234,15 +234,19 @@ function renderShop() {
   const bulkBar=document.createElement('div');
   bulkBar.className='bulk-bar';
   bulkBar.style.cssText='grid-column:1/-1';
-  [[1,'×1'],[10,'×10'],[100,'×100'],[0,'MAX']].forEach(([mode,label])=>{
-    const btn=document.createElement('button');
-    btn.className='bulk-btn'+(bulkMode===mode?' active':'');
-    btn.textContent=label;
-    btn.dataset.mode=mode;
-    btn.onclick=()=>setBulkMode(mode);
-    bulkBar.appendChild(btn);
-  });
-  grid.appendChild(bulkBar);
+  const bulkUnlocked = !!state.prestigeSkills?.unlock_bulk_lv;
+  if (!bulkUnlocked) { bulkMode = 1; }
+  if (bulkUnlocked) {
+    [[1,'×1'],[10,'×10'],[100,'×100'],[0,'MAX']].forEach(([mode,label])=>{
+      const btn=document.createElement('button');
+      btn.className='bulk-btn'+(bulkMode===mode?' active':'');
+      btn.textContent=label;
+      btn.dataset.mode=mode;
+      btn.onclick=()=>setBulkMode(mode);
+      bulkBar.appendChild(btn);
+    });
+    grid.appendChild(bulkBar);
+  }
   const maxLv=getMaxLevel();
   const disc=state.eventDiscount<1;
   const unlockedAreas = state.unlockedAreas || [1];
@@ -272,6 +276,8 @@ function renderShop() {
       grid.appendChild(hdr);
     }
 
+    const totalBuildingCps = BUILDINGS.reduce((s,x)=>s+getBuildingCps(x),0);
+
     BUILDINGS.filter(b => b.area === area.id).forEach(b=>{
     if (!state.buildings[b.id]) state.buildings[b.id]={level:0};
     const lv=state.buildings[b.id].level;
@@ -279,6 +285,9 @@ function renderShop() {
     const isMax=lv>=maxLv;
     const bulk=!isMax?getBulkInfo(b):{count:0,totalCost:0};
     const canAfford=bulk.count>0;
+    const bCps=getBuildingCps(b);
+    const cpsPct=totalBuildingCps>0?(bCps/totalBuildingCps*100):0;
+    const cpsLabel=lv>0?`<span class="item-cps-share">${fmt(bCps)}/秒 <span class="item-cps-pct">${cpsPct.toFixed(1)}%</span></span>`:'';
 
     const phase=getPhase(lv);
     const phaseLabel=getPhaseLabel(lv);
@@ -310,6 +319,7 @@ function renderShop() {
       <div class="lv-bar-wrap ${phase.colorClass}">
         <div class="lv-bar-header">
           <span class="lv-label">Lv ${lv} / ${maxLv}</span>
+          ${cpsLabel}
         </div>
         <div class="lv-bar-track"><div class="lv-bar-fill" style="width:${isMax?100:barPct}%"></div></div>
       </div>

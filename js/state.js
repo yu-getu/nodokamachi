@@ -36,27 +36,27 @@ const GAME_SEASON_DAYS   = 30;  // 30ゲーム日 = 1シーズン
 
 // 建物定義
 const BUILDINGS = [
-  // ── 第1区「農村」（×4比、ranch=30,720）──
-  {id:'field',        name:'畑',               emoji:'🥕', baseCost:30,                baseCps:0.3,           desc:'野菜を育てる小さな畑',      area:1},
-  {id:'coop',         name:'鶏小屋',           emoji:'🐓', baseCost:120,               baseCps:1.0,           desc:'卵を産む可愛い鶏たち',      area:1},
-  {id:'bakery',       name:'パン屋',           emoji:'🥐', baseCost:480,               baseCps:3.2,           desc:'焼きたてパンの香り',        area:1},
-  {id:'farmcoop',     name:'農協',             emoji:'🌾', baseCost:1920,              baseCps:10,            desc:'農家を支える地域組合',      area:1},
-  {id:'orchard',      name:'果樹園',           emoji:'🍎', baseCost:7680,              baseCps:30,            desc:'実り豊かな果樹の農園',      area:1},
-  {id:'ranch',        name:'牧場',             emoji:'🐄', baseCost:30720,             baseCps:90,            desc:'のどかな草原の牧場',        area:1},
-  // ── 第2区「商店街」（×3比、candyshop=40,000 > ranch）──
-  {id:'candyshop',    name:'駄菓子屋',         emoji:'🍬', baseCost:40000,             baseCps:39,            desc:'懐かしい甘いお菓子',        area:2},
-  {id:'cafe',         name:'喫茶店',           emoji:'☕', baseCost:120000,            baseCps:133,           desc:'ゆったりコーヒータイム',    area:2},
-  {id:'greengrocer',  name:'八百屋',           emoji:'🥦', baseCost:360000,            baseCps:444,           desc:'新鮮な野菜が並ぶ',          area:2},
-  {id:'inn',          name:'旅館',             emoji:'🏨', baseCost:1080000,           baseCps:1444,          desc:'旅人を温かくもてなす',      area:2},
-  {id:'flowershop',   name:'花屋',             emoji:'💐', baseCost:3240000,           baseCps:4667,          desc:'四季折々の花を届ける',      area:2},
-  {id:'bookstore',    name:'書店',             emoji:'📖', baseCost:9720000,           baseCps:15556,         desc:'知識と物語が集まる店',      area:2},
-  // ── 第3区「文化の丘」（×3比、library=13,000,000 > bookstore）──
-  {id:'library',      name:'図書館',           emoji:'📚', baseCost:13000000,          baseCps:6250,          desc:'知識の宝庫',                area:3},
-  {id:'artmuseum',    name:'美術館',           emoji:'🎨', baseCost:39000000,          baseCps:22500,         desc:'芸術が集まる場所',          area:3},
-  {id:'shrine',       name:'神社',             emoji:'⛩️', baseCost:117000000,         baseCps:75000,         desc:'古くから守られた社',        area:3},
-  {id:'theater',      name:'劇場',             emoji:'🎭', baseCost:351000000,         baseCps:250000,        desc:'感動の舞台',                area:3},
-  {id:'museum',       name:'博物館',           emoji:'🏛️', baseCost:1053000000,        baseCps:812500,        desc:'歴史と文化の宝庫',          area:3},
-  {id:'university',   name:'大学',             emoji:'🎓', baseCost:3159000000,        baseCps:2625000,       desc:'未来を担う知の殿堂',        area:3},
+  // ── 第1区「農村」（×4比、ranch=46,080）──
+  {id:'field',        name:'畑',               emoji:'🥕', baseCost:45,                baseCps:0.3,           desc:'野菜を育てる小さな畑',      area:1},
+  {id:'coop',         name:'鶏小屋',           emoji:'🐓', baseCost:180,               baseCps:1.0,           desc:'卵を産む可愛い鶏たち',      area:1},
+  {id:'bakery',       name:'パン屋',           emoji:'🥐', baseCost:720,               baseCps:3.2,           desc:'焼きたてパンの香り',        area:1},
+  {id:'farmcoop',     name:'農協',             emoji:'🌾', baseCost:2880,              baseCps:10,            desc:'農家を支える地域組合',      area:1},
+  {id:'orchard',      name:'果樹園',           emoji:'🍎', baseCost:11520,             baseCps:30,            desc:'実り豊かな果樹の農園',      area:1},
+  {id:'ranch',        name:'牧場',             emoji:'🐄', baseCost:46080,             baseCps:90,            desc:'のどかな草原の牧場',        area:1},
+  // ── 第2区「商店街」（×3比、candyshop=80,000 > ranch）──
+  {id:'candyshop',    name:'駄菓子屋',         emoji:'🍬', baseCost:80000,             baseCps:39,            desc:'懐かしい甘いお菓子',        area:2},
+  {id:'cafe',         name:'喫茶店',           emoji:'☕', baseCost:240000,            baseCps:133,           desc:'ゆったりコーヒータイム',    area:2},
+  {id:'greengrocer',  name:'八百屋',           emoji:'🥦', baseCost:720000,            baseCps:444,           desc:'新鮮な野菜が並ぶ',          area:2},
+  {id:'inn',          name:'旅館',             emoji:'🏨', baseCost:2160000,           baseCps:1444,          desc:'旅人を温かくもてなす',      area:2},
+  {id:'flowershop',   name:'花屋',             emoji:'💐', baseCost:6480000,           baseCps:4667,          desc:'四季折々の花を届ける',      area:2},
+  {id:'bookstore',    name:'書店',             emoji:'📖', baseCost:19440000,          baseCps:15556,         desc:'知識と物語が集まる店',      area:2},
+  // ── 第3区「文化の丘」（×3比、library=39,000,000 > bookstore）──
+  {id:'library',      name:'図書館',           emoji:'📚', baseCost:39000000,          baseCps:6250,          desc:'知識の宝庫',                area:3},
+  {id:'artmuseum',    name:'美術館',           emoji:'🎨', baseCost:117000000,         baseCps:22500,         desc:'芸術が集まる場所',          area:3},
+  {id:'shrine',       name:'神社',             emoji:'⛩️', baseCost:351000000,         baseCps:75000,         desc:'古くから守られた社',        area:3},
+  {id:'theater',      name:'劇場',             emoji:'🎭', baseCost:1053000000,        baseCps:250000,        desc:'感動の舞台',                area:3},
+  {id:'museum',       name:'博物館',           emoji:'🏛️', baseCost:3159000000,        baseCps:812500,        desc:'歴史と文化の宝庫',          area:3},
+  {id:'university',   name:'大学',             emoji:'🎓', baseCost:9477000000,        baseCps:2625000,       desc:'未来を担う知の殿堂',        area:3},
   // ── 第4区「いやしの里」（×3比、herbgarden=4.5B > university）──
   {id:'herbgarden',   name:'薬草園',           emoji:'🌿', baseCost:4500000000,        baseCps:1066667,       desc:'癒やしの香り漂う庭園',      area:4},
   {id:'onsen',        name:'温泉旅館',         emoji:'♨️', baseCost:13500000000,       baseCps:3733333,       desc:'名湯が湧き出す宿',          area:4},
@@ -98,9 +98,9 @@ const BUILDINGS = [
 // 解放コスト = 当エリア最後の2棟付近で解放できるよう設計（前区6棟目の約1.5倍）
 const AREAS = [
   {id:1, name:'第1区', emoji:'🌾', unlockCost:0,        desc:'のどかな農村エリア'},
-  {id:2, name:'第2区', emoji:'🏪', unlockCost:100000,   desc:'にぎやかな商店街エリア'},
-  {id:3, name:'第3区', emoji:'📚', unlockCost:34000000, desc:'文化の丘エリア'},
-  {id:4, name:'第4区', emoji:'🌿', unlockCost:1.1e10,   desc:'いやしの里エリア'},
+  {id:2, name:'第2区', emoji:'🏪', unlockCost:200000,   desc:'にぎやかな商店街エリア'},
+  {id:3, name:'第3区', emoji:'📚', unlockCost:100000000, desc:'文化の丘エリア'},
+  {id:4, name:'第4区', emoji:'🌿', unlockCost:3.5e10,   desc:'いやしの里エリア'},
   {id:5, name:'第5区', emoji:'🏙️', unlockCost:3.8e12,   desc:'夢の都市エリア'},
   {id:6, name:'第6区', emoji:'🚀', unlockCost:1.28e15,  desc:'宇宙の夢エリア'},
   {id:7, name:'第7区', emoji:'🌊', unlockCost:4.3e17,   desc:'深海都市エリア'},
@@ -108,18 +108,13 @@ const AREAS = [
 ];
 
 // 研究定義
-const RESEARCH = [
-  {id:'farming',   name:'農業振興',     emoji:'🌾', cost:100000,              desc:'農村エリア全建物のCPS ×1.5',    targets:['field','coop','bakery','farmcoop','orchard','ranch'],                           mult:1.5},
-  {id:'commerce',  name:'商業発展',     emoji:'🏪', cost:20000000,            desc:'商店街エリア全建物のCPS ×1.5',  targets:['candyshop','cafe','greengrocer','inn','flowershop','bookstore'],                mult:1.5},
-  {id:'all1',      name:'街の活性化',   emoji:'🏙️', cost:50000000,            desc:'全建物のCPS +30%',              targets:['all'],                                                                         mult:1.3},
-  {id:'culture',   name:'文化革命',     emoji:'📚', cost:3000000000,          desc:'文化エリア全建物のCPS ×2',      targets:['library','artmuseum','shrine','theater','museum','university'],                 mult:2},
-  {id:'nature',    name:'自然の恵み',   emoji:'🌿', cost:400000000000,        desc:'癒やしエリア全建物のCPS ×2',    targets:['herbgarden','onsen','spa','zengarden','naturepark','meditforest'],              mult:2},
-  {id:'all2',      name:'奇跡の街',     emoji:'✨', cost:1000000000000,       desc:'全建物のCPS ×2',                targets:['all'],                                                                         mult:2},
-  {id:'entertain', name:'エンタメ産業', emoji:'🎡', cost:50000000000000,      desc:'娯楽エリア全建物のCPS ×2',      targets:['castle','amusement','stadium','skyscraper','airport','megaresort'],             mult:2},
-  {id:'space',     name:'宇宙開発',     emoji:'🚀', cost:1e16,               desc:'宇宙エリア全建物のCPS ×2',      targets:['rocket','spaceport','colony','dysonring','galaxystation','spaceciv'],           mult:2},
-  {id:'hypertech', name:'超技術革新',   emoji:'⚡', cost:3e16,               desc:'全建物のCPS ×1.5',              targets:['all'],                                                                         mult:1.5},
-  {id:'deepsea',   name:'深海開拓',     emoji:'🌊', cost:1.5e19,             desc:'深海エリア全建物のCPS ×2',      targets:['aquarium','deepseasub','seabase','tidalpower','oceancity','deepkingdom'],        mult:2},
-  {id:'dimension', name:'異次元探索',   emoji:'🔮', cost:5e20,               desc:'異次元エリア全建物のCPS ×2',    targets:['magicircle','dimgate','otherworld','illpalace','eyeofall','dimempire'],           mult:2},
+// 施設別研究ティア定義
+const RESEARCH_TIERS = [
+  { tier: 1, mult: 1.20, costMult: 150,     label: '基礎研究', emoji: '🔬' },
+  { tier: 2, mult: 1.25, costMult: 1500,    label: '応用研究', emoji: '⚗️' },
+  { tier: 3, mult: 1.30, costMult: 15000,   label: '高等研究', emoji: '🧬' },
+  { tier: 4, mult: 2.00, costMult: 150000,  label: '地域振興', emoji: '🏗️', advancedOnly: true },
+  { tier: 5, mult: 5.00, costMult: 1500000, label: '街の誇り', emoji: '🏅', advancedOnly: true },
 ];
 
 // 世代スキルツリー定義（転生専用・永続）
@@ -127,6 +122,9 @@ const PRESTIGE_SKILLS = [
   // Tier 1（各1PSP・前提なし）
   {id:'legacy_memory',  name:'遺産の記憶', emoji:'📜', cost:1, tier:1, requires:[],                            effect:'offline_mult',      value:0.15, desc:'オフライン効率 +15%'},
   {id:'ancestor_grace', name:'先祖の加護', emoji:'🙏', cost:1, tier:1, requires:[],                            effect:'prestige_sp_bonus', value:1,    desc:'転生ごとに通常SP +1'},
+  {id:'unlock_bulk_lv', name:'一括強化',   emoji:'⬆️', cost:1, tier:1, requires:[],                            effect:'unlock_feature',    value:0,    desc:'建物の一括レベルアップを解放（×10・×100・MAX）'},
+  {id:'unlock_bulk_sk', name:'まとめ習得', emoji:'📚', cost:1, tier:1, requires:[],                            effect:'unlock_feature',    value:0,    desc:'スキル・世代スキルのまとめて習得を解放'},
+  {id:'unlock_bulk_res',name:'一括研究',   emoji:'🔬', cost:1, tier:1, requires:[],                            effect:'unlock_feature',    value:0,    desc:'施設の全Tier一括研究を解放'},
   // Tier 2（各2PSP）
   {id:'gen_bond',       name:'世代の絆',   emoji:'🔗', cost:2, tier:2, requires:['legacy_memory'],             effect:'cps_perm',          value:0.20, desc:'全CPS +20% 永続'},
   {id:'history_mark',   name:'歴史の刻印', emoji:'⚖️', cost:2, tier:2, requires:['ancestor_grace'],            effect:'cps_perm',          value:0.25, desc:'全CPS +25% 永続'},
@@ -137,8 +135,11 @@ const PRESTIGE_SKILLS = [
   {id:'genesis_power',  name:'創世の力',   emoji:'🌌', cost:4, tier:4, requires:['legend_grace','gods_will'], effect:'cps_perm',          value:0.50, desc:'全CPS +50% 永続'},
 ];
 const PRESTIGE_SKILL_POS = {
-  legacy_memory:  { x: 0.25, tier: 1 },
-  ancestor_grace: { x: 0.75, tier: 1 },
+  legacy_memory:  { x: 0.10, tier: 1 },
+  ancestor_grace: { x: 0.90, tier: 1 },
+  unlock_bulk_lv: { x: 0.35, tier: 1 },
+  unlock_bulk_sk: { x: 0.55, tier: 1 },
+  unlock_bulk_res:{ x: 0.74, tier: 1 },
   gen_bond:       { x: 0.25, tier: 2 },
   history_mark:   { x: 0.75, tier: 2 },
   legend_grace:   { x: 0.25, tier: 3 },
@@ -151,9 +152,9 @@ const SKILLS = [
   // Tier 1（前提なし・1SP）
   {id:'farm_mastery',   name:'大地の恵み',   emoji:'🥕', cost:1, tier:1, requires:[], effect:'cps_area1',     value:0.30, desc:'農村エリア全建物のCPS +30%'},
   {id:'commerce_art',   name:'商いの才',     emoji:'🏪', cost:1, tier:1, requires:[], effect:'cps_area2',     value:0.30, desc:'商店街エリア全建物のCPS +30%'},
-  {id:'quick_hands',    name:'素早い手',     emoji:'🪙', cost:1, tier:1, requires:[], effect:'click_sec',     value:4,    desc:'ひと稼ぎ +4秒分（合計6秒）'},
+  {id:'quick_hands',    name:'素早い手',     emoji:'🪙', cost:1, tier:1, requires:[], effect:'click_sec',     value:1,    desc:'ひと稼ぎ +1秒分'},
   // Tier 2（2SP）
-  {id:'master_hands',   name:'名人の手さばき', emoji:'⚡', cost:2, tier:2, requires:['quick_hands'],            effect:'click_sec',     value:4,    desc:'ひと稼ぎ +4秒分（合計10秒）'},
+  {id:'master_hands',   name:'名人の手さばき', emoji:'⚡', cost:2, tier:2, requires:['quick_hands'],            effect:'click_sec',     value:2,    desc:'ひと稼ぎ +2秒分'},
   {id:'beauty_power',   name:'美の力',       emoji:'🌺', cost:2, tier:2, requires:['farm_mastery'],           effect:'beauty_mult',   value:0.5,  desc:'美観ボーナス ×1.5'},
   {id:'nature_beauty',  name:'自然の美',     emoji:'🌿', cost:2, tier:2, requires:['farm_mastery'],           effect:'deco_mult',     value:0.25, desc:'全デコレーション効果 +25%'},
   {id:'culture_bloom',  name:'文化の花開き', emoji:'📚', cost:2, tier:2, requires:['commerce_art'],           effect:'cps_area3',     value:0.40, desc:'文化エリア全建物のCPS +40%'},
@@ -161,6 +162,7 @@ const SKILLS = [
   {id:'event_sense',    name:'イベント感知', emoji:'🎪', cost:2, tier:2, requires:['quick_hands'],            effect:'event_mult',    value:0.30, desc:'イベント効果倍率 +30%'},
   {id:'farm_market',    name:'農商連携',     emoji:'🤝', cost:2, tier:2, requires:['farm_mastery','commerce_art'], effect:'cps_synergy', areas:[1,2], value:0.25, desc:'農村・商店街エリアが互いに+25%（両区解放時）'},
   // Tier 3（2〜3SP）
+  {id:'foundation_1',   name:'礎の目覚め',   emoji:'🏡', cost:2, tier:3, requires:['farm_mastery'],           effect:'foundation_rate', value:0.002, desc:'農村各建物Lv×0.2% を乗算で全建物CPS強化。農村全Lv100で全体×3'},
   {id:'healing_spirit', name:'癒やしの精神', emoji:'🌿', cost:2, tier:3, requires:['beauty_power'],           effect:'cps_area4',     value:0.50, desc:'癒やしエリア全建物のCPS +50%'},
   {id:'city_dream',     name:'都市の夢',     emoji:'🏙️', cost:2, tier:3, requires:['culture_bloom'],          effect:'cps_area5',     value:0.50, desc:'娯楽エリア全建物のCPS +50%'},
   {id:'harvest_master', name:'豊作の神髄',   emoji:'🌾', cost:3, tier:3, requires:['master_hands','event_sense'], effect:'click_mult', value:0.5,  desc:'手動収穫量 ×1.5'},
@@ -175,6 +177,7 @@ const SKILLS = [
   {id:'space_ambition', name:'宇宙への野望', emoji:'🚀', cost:3, tier:4, requires:['research_gift'],              effect:'cps_area6', value:0.80, desc:'宇宙エリア全建物のCPS +80%'},
   {id:'quest_wisdom',   name:'知恵の報酬',   emoji:'📜', cost:2, tier:4, requires:['research_gift'],             effect:'quest_reward', value:0.40, desc:'クエスト報酬 +40%'},
   // Tier 5（3〜4SP）
+  {id:'foundation_2',   name:'礎の力',       emoji:'🏯', cost:3, tier:5, requires:['foundation_1'],           effect:'foundation_rate', value:0.003, desc:'礎レート +0.3%/Lv → 計0.5%。農村全Lv100で全体×11倍'},
   {id:'miracle_town',   name:'奇跡の街',     emoji:'🌟', cost:3, tier:5, requires:['town_vitality','space_ambition'], effect:'cps_all', value:0.50, desc:'全建物のCPS +50%'},
   {id:'harvest_limit',  name:'収穫の境地',   emoji:'⚡', cost:4, tier:5, requires:['harvest_master'],          effect:'click_mult',  value:0.5,  desc:'手動収穫量さらに強化（累積×2）'},
   {id:'deep_sea_power', name:'深海の覇権',   emoji:'🌊', cost:3, tier:5, requires:['space_ambition'],         effect:'cps_area7',   value:0.60, desc:'深海エリア全建物のCPS +60%'},
@@ -184,6 +187,7 @@ const SKILLS = [
   {id:'dim_mastery',    name:'異次元の理',   emoji:'🔮', cost:3, tier:6, requires:['deep_sea_power'],         effect:'cps_area8',   value:0.70, desc:'異次元エリア全建物のCPS +70%'},
   {id:'galaxy_civ',     name:'銀河文明',     emoji:'🌌', cost:4, tier:6, requires:['achiev_eye'],             effect:'cps_mult',    value:1.0,  desc:'全建物のCPS ×2'},
   // Tier 7（5SP）
+  {id:'foundation_3',   name:'礎の真髄',     emoji:'🌍', cost:5, tier:7, requires:['foundation_2'],           effect:'foundation_rate', value:0.005, desc:'礎レート +0.5%/Lv → 計1.0%。農村全Lv100で全体×64倍'},
   {id:'cosmos_wisdom',  name:'宇宙の全知',   emoji:'🌠', cost:5, tier:7, requires:['all_harmony','achiev_eye'], effect:'cps_mult',  value:0.50, desc:'全建物のCPS ×1.5'},
   {id:'dim_enlighten',  name:'異次元の悟り', emoji:'💎', cost:5, tier:7, requires:['galaxy_civ','dim_mastery'], effect:'cps_mult',  value:2.0,  desc:'全建物のCPS ×3'},
 ];
@@ -380,7 +384,7 @@ const ACHIEVEMENTS = [
   {id:'area8',     icon:'🔮', name:'異次元の扉',      desc:'第8区を解放した',    reward:'称号',    check:s=>(s.unlockedAreas||[]).includes(8)},
   {id:'all_areas', icon:'🗺️', name:'全区制覇',        desc:'全エリアを解放',     reward:'称号',    check:s=>(s.unlockedAreas||[]).length>=8},
   {id:'research_3',    icon:'🔬', name:'研究者',       desc:'3つの研究を完了',    reward:'称号',    check:s=>Object.keys(s.research||{}).length>=3},
-  {id:'research_all',  icon:'🧪', name:'科学の申し子', desc:'全研究を完了',       reward:'称号',    check:s=>Object.keys(s.research||{}).length>=RESEARCH.length},
+  {id:'research_all',  icon:'🧪', name:'科学の申し子', desc:'全研究を完了',       reward:'称号',    check:s=>Object.keys(s.research||{}).length>=BUILDINGS.length*RESEARCH_TIERS.length},
   {id:'weekend',       icon:'🎉', name:'週末の楽しみ', desc:'週末ボーナス中に遊んだ', reward:'記念称号', check:s=>getWeekendMult()>1&&getTotalLv()>=1},
   // CPS
   {id:'cps_1',         icon:'⏱️', name:'コイン生産開始',   desc:'CPS 1/秒を達成',          reward:'称号', check:s=>(s.maxCps||0)>=1},
@@ -424,11 +428,17 @@ const ACHIEVEMENTS = [
   {id:'went_broke',    icon:'💸', name:'一文無し',         desc:'所持コインが一桁まで減った',          reward:'称号', hidden:true, check:s=>s.wentBroke},
   {id:'event_stack_3', icon:'🌀', name:'嵐の目の中で',     desc:'3種類のイベントを同時に重ねた',       reward:'称号', hidden:true, check:s=>s.eventStack3},
   {id:'winter_prestige',icon:'❄️',name:'冬の決断',         desc:'冬の季節にプレステージ転生した',      reward:'称号', hidden:true, check:s=>s.prestigeInWinter},
+  // 施設別レベル実績
+  ...BUILDINGS.flatMap(b => [
+    {id:`${b.id}_lv10`,  icon:b.emoji, name:`${b.name} Lv10`,  desc:`${b.name}をLv10に強化`,  reward:'称号', check:s=>(s.buildings?.[b.id]?.level||0)>=10},
+    {id:`${b.id}_lv50`,  icon:b.emoji, name:`${b.name} Lv50`,  desc:`${b.name}をLv50に強化`,  reward:'称号', check:s=>(s.buildings?.[b.id]?.level||0)>=50},
+    {id:`${b.id}_lv100`, icon:b.emoji, name:`${b.name} Lv100`, desc:`${b.name}をLv100に強化`, reward:'称号', check:s=>(s.buildings?.[b.id]?.level||0)>=100},
+  ]),
 ];
 
 // ゲーム状態
 let state = {
-  coins:50, totalEarned:0, buildings:{},
+  coins:0, totalEarned:0, buildings:{},
   lastTick:Date.now(), lastSaved:null,
   activeEvents:[], eventDiscount:1,
   prestigeCount:0, achievements:{},

@@ -337,84 +337,130 @@
 
 /* ── 研究システム ── */
 .research-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px
-}
-
-.research-item {
-    background: linear-gradient(135deg, #f3e5f5, #ede7f6);
-    border: 2px solid #ce93d8;
-    border-radius: 14px;
-    padding: 12px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 12px
 }
 
-.research-item.done {
-    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
-    border-color: var(--green)
+/* ── エリアセクション ── */
+.research-area-section {
+    border: 1.5px solid #ce93d8;
+    border-radius: 14px;
+    overflow: hidden
 }
 
-.research-item.affordable {
-    border-color: var(--prestige)
-}
-
-.research-emoji {
-    font-size: 30px;
-    flex-shrink: 0
-}
-
-.research-info {
-    flex: 1
-}
-
-.research-name {
-    font-size: 13px;
+.research-area-header {
+    background: linear-gradient(135deg, #f3e5f5, #ede7f6);
+    padding: 6px 12px;
+    font-size: 12px;
     font-weight: 800;
     color: #4a148c
 }
 
-.research-item.done .research-name {
-    color: var(--green2)
+/* ── 施設行 ── */
+.research-building-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-top: 1px solid #e8d0f0
 }
 
-.research-desc {
+.research-building-row:first-of-type {
+    border-top: none
+}
+
+.rb-emoji {
+    font-size: 20px;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center
+}
+
+.rb-name {
     font-size: 11px;
-    color: #7b1fa2;
-    margin-top: 2px
+    font-weight: 700;
+    color: var(--brown);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
 }
 
-.research-item.done .research-desc {
-    color: var(--muted)
-}
-
-.btn-research {
-    background: linear-gradient(135deg, var(--prestige), var(--prestige2));
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 7px 12px;
-    font-family: 'M PLUS Rounded 1c', sans-serif;
-    font-weight: 800;
-    font-size: 11px;
-    cursor: pointer;
-    box-shadow: 0 3px 0 var(--prestige2);
-    white-space: nowrap;
+.rb-tiers {
+    display: flex;
+    gap: 5px;
     flex-shrink: 0
 }
 
-.btn-research:disabled {
-    background: #ccc;
-    box-shadow: 0 3px 0 #aaa;
-    cursor: not-allowed
+/* ── Tierボタン ── */
+.btn-research-tier {
+    width: 52px;
+    height: 48px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 800;
+    font-size: 10px;
+    line-height: 1.3;
+    cursor: pointer;
+    text-align: center;
+    background: linear-gradient(135deg, var(--prestige), var(--prestige2));
+    color: white;
+    box-shadow: 0 3px 0 var(--prestige2);
+    transition: opacity 0.1s
 }
 
-.btn-research.done {
+.btn-research-tier.affordable {
+    background: linear-gradient(135deg, #7b1fa2, #4a148c);
+    box-shadow: 0 3px 0 #4a148c
+}
+
+.btn-research-tier.done {
     background: linear-gradient(135deg, var(--green), var(--green2));
     box-shadow: 0 3px 0 var(--green2);
     cursor: default
+}
+
+.btn-research-tier.locked,
+.btn-research-tier:disabled:not(.done) {
+    background: #ccc;
+    box-shadow: 0 3px 0 #aaa;
+    cursor: not-allowed;
+    color: #888
+}
+
+.rt-cost {
+    font-size: 9px
+}
+
+.btn-research-all {
+    width: 52px;
+    height: 48px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 800;
+    font-size: 10px;
+    line-height: 1.3;
+    cursor: pointer;
+    text-align: center;
+    background: linear-gradient(135deg, #e65100, #bf360c);
+    color: white;
+    box-shadow: 0 3px 0 #bf360c
+}
+
+.btn-research-all.affordable {
+    background: linear-gradient(135deg, #ff6d00, #e65100);
+    box-shadow: 0 3px 0 #e65100
+}
+
+.btn-research-all:disabled {
+    background: #ccc;
+    box-shadow: 0 3px 0 #aaa;
+    cursor: not-allowed;
+    color: #888
 }
 
 /* ── クエスト ── */
