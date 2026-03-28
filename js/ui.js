@@ -120,6 +120,13 @@ function renderCpsDetail() {
 
 let _townViewArea = 0;
 
+function _updateTownMeta(area) {
+  const label = document.getElementById('townAreaLabel');
+  const icon  = document.getElementById('townCenterIcon');
+  if (label) label.textContent = `${area.emoji} ${area.name}`;
+  if (icon)  icon.textContent  = area.emoji;
+}
+
 let _townSliding = false;
 function changeTownArea(dir) {
   if (_townSliding) return;
@@ -132,9 +139,10 @@ function changeTownArea(dir) {
   const outClass = dir > 0 ? 'tc-out-left'  : 'tc-out-right';
   const inClass  = dir > 0 ? 'tc-in-right'  : 'tc-in-left';
 
-  // 背景色をすぐに遷移開始
+  // 背景色・ラベル・中央アイコンを即時切り替え
   _townViewArea = newIdx;
   document.getElementById('townArea').dataset.area = unlocked[newIdx].id;
+  _updateTownMeta(unlocked[newIdx]);
 
   content.classList.add(outClass);
   setTimeout(() => {
@@ -172,13 +180,9 @@ function renderTown() {
   // ナビゲーション更新
   const prevBtn = document.getElementById('townNavPrev');
   const nextBtn = document.getElementById('townNavNext');
-  const label   = document.getElementById('townAreaLabel');
   if (prevBtn) prevBtn.disabled = (_townViewArea === 0);
   if (nextBtn) nextBtn.disabled = (_townViewArea === unlocked.length - 1);
-  if (label) label.innerHTML =
-    `<span class="tna-emoji">${cur.emoji}</span>` +
-    `<span class="tna-name">${cur.name}</span>` +
-    `<span class="tna-desc">${cur.desc}</span>`;
+  _updateTownMeta(cur);
 
   // ひと稼ぎ（上段）
   const harvestRow = document.getElementById('harvestRow');

@@ -3,6 +3,7 @@
 // ══════════════════════════════
 let _audioCtx = null, _sfxOn = true, _bgmOn = true, _bgmTimer = null;
 let _bgmAudio = null;
+let _bgmVol = 0.5, _sfxVol = 0.8;
 
 function getAudioCtx() {
   if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -14,7 +15,7 @@ function _initBgmAudio() {
   if (_bgmAudio) return;
   _bgmAudio = new Audio('./ひだまりのまち.mp3');
   _bgmAudio.loop = true;
-  _bgmAudio.volume = 0.5;
+  _bgmAudio.volume = _bgmVol;
 }
 
 function _startBgm() {
@@ -35,7 +36,7 @@ function playTones(freqs, dur = 0.3, vol = 0.22, type = 'sine') {
       osc.type = type; osc.frequency.value = freq;
       osc.connect(g); g.connect(ctx.destination);
       const t = ctx.currentTime + i * 0.09;
-      g.gain.setValueAtTime(vol, t);
+      g.gain.setValueAtTime(vol * _sfxVol, t);
       g.gain.exponentialRampToValueAtTime(0.001, t + dur);
       osc.start(t); osc.stop(t + dur + 0.05);
     });
@@ -85,10 +86,41 @@ function updateSoundBtns() {
   if (s) { s.textContent = _sfxOn ? '🔔' : '🔕'; s.classList.toggle('off', !_sfxOn); }
 }
 
+function openSettings() {
+  document.getElementById('sBgmOn').checked = _bgmOn;
+  document.getElementById('sSfxOn').checked = _sfxOn;
+  const bgmPct = Math.round(_bgmVol * 100);
+  const sfxPct = Math.round(_sfxVol * 100);
+  document.getElementById('sBgmVol').value = bgmPct;
+  document.getElementById('sSfxVol').value = sfxPct;
+  document.getElementById('sBgmVolVal').textContent = bgmPct + '%';
+  document.getElementById('sSfxVolVal').textContent = sfxPct + '%';
+  document.getElementById('settingsModal').classList.add('show');
+}
+
+function setBgmOn(on) { if (on !== _bgmOn) toggleBgm(); }
+function setSfxOn(on)  { if (on !== _sfxOn) toggleSfx(); }
+
+function setBgmVolume(val) {
+  _bgmVol = val / 100;
+  if (_bgmAudio) _bgmAudio.volume = _bgmVol;
+  document.getElementById('sBgmVolVal').textContent = val + '%';
+  localStorage.setItem('nodoka_bgm_vol', val);
+}
+
+function setSfxVolume(val) {
+  _sfxVol = val / 100;
+  document.getElementById('sSfxVolVal').textContent = val + '%';
+  localStorage.setItem('nodoka_sfx_vol', val);
+}
+
 function initSound() {
   _bgmOn = localStorage.getItem('nodoka_bgm') !== '0';
   _sfxOn = localStorage.getItem('nodoka_sfx') !== '0';
+  const savedBgmVol = localStorage.getItem('nodoka_bgm_vol');
+  if (savedBgmVol !== null) _bgmVol = Number(savedBgmVol) / 100;
+  const savedSfxVol = localStorage.getItem('nodoka_sfx_vol');
+  if (savedSfxVol !== null) _sfxVol = Number(savedSfxVol) / 100;
   updateSoundBtns();
-  // ブラウザの自動再生ポリシー対策：初回クリックで再生開始
   document.addEventListener('click', () => { if (_bgmOn) _startBgm(); }, { once: true });
 }

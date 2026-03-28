@@ -367,6 +367,91 @@
     box-shadow: 0 3px 0 var(--prestige2)
 }
 
+/* ── 設定モーダル ── */
+.settings-modal { text-align: left; min-width: 260px; }
+.settings-modal h2 { text-align: center; margin-bottom: 16px; }
+
+.settings-group {
+    background: rgba(0,0,0,.04);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.settings-label {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.settings-vol-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settings-vol-icon { font-size: 14px; }
+
+.settings-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 4px;
+    background: #ddd;
+    outline: none;
+}
+
+.settings-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--btn);
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+
+.settings-vol-val {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    width: 34px;
+    text-align: right;
+}
+
+/* トグルスイッチ */
+.sw { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+.sw input { opacity: 0; width: 0; height: 0; }
+.sw-track {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #ccc;
+    border-radius: 24px;
+    transition: .25s;
+}
+.sw-track::before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: .25s;
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.sw input:checked + .sw-track { background: var(--btn); }
+.sw input:checked + .sw-track::before { transform: translateX(20px); }
+
 .prestige-confirm-list {
     text-align: left;
     background: rgba(156, 39, 176, .08);

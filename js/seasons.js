@@ -159,3 +159,44 @@ function spawnResident() {
 
   setTimeout(() => el.remove(), duration * 1000 + 200);
 }
+
+// ── 特別住人（クリックでイベント発動） ──
+const SPECIAL_VISITORS = ['🧙','🎪','👑','🔮','🎭','🌟','🧝','🦊'];
+
+function spawnSpecialResident() {
+  if (getTotalLv() < 1) return;
+  const town = document.getElementById('townArea');
+  if (!town) return;
+  const emoji = SPECIAL_VISITORS[Math.floor(Math.random() * SPECIAL_VISITORS.length)];
+  const duration = 10 + Math.random() * 8;
+  const rtl = Math.random() < 0.4;
+
+  const el = document.createElement('div');
+  el.className = 'resident special-resident' + (rtl ? ' rtl' : '');
+  el.style.animationDuration = duration + 's';
+  el.style.bottom = (48 + Math.random() * 16) + 'px';
+
+  el.innerHTML = `
+    <div class="special-res-badge">!</div>
+    <span class="res-emoji">${emoji}</span>`;
+
+  let clicked = false;
+  el.addEventListener('click', () => {
+    if (clicked) return;
+    clicked = true;
+    triggerRandomEvent();
+    el.classList.add('special-res-clicked');
+    setTimeout(() => el.remove(), 400);
+  });
+
+  town.appendChild(el);
+  setTimeout(() => { if (el.isConnected) el.remove(); }, duration * 1000 + 200);
+}
+
+function scheduleSpecialResident() {
+  const delay = (60 + Math.random() * 90) * 1000;
+  setTimeout(() => {
+    spawnSpecialResident();
+    scheduleSpecialResident();
+  }, delay);
+}

@@ -74,9 +74,6 @@ function shakeScreen() {
   setTimeout(() => wrap.classList.remove('screen-shake'), 500);
 }
 
-function scheduleNextEvent() {
-  setTimeout(() => { triggerRandomEvent(); scheduleNextEvent(); }, (45 + Math.random() * 75) * 1000);
-}
 
 function updateEventBadge() {
   const container = document.getElementById('eventBadgeContainer');

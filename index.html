@@ -50,10 +50,7 @@
           <div class="prestige-badge" id="prestigeBadge" style="display:none">⭐<span id="prestigeCount">0</span>世代</div>
           <div class="weekend-badge" id="weekendBadge" style="display:none">🎉 週末×1.3</div>
           <div class="season-badge season-spring" id="seasonBadge">🌸 春</div>
-          <div class="sound-btns">
-            <button class="btn-sound" id="btnBgm" onclick="toggleBgm()">🎵</button>
-            <button class="btn-sound" id="btnSfx" onclick="toggleSfx()">🔔</button>
-          </div>
+          <button class="btn-sound" id="btnSettings" onclick="openSettings()">⚙️</button>
           <div class="coin-display"><span class="coin-icon">🪙</span><span id="coinCount">0</span></div>
         </div>
       </div>
@@ -70,11 +67,10 @@
       <div id="weatherLayer"></div>
       <button class="town-nav-btn" id="townNavPrev" onclick="changeTownArea(-1)">◀</button>
       <button class="town-nav-btn" id="townNavNext" onclick="changeTownArea(1)">▶</button>
+      <div class="town-area-tag" id="townAreaLabel"></div>
+      <div class="town-center-icon" id="townCenterIcon"></div>
       <div class="harvest-row" id="harvestRow"></div>
       <div id="townContent">
-        <div class="town-nav-bar">
-          <div class="town-area-label" id="townAreaLabel"></div>
-        </div>
         <div class="buildings-row" id="buildingsRow"></div>
       </div>
       <div class="event-badge-container" id="eventBadgeContainer"></div>
@@ -254,6 +250,36 @@
         <button class="btn-modal" onclick="closeModal('prestigeModal')">やめる</button>
         <button class="btn-modal purple" onclick="doPrestige()">転生する！</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 設定モーダル -->
+  <div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeModal('settingsModal')">
+    <div class="modal settings-modal">
+      <h2>⚙️ 設定</h2>
+      <div class="settings-group">
+        <div class="settings-row">
+          <span class="settings-label">🎵 BGM</span>
+          <label class="sw"><input type="checkbox" id="sBgmOn" onchange="setBgmOn(this.checked)"><span class="sw-track"></span></label>
+        </div>
+        <div class="settings-vol-row">
+          <span class="settings-vol-icon">🔈</span>
+          <input type="range" class="settings-slider" id="sBgmVol" min="0" max="100" value="50" oninput="setBgmVolume(this.value)">
+          <span class="settings-vol-val" id="sBgmVolVal">50%</span>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <span class="settings-label">🔔 効果音</span>
+          <label class="sw"><input type="checkbox" id="sSfxOn" onchange="setSfxOn(this.checked)"><span class="sw-track"></span></label>
+        </div>
+        <div class="settings-vol-row">
+          <span class="settings-vol-icon">🔈</span>
+          <input type="range" class="settings-slider" id="sSfxVol" min="0" max="100" value="80" oninput="setSfxVolume(this.value)">
+          <span class="settings-vol-val" id="sSfxVolVal">80%</span>
+        </div>
+      </div>
+      <button class="btn-modal" onclick="closeModal('settingsModal')">閉じる</button>
     </div>
   </div>
 

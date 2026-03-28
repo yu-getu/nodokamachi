@@ -167,7 +167,7 @@ initSound();
 updateSky();
 initWeather();
 setInterval(tick, 200);
-scheduleNextEvent();
+scheduleSpecialResident();
 
 // Service Worker 登録
 if ('serviceWorker' in navigator) {
