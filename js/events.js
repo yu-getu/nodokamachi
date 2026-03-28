@@ -14,21 +14,28 @@ let eventToastTimer = null;
 function triggerRandomEvent() {
   if (getTotalLv() < 1) return;
   const ev = EVENTS[Math.floor(Math.random() * EVENTS.length)];
-  showEventToast(ev);
   state.eventCount++;
-  if (ev.id === 'storm') state.stormCount++;
+  if (ev.id === 'storm' || ev.id === 'lightning') state.stormCount++;
   const now = Date.now();
   state.activeEvent = { eventId: ev.id, endsAt: ev.dur > 0 ? now + ev.dur * 1000 : now, mult: ev.mult || 1 };
   state.eventDiscount = ev.discount || 1;
-  if (ev.bonus === 'flat') {
+  if (ev.bonus === 'cps' || ev.bonus === 'cps30') {
+    const sec = ev.bonusSec || 30;
+    const b = Math.floor(getCps() * sec);
+    state.coins += b; state.totalEarned += b;
+    spawnFloatCoins(`+${fmt(b)}`);
+    addLog(`${ev.icon} ${ev.title} +${fmt(b)}コイン！`);
+  } else if (ev.bonus === 'flat') {
     state.coins += ev.amt; state.totalEarned += ev.amt;
     spawnFloatCoins(`+${fmt(ev.amt)}`);
     addLog(`${ev.icon} ${ev.title} +${fmt(ev.amt)}コイン！`);
-  } else if (ev.bonus === 'cps30') {
-    const b = Math.floor(getCps() * 30); state.coins += b; state.totalEarned += b;
-    spawnFloatCoins(`+${fmt(b)}`);
-    addLog(`${ev.icon} ${ev.title} +${fmt(b)}コイン！`);
-  } else { addLog(`${ev.icon} ${ev.title}`); }
+  } else {
+    addLog(`${ev.icon} ${ev.title}`);
+  }
+  showEventToast(ev);
+  flashScreen(ev.type);
+  if (ev.type === 'bad') shakeScreen();
+  playEventSfx(ev.type);
   checkAchievements(); render();
 }
 
@@ -39,7 +46,22 @@ function showEventToast(ev) {
   document.getElementById('eventDesc').textContent = ev.desc;
   t.className = `event-toast ${ev.type} show`;
   if (eventToastTimer) clearTimeout(eventToastTimer);
-  eventToastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+  eventToastTimer = setTimeout(() => t.classList.remove('show'), 5000);
+}
+
+function flashScreen(type) {
+  const colors = { great: 'rgba(255,215,0,0.22)', good: 'rgba(76,175,80,0.18)', bad: 'rgba(229,57,53,0.22)', info: 'rgba(66,165,245,0.16)' };
+  const el = document.createElement('div');
+  el.style.cssText = `position:fixed;inset:0;z-index:9000;pointer-events:none;background:${colors[type]||colors.info};animation:eventFlash .6s ease-out forwards`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 700);
+}
+
+function shakeScreen() {
+  const wrap = document.querySelector('.game-wrap');
+  if (!wrap) return;
+  wrap.classList.add('screen-shake');
+  setTimeout(() => wrap.classList.remove('screen-shake'), 500);
 }
 
 function scheduleNextEvent() {
