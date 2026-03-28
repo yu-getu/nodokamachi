@@ -51,7 +51,6 @@
           <div class="weekend-badge" id="weekendBadge" style="display:none">🎉 週末×1.3</div>
           <div class="season-badge season-spring" id="seasonBadge">🌸 春</div>
           <button class="btn-sound" id="btnSettings" onclick="openSettings()">⚙️</button>
-          <div class="coin-display"><span class="coin-icon">🪙</span><span id="coinCount">0</span></div>
         </div>
       </div>
       <div class="header-bottom">
@@ -81,8 +80,13 @@
         <span class="stat-icon">⏱️</span>
         <div class="stat-info"><span class="stat-label">コイン/秒 <span class="cps-detail-hint" id="cpsDetailHint">▼</span></span><span class="stat-value" id="cps">0</span></div>
       </div>
-      <div class="stat-card"><span class="stat-icon">📈</span>
-        <div class="stat-info"><span class="stat-label">総収入</span><span class="stat-value" id="totalEarned">0</span></div>
+      <div class="stat-card">
+        <span class="stat-icon">🪙</span>
+        <div class="stat-info">
+          <span class="stat-label">現在のコイン</span>
+          <span class="stat-value" id="coinCount">0</span>
+          <span class="stat-sub">総収入 <span id="totalEarned">0</span></span>
+        </div>
       </div>
     </div>
 

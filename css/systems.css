@@ -793,6 +793,18 @@
     cursor: default
 }
 
+.sk-btn.sk-btn-all {
+    margin-top: 5px;
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    box-shadow: 0 2px 0 #e65100
+}
+
+.sk-btn.sk-btn-all:disabled {
+    background: #bbb;
+    box-shadow: 0 2px 0 #aaa;
+    cursor: default
+}
+
 .sk-tier-label {
     position: absolute;
     left: 3px;

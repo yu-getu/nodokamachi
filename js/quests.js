@@ -187,8 +187,8 @@ function renderQuests() {
   }).join('');
 
   if (allClaimed) {
-    container.innerHTML += `<div style="text-align:center;margin-top:10px">
-      <button class="btn-save" onclick="refreshQuests()" style="background:var(--prestige);font-size:12px;padding:8px 20px;border-radius:10px">🎯 次のクエストへ</button>
+    container.innerHTML += `<div style="text-align:center;margin-top:10px;font-size:12px;color:var(--muted)">
+      🎉 本日のクエストはすべて完了！明日また来てね
     </div>`;
   }
 }

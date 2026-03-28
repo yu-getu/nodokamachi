@@ -126,7 +126,11 @@
     font-size: 9px;
     color: var(--coin2);
     font-weight: 700;
-    margin-top: 1px
+    margin-top: 1px;
+    background: rgba(255, 255, 255, .85);
+    border-radius: 8px;
+    padding: 2px 5px;
+    white-space: nowrap
 }
 
 /* 暗いエリアのナビボタン・建物名調整 */

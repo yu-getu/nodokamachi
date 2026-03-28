@@ -79,7 +79,7 @@
 
 .item-desc {
     font-size: 10px;
-    color: var(--muted)
+    color: var(--brown)
 }
 
 /* ── レベルバー ── */
@@ -194,7 +194,14 @@
 
 .btn-buy.upgrade {
     background: linear-gradient(135deg, #66bb6a, var(--green2));
-    box-shadow: 0 3px 0 var(--green2)
+    box-shadow: 0 3px 0 var(--green2);
+    color: white
+}
+
+.btn-buy.upgrade:disabled {
+    background: linear-gradient(135deg, #66bb6a, var(--green2));
+    box-shadow: 0 3px 0 var(--green2);
+    color: rgba(255, 255, 255, 0.55)
 }
 
 .btn-buy.maxed-btn {

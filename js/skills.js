@@ -191,10 +191,51 @@ function renderSkills() {
       </div>
     </div>
     <div class="skill-detail-desc" id="sdDesc"></div>
-    <button class="sk-btn" id="sdBtn"></button>`;
+    <button class="sk-btn" id="sdBtn"></button>
+    <button class="sk-btn sk-btn-all" id="sdBtnAll" style="display:none"></button>`;
   container.appendChild(detail);
 
   if (prevOpen) showSkillDetail(prevOpen);
+}
+
+// 未習得の前提スキルをトポロジカル順で返す
+function _getUnlearnedPrereqsInOrder(id) {
+  const ancestors = _getSkillAncestors(id);
+  const unlearned = [...ancestors].filter(rid => !state.skills?.[rid]);
+  // 依存関係を考慮した順序でソート（前提を先に）
+  const sorted = [];
+  const visited = new Set();
+  function visit(sid) {
+    if (visited.has(sid)) return;
+    visited.add(sid);
+    const s = SKILLS.find(x => x.id === sid);
+    if (s) s.requires.forEach(r => { if (unlearned.includes(r)) visit(r); });
+    if (unlearned.includes(sid)) sorted.push(sid);
+  }
+  unlearned.forEach(visit);
+  return sorted;
+}
+
+function unlockSkillWithPrereqs(id) {
+  const prereqs = _getUnlearnedPrereqsInOrder(id);
+  const sk = SKILLS.find(s => s.id === id);
+  if (!sk) return;
+  const allIds = [...prereqs, id];
+  const totalCost = allIds.reduce((sum, sid) => {
+    const s = SKILLS.find(x => x.id === sid);
+    return sum + (s && !state.skills?.[sid] ? s.cost : 0);
+  }, 0);
+  if (getAvailableSkillPoints() < totalCost) return;
+  if (!state.skills) state.skills = {};
+  allIds.forEach(sid => {
+    const s = SKILLS.find(x => x.id === sid);
+    if (s && !state.skills[sid]) { state.skills[sid] = true; }
+  });
+  playUnlockSfx();
+  addLog(`🌟 スキル習得（${allIds.length}件）：${sk.emoji}${sk.name} まで一括取得！`);
+  renderSkills();
+  renderStats();
+  showSkillDetail(id);
 }
 
 function showSkillDetail(id) {
@@ -205,6 +246,7 @@ function showSkillDetail(id) {
   const unlocked = !!state.skills?.[sk.id];
   const canUnlock = canUnlockSkill(sk);
   const avail = getAvailableSkillPoints();
+  const prereqMet = sk.requires.every(r => state.skills?.[r]);
 
   panel.dataset.openId = id;
   document.getElementById('sdEmoji').textContent = sk.emoji;
@@ -214,20 +256,43 @@ function showSkillDetail(id) {
     unlocked ? '✅ 習得済み' : `必要SP: ${sk.cost}（残り ${avail} SP）`;
 
   const btn = document.getElementById('sdBtn');
+  const btnAll = document.getElementById('sdBtnAll');
+
   if (unlocked) {
     btn.textContent = '✅ 習得済み';
     btn.className = 'sk-btn sk-done';
     btn.disabled = true;
+    if (btnAll) btnAll.style.display = 'none';
   } else if (canUnlock) {
     btn.textContent = `💎 習得する（${sk.cost} SP）`;
     btn.className = 'sk-btn';
     btn.disabled = false;
     btn.onclick = () => { unlockSkill(id); showSkillDetail(id); };
+    if (btnAll) btnAll.style.display = 'none';
   } else {
-    btn.textContent = !sk.requires.every(r => state.skills?.[r])
-      ? '🔒 前提スキル未習得' : '💎 SP不足';
-    btn.className = 'sk-btn';
-    btn.disabled = true;
+    if (!prereqMet) {
+      // 前提未習得 → まとめて習得ボタンを表示
+      const prereqs = _getUnlearnedPrereqsInOrder(id);
+      const totalCost = [...prereqs, id].reduce((sum, sid) => {
+        const s = SKILLS.find(x => x.id === sid);
+        return sum + (s && !state.skills?.[sid] ? s.cost : 0);
+      }, 0);
+      const canAffordAll = avail >= totalCost;
+      btn.textContent = '🔒 前提スキル未習得';
+      btn.className = 'sk-btn';
+      btn.disabled = true;
+      if (btnAll) {
+        btnAll.style.display = 'block';
+        btnAll.textContent = `⚡ まとめて習得（計 ${totalCost} SP / ${prereqs.length + 1}件）`;
+        btnAll.disabled = !canAffordAll;
+        btnAll.onclick = () => unlockSkillWithPrereqs(id);
+      }
+    } else {
+      btn.textContent = '💎 SP不足';
+      btn.className = 'sk-btn';
+      btn.disabled = true;
+      if (btnAll) btnAll.style.display = 'none';
+    }
   }
 
   panel.style.display = 'block';
