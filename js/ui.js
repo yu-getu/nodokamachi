@@ -17,7 +17,7 @@ function fmt(n){
 }
 
 function switchTab(name) {
-  ['shop','research','deco','achiev','prestige','skill'].forEach(t=>{
+  ['shop','research','deco','achiev','prestige','skill','record'].forEach(t=>{
     document.getElementById(`panel-${t}`).style.display=t===name?'':'none';
     document.getElementById(`tab-${t}`).classList.toggle('active',t===name);
   });
@@ -26,6 +26,7 @@ function switchTab(name) {
   if(name==='achiev') renderAchiev();
   if(name==='prestige') renderPrestige();
   if(name==='skill') renderSkills();
+  if(name==='record') renderRecord();
 }
 
 function getWeekendMult() {
@@ -92,12 +93,13 @@ function renderCpsDetail() {
   const wm = getWeekendMult();
   if (wm > 1) buffs.push({ icon:'🎉', label:'週末', raw: fmtMult(wm), type:'buff' });
 
-  // イベント
-  const em = getEventMult();
-  if (em !== 1) {
-    const ev = EVENTS.find(e => e.id === state.activeEvent);
-    buffs.push({ icon: ev?.icon || '🎪', label: ev?.title?.replace(/[！。]/g,'') || 'イベント', raw: fmtMult(em), type: em >= 1 ? 'buff' : 'debuff' });
-  }
+  // イベント（重ねがけ対応）
+  const now_ev = Date.now();
+  (state.activeEvents || []).filter(ae => now_ev <= ae.endsAt && (ae.mult || 1) !== 1).forEach(ae => {
+    const ev = EVENTS.find(e => e.id === ae.eventId);
+    const m = ae.mult || 1;
+    buffs.push({ icon: ev?.icon || '🎪', label: ev?.title?.replace(/[！。]/g,'') || 'イベント', raw: fmtMult(m), type: m >= 1 ? 'buff' : 'debuff' });
+  });
 
   // 合計
   const total = getEffectiveCps();
@@ -254,6 +256,45 @@ function renderAchiev() {
   });
 }
 
+
+function renderRecord() {
+  const el = document.getElementById('recordGrid');
+  const fmtSec = s => {
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+    if (h > 0) return `${h}時間${m}分`;
+    return `${m}分`;
+  };
+  const fmtDate = ts => {
+    if (!ts) return '—';
+    const d = new Date(ts);
+    return `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}`;
+  };
+  const achievCount = Object.values(state.achievements || {}).filter(Boolean).length;
+  const totalLv = BUILDINGS.reduce((s, b) => s + (state.buildings[b.id]?.level || 0), 0);
+  const unlockedAreaCount = (state.unlockedAreas || [1]).length;
+
+  const rows = [
+    { icon:'📅', label:'プレイ開始日', value: fmtDate(state.firstPlayedAt) },
+    { icon:'⏱️', label:'総プレイ時間', value: fmtSec(state.totalPlaySecs || 0) },
+    { icon:'🪙', label:'総収入', value: fmt(state.totalEarned || 0) },
+    { icon:'💸', label:'総支出', value: fmt(state.totalSpent || 0) },
+    { icon:'👆', label:'総ひと稼ぎ回数', value: `${(state.totalHarvestCount || 0).toLocaleString()} 回` },
+    { icon:'⚡', label:'最高CPS', value: fmt(state.maxCps || 0) + '/秒' },
+    { icon:'💰', label:'最高所持コイン', value: fmt(state.maxCoins || 0) },
+    { icon:'⭐', label:'転生回数', value: `${state.prestigeCount || 0} 回` },
+    { icon:'🏅', label:'実績解除数', value: `${achievCount} / ${ACHIEVEMENTS.length} 件` },
+    { icon:'🏗️', label:'建物総レベル', value: `Lv ${totalLv.toLocaleString()}` },
+    { icon:'🗺️', label:'解放エリア数', value: `${unlockedAreaCount} / ${AREAS.length} エリア` },
+    { icon:'🎪', label:'イベント発生数', value: `${state.eventCount || 0} 回` },
+  ];
+
+  el.innerHTML = rows.map(r => `
+    <div class="record-row">
+      <span class="record-icon">${r.icon}</span>
+      <span class="record-label">${r.label}</span>
+      <span class="record-value">${r.value}</span>
+    </div>`).join('');
+}
 
 function render() { renderStats(); renderTown(); renderShop(); renderSeason(); renderWeekendBadge(); updateEventBadge(); }
 

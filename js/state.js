@@ -298,7 +298,7 @@ const ACHIEVEMENTS = [
 let state = {
   coins:50, totalEarned:0, buildings:{},
   lastTick:Date.now(), lastSaved:null,
-  activeEvent:null, eventDiscount:1,
+  activeEvents:[], eventDiscount:1,
   prestigeCount:0, achievements:{},
   eventCount:0, stormCount:0,
   decorations: {},
@@ -323,6 +323,13 @@ let state = {
   // ゲーム内時間（0=春の1日目 朝8時スタート）
   gameDay: 0,
   gameDayProgress: 8 / 24,
+  // 統計
+  totalHarvestCount: 0,
+  totalSpent: 0,
+  totalPlaySecs: 0,
+  maxCps: 0,
+  maxCoins: 0,
+  firstPlayedAt: Date.now(),
 };
 BUILDINGS.forEach(b=>{ state.buildings[b.id]={level:0}; });
 

@@ -4,58 +4,88 @@
 function generateQuests() {
   const pool = [];
   const unlockedAreas = state.unlockedAreas || [1];
+  const cps = Math.max(1, getEffectiveCps());
+  // CPS秒数とコスト基準フロアの大きい方を報酬にする
+  const reward = (cpsSecs, costFloor = 0) => Math.max(Math.floor(cps * cpsSecs), Math.floor(costFloor));
 
   BUILDINGS.filter(b => unlockedAreas.includes(b.area)).forEach(b => {
     const lv = state.buildings[b.id]?.level || 0;
     const targets = b.area <= 2 ? [1, 5, 10, 25, 50]
       : b.area <= 4 ? [1, 5, 10, 25]
         : [1, 5, 10];
+    const secs = { 1: 30, 5: 60, 10: 120, 25: 240, 50: 480 };
+    // フロア: そのレベルに到達するまでの建物コストの約15%
+    const costFloors = { 1: b.baseCost * 0.5, 5: b.baseCost * 2, 10: b.baseCost * 5, 25: b.baseCost * 15, 50: b.baseCost * 40 };
     targets.forEach(target => {
       if (lv < target) pool.push({
         id: `${b.id}_lv${target}`, emoji: b.emoji,
         label: `${b.name}をLv${target}にする`,
         type: 'building_level', buildingId: b.id, target,
-        reward: Math.min(Math.floor(b.baseCost * target * 0.08), b.baseCost),
+        reward: reward(secs[target] || 60, costFloors[target]),
       });
     });
   });
 
+  const totalSecs = { 5: 60, 15: 90, 30: 120, 60: 180, 100: 240, 150: 300, 230: 420, 350: 600, 500: 900 };
   [5, 15, 30, 60, 100, 150, 230, 350, 500].forEach(t => {
     if (getTotalLv() < t) pool.push({
       id: `total_${t}`, emoji: '🏘️', label: `建物の総レベルを${t}にする`,
       type: 'total_level', target: t,
-      reward: Math.floor(t * 500 * Math.pow(1.5, Math.log10(t + 1))),
+      reward: reward(totalSecs[t] || 120),
     });
   });
 
   [1000, 50000, 1000000, 50000000, 1000000000, 50000000000, 1000000000000].forEach(t => {
     if (state.totalEarned < t) pool.push({
       id: `earn_${t}`, emoji: '💰', label: `累計${fmt(t)}コインを稼ぐ`,
-      type: 'earn', target: t, reward: Math.floor(t * 0.08),
+      type: 'earn', target: t,
+      // フロア: 目標額の5%
+      reward: reward(120, t * 0.05),
     });
   });
 
   const decoCount = Object.values(state.decorations || {}).filter(Boolean).length;
+  const decoSecs = { 1: 60, 3: 120, 5: 180, 8: 300, 10: 420 };
+  // デコのコストフロア: 該当個数目のデコ購入コストの10%（概算）
+  const decoFloors = { 1: 500, 3: 2000, 5: 8000, 8: 50000, 10: 200000 };
   [1, 3, 5, 8, 10].forEach(t => {
     if (decoCount < t) pool.push({
       id: `deco_${t}`, emoji: '🌺', label: `デコレーションを${t}個設置する`,
-      type: 'deco', target: t, reward: t * 5000,
+      type: 'deco', target: t,
+      reward: reward(decoSecs[t] || 120, decoFloors[t]),
     });
   });
 
   const resCount = Object.keys(state.research || {}).length;
+  const resSecs = { 1: 120, 3: 240, 5: 360, 9: 600 };
+  // 研究コストフロア: 研究コストの10%（概算）
+  const resFloors = { 1: 5000, 3: 50000, 5: 500000, 9: 5000000 };
   [1, 3, 5, 9].forEach(t => {
     if (resCount < t) pool.push({
       id: `res_${t}`, emoji: '🔬', label: `研究を${t}件完了する`,
-      type: 'research', target: t, reward: t * 20000,
+      type: 'research', target: t,
+      reward: reward(resSecs[t] || 180, resFloors[t]),
     });
   });
 
   const skillCount = Object.keys(state.skills || {}).length;
+  const skillSecs = { 1: 120, 3: 240, 5: 360, 8: 540, 13: 900 };
   [1, 3, 5, 8, 13].forEach(t => {
     if (skillCount < t) pool.push({
       id: `skill_${t}`, emoji: '🌟', label: `スキルを${t}個習得する`,
-      type: 'skill', target: t, reward: t * 50000,
+      type: 'skill', target: t,
+      reward: reward(skillSecs[t] || 240),
+    });
+  });
+
+  const curMaxCps = state.maxCps || 0;
+  [1, 5, 10, 50, 100, 500, 1000, 5000, 1e4, 5e4, 1e5, 5e5, 1e6, 5e6, 1e7, 5e7, 1e8, 5e8].forEach(t => {
+    if (curMaxCps < t) pool.push({
+      id: `cps_${t}`, emoji: '⚡',
+      label: `CPS ${fmt(t)}/秒 を達成する`,
+      type: 'cps', target: t,
+      // フロア: 目標CPS × 30秒分
+      reward: reward(300, t * 30),
     });
   });
 
@@ -67,7 +97,8 @@ function generateQuests() {
         id: `unlock_area${areaId}`, emoji: area.emoji,
         label: `${area.name}（${area.desc}）を解放する`,
         type: 'unlock_area', areaId, target: 1,
-        reward: Math.max(Math.floor(area.unlockCost * 0.05), 1000),
+        // フロア: 解放コストの10%
+        reward: reward(300, area.unlockCost * 0.1),
       });
     }
   });
@@ -94,6 +125,7 @@ function getQuestProgress(q) {
     case 'research': return Math.min(Object.keys(state.research || {}).length, q.target);
     case 'skill': return Math.min(Object.keys(state.skills || {}).length, q.target);
     case 'unlock_area': return (state.unlockedAreas || [1]).includes(q.areaId) ? 1 : 0;
+    case 'cps': return Math.min(state.maxCps || 0, q.target);
     default: return 0;
   }
 }
