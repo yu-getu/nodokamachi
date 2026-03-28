@@ -52,12 +52,10 @@ function renderTown() {
   const row=document.getElementById('buildingsRow'); row.innerHTML=''; let any=false;
   BUILDINGS.forEach((b,i)=>{
     const lv=state.buildings[b.id].level; if(!lv) return; any=true;
-    const msCount=(state.buildings[b.id].msReached||[]).length;
     const d=document.createElement('div'); d.className='building';
     d.style.setProperty('--delay',`${i*.4}s`);
     const cps=getBuildingCps(b).toFixed(1);
-    const msGlow=msCount>0?`filter:drop-shadow(0 0 6px gold)`:'';
-    d.innerHTML=`<div class="building-emoji" style="${msGlow}">${b.emoji}${msCount>0?`<span style="font-size:10px;vertical-align:top">×${Math.pow(2,msCount)}</span>`:''}</div>
+    d.innerHTML=`<div class="building-emoji">${b.emoji}</div>
       <div class="building-name">${b.name} Lv${lv}</div>
       <div class="building-rate">+${cps}/秒</div>`;
     row.appendChild(d);
@@ -122,31 +120,23 @@ function renderShop() {
     }
 
     BUILDINGS.filter(b => b.area === area.id).forEach(b=>{
-    if (!state.buildings[b.id]) state.buildings[b.id]={level:0,msReached:[]};
+    if (!state.buildings[b.id]) state.buildings[b.id]={level:0};
     const lv=state.buildings[b.id].level;
     const cost=getBuildingCost(b);
     const isMax=lv>=maxLv;
     const bulk=!isMax?getBulkInfo(b):{count:0,totalCost:0};
     const canAfford=bulk.count>0;
-    const msReached=state.buildings[b.id].msReached||[];
-    const msCount=msReached.length;
-    const nextMs=getNextMilestone(lv,maxLv);
 
     const phase=getPhase(lv);
     const phaseLabel=getPhaseLabel(lv);
 
-    let barPct=0, barPhaseClass=phase.colorClass;
+    let barPct=0;
     if(!isMax) {
       const prevPhaseMax = PHASES.find(p=>lv<=p.maxLv);
       const pStart = prevPhaseMax===PHASES[0]?0:PHASES[PHASES.indexOf(prevPhaseMax)-1]?.maxLv||0;
       const pEnd = Math.min(prevPhaseMax?.maxLv||100, maxLv);
       barPct=Math.min(100,((lv-pStart)/(pEnd-pStart))*100);
     }
-
-    const msBadges=MILESTONES.filter(ms=>ms<=maxLv).map(ms=>{
-      const hit=msReached.includes(ms);
-      return `<span class="ms-badge ${hit?'reached':'next'}">Lv${ms}${hit?' ✓':''}</span>`;
-    }).join('');
 
     const sale=disc&&!isMax?`<span style="font-size:9px;color:#e53935;font-weight:800"> SALE</span>`:'';
     const bulkLabel=bulk.count>1?` +${bulk.count}Lv`:'';
@@ -158,7 +148,7 @@ function renderShop() {
     div.className='shop-item '+`${isMax?'maxed':canAfford?'affordable':''} ${phase.colorClass}`;
     div.innerHTML=`
       <div class="item-top">
-        <span class="item-emoji">${b.emoji}${msCount>0?`<span style="font-size:10px;color:var(--coin2);font-weight:800;vertical-align:top">×${Math.pow(2,msCount)}</span>`:''}</span>
+        <span class="item-emoji">${b.emoji}</span>
         <div class="item-info">
           <div class="item-name">${b.name}${sale}</div>
           <div class="item-desc">${b.desc} · ${phaseLabel}</div>
@@ -167,11 +157,9 @@ function renderShop() {
       <div class="lv-bar-wrap ${phase.colorClass}">
         <div class="lv-bar-header">
           <span class="lv-label">Lv ${lv} / ${maxLv}</span>
-          <span class="lv-next-ms">${nextMs?`次のMS: Lv${nextMs}`:'全MS達成！'}</span>
         </div>
         <div class="lv-bar-track"><div class="lv-bar-fill" style="width:${isMax?100:barPct}%"></div></div>
       </div>
-      <div class="ms-badges">${msBadges}</div>
       <button class="btn-buy ${btnClass}" onclick="buyBuilding('${b.id}')" ${isMax||(!isMax&&!canAfford)?'disabled':''}>${btnText}</button>
     `;
     grid.appendChild(div);
@@ -234,15 +222,6 @@ function renderLvDesign() {
       <div class="lv-detail">転生拡張（倍率×${PHASES[3].mult}継続）</div>
     </div>`;
   }
-  html+=`</div><div style="margin-bottom:14px">
-    <div style="font-weight:800;font-size:12px;color:var(--brown);margin-bottom:6px">🌟 マイルストーン（CPS×2ボーナス）</div>`;
-  MILESTONES.filter(ms=>ms<=maxLv).forEach(ms=>{
-    html+=`<div class="lv-design-row">
-      <div class="lv-range">Lv${ms}</div>
-      <div style="font-size:14px">⭐</div>
-      <div class="lv-detail"><span class="lv-ms-note">CPS×2（累積：到達4回で最大×16）</span></div>
-    </div>`;
-  });
   html+=`</div><div>
     <div style="font-weight:800;font-size:12px;color:var(--brown);margin-bottom:6px">📊 建物別コスト早見表</div>
     <div style="overflow-x:auto"><table style="width:100%;font-size:10px;border-collapse:collapse">

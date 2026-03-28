@@ -28,7 +28,7 @@ function doPrestige() {
   state.prestigeCount++;
   state.prestigeSp = (state.prestigeSp || 0) + 3;
   state.coins = 50; state.totalEarned = 0;
-  BUILDINGS.forEach(b => { state.buildings[b.id] = { level: 0, msReached: [] }; });
+  BUILDINGS.forEach(b => { state.buildings[b.id] = { level: 0 }; });
   state.activeEvent = null; state.eventDiscount = 1; state.skills = {}; state.research = {};
   const newMax = getMaxLevel();
   const curMult = getPrestigeMult().toFixed(1);
@@ -109,7 +109,7 @@ function renderPrestigeSkillTree() {
   const container = document.getElementById('prestigeSkillTree');
   container.innerHTML = '';
 
-  const TIER_H = 130, TOP_PAD = 16;
+  const TIER_H = 170, TOP_PAD = 24;
   const wrap = document.createElement('div');
   wrap.className = 'skill-tree-wrap';
   wrap.id = 'pskTreeWrap';
@@ -136,28 +136,84 @@ function renderPrestigeSkillTree() {
     const node = document.createElement('div');
     node.className = `skill-node ${stateClass}`;
     node.dataset.id = sk.id;
-    node.style.cssText = `left:${pos.x * 100}%;top:${topY}px`;
-
-    const btnLabel = unlocked ? '✅ 習得済み' : `💎 ${sk.cost} PSP`;
+    node.style.cssText = `left:${pos.x * 100}%;top:${topY}px;cursor:pointer`;
     node.innerHTML = `
       <div class="sk-icon">${sk.emoji}</div>
-      <div class="sk-name">${sk.name}</div>
-      <div class="sk-eff">${sk.desc}</div>
-      <button class="sk-btn ${unlocked ? 'sk-done' : ''}"
-        onclick="unlockPrestigeSkill('${sk.id}')"
-        ${unlocked || !canUnlock ? 'disabled' : ''}>
-        ${btnLabel}
-      </button>`;
+      <div class="sk-name">${sk.name}</div>`;
+    node.addEventListener('click', e => { e.stopPropagation(); showPrestigeSkillDetail(sk.id); });
     wrap.appendChild(node);
   });
 
   container.appendChild(wrap);
+
+  // 詳細パネル（ツリー下部にsticky）
+  const prevOpen = document.getElementById('pskDetailPanel')?.dataset.openId;
+  const detail = document.createElement('div');
+  detail.id = 'pskDetailPanel';
+  detail.className = 'skill-detail-panel';
+  detail.style.display = 'none';
+  detail.innerHTML = `
+    <button class="skill-detail-close" onclick="closePskDetail()">✕</button>
+    <div class="skill-detail-header">
+      <span class="skill-detail-emoji" id="psdEmoji"></span>
+      <div>
+        <div class="skill-detail-name" id="psdName"></div>
+        <div class="skill-detail-cost" id="psdCost"></div>
+      </div>
+    </div>
+    <div class="skill-detail-desc" id="psdDesc"></div>
+    <button class="sk-btn" id="psdBtn"></button>`;
+  container.appendChild(detail);
+
+  if (prevOpen) showPrestigeSkillDetail(prevOpen);
+
   requestAnimationFrame(() => {
     _drawPrestigeSkillLines();
     if (window._pskTreeRO) window._pskTreeRO.disconnect();
     window._pskTreeRO = new ResizeObserver(() => _drawPrestigeSkillLines());
     window._pskTreeRO.observe(wrap);
   });
+}
+
+function showPrestigeSkillDetail(id) {
+  const sk = PRESTIGE_SKILLS.find(s => s.id === id);
+  const panel = document.getElementById('pskDetailPanel');
+  if (!sk || !panel) return;
+
+  const unlocked  = !!state.prestigeSkills?.[sk.id];
+  const canUnlock = canUnlockPrestigeSkill(sk);
+  const avail = getAvailablePrestigeSp();
+
+  panel.dataset.openId = id;
+  document.getElementById('psdEmoji').textContent = sk.emoji;
+  document.getElementById('psdName').textContent  = sk.name;
+  document.getElementById('psdDesc').textContent  = sk.desc;
+  document.getElementById('psdCost').textContent  =
+    unlocked ? '✅ 習得済み' : `必要PSP: ${sk.cost}（残り ${avail} PSP）`;
+
+  const btn = document.getElementById('psdBtn');
+  if (unlocked) {
+    btn.textContent = '✅ 習得済み';
+    btn.className = 'sk-btn sk-done';
+    btn.disabled = true;
+  } else if (canUnlock) {
+    btn.textContent = `💎 習得する（${sk.cost} PSP）`;
+    btn.className = 'sk-btn';
+    btn.disabled = false;
+    btn.onclick = () => { unlockPrestigeSkill(id); showPrestigeSkillDetail(id); };
+  } else {
+    btn.textContent = !sk.requires.every(r => state.prestigeSkills?.[r])
+      ? '🔒 前提スキル未習得' : '💎 PSP不足';
+    btn.className = 'sk-btn';
+    btn.disabled = true;
+  }
+
+  panel.style.display = 'block';
+}
+
+function closePskDetail() {
+  const panel = document.getElementById('pskDetailPanel');
+  if (panel) { panel.style.display = 'none'; delete panel.dataset.openId; }
 }
 
 function _drawPrestigeSkillLines() {

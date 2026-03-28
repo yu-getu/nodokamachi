@@ -51,15 +51,20 @@ function getSkillCpsMult(b) {
   mult += areaAdd;
   const mulBonus = getSkillEffect('cps_mult');
   mult *= (1 + mulBonus);
+  // シナジースキル：対象エリアが全て解放済みの場合のみ発動
+  const unlockedAreas = state.unlockedAreas || [1];
+  SKILLS.forEach(s => {
+    if (s.effect !== 'cps_synergy') return;
+    if (!state.skills?.[s.id]) return;
+    if (!s.areas.includes(b.area)) return;
+    if (!s.areas.every(a => unlockedAreas.includes(a))) return;
+    mult += s.value;
+  });
   return mult;
 }
 function getSkillCostMult() {
   const down = getSkillEffect('cost_down');
   return Math.max(0.1, 1 - down);
-}
-function getSkillCollectMult() {
-  const add = getSkillEffect('collect_mult');
-  return 1 + add;
 }
 function getSkillResearchCostMult() {
   const down = getSkillEffect('research_cost');
@@ -73,22 +78,34 @@ function getSkillBeautyMult() {
 // ── ツリー型レイアウト設定 ──
 // x: コンテナ幅に対する割合（0〜1）、tier: 段（1〜6）
 const SKILL_POS = {
-  farm_mastery:   { x: 0.19, tier: 1 },
-  commerce_art:   { x: 0.50, tier: 1 },
-  quick_hands:    { x: 0.81, tier: 1 },
-  beauty_power:   { x: 0.19, tier: 2 },
-  culture_bloom:  { x: 0.50, tier: 2 },
-  thrift:         { x: 0.81, tier: 2 },
-  healing_spirit: { x: 0.19, tier: 3 },
-  city_dream:     { x: 0.50, tier: 3 },
-  research_gift:  { x: 0.81, tier: 3 },
-  town_vitality:  { x: 0.34, tier: 4 },
-  space_ambition: { x: 0.66, tier: 4 },
-  miracle_town:   { x: 0.50, tier: 5 },
-  galaxy_civ:     { x: 0.50, tier: 6 },
+  // ── Tier 1 ──
+  farm_mastery:    { x: 0.19, tier: 1 },
+  commerce_art:    { x: 0.50, tier: 1 },
+  quick_hands:     { x: 0.81, tier: 1 },
+  // ── Tier 2 ──
+  beauty_power:    { x: 0.10, tier: 2 },
+  farm_market:     { x: 0.32, tier: 2 },
+  culture_bloom:   { x: 0.54, tier: 2 },
+  master_hands:    { x: 0.70, tier: 2 },
+  thrift:          { x: 0.88, tier: 2 },
+  // ── Tier 3 ──
+  healing_spirit:  { x: 0.10, tier: 3 },
+  culture_healing: { x: 0.32, tier: 3 },
+  city_dream:      { x: 0.54, tier: 3 },
+  research_gift:   { x: 0.88, tier: 3 },
+  // ── Tier 4 ──
+  town_vitality:   { x: 0.26, tier: 4 },
+  city_space:      { x: 0.50, tier: 4 },
+  space_ambition:  { x: 0.74, tier: 4 },
+  // ── Tier 5 ──
+  miracle_town:    { x: 0.30, tier: 5 },
+  all_harmony:     { x: 0.70, tier: 5 },
+  // ── Tier 6 ──
+  achiev_eye:      { x: 0.30, tier: 6 },
+  galaxy_civ:      { x: 0.70, tier: 6 },
 };
-const SKILL_ROW_H = 130;
-const SKILL_TOP_PAD = 16;
+const SKILL_ROW_H = 170;
+const SKILL_TOP_PAD = 24;
 
 function renderSkills() {
   const avail = getAvailableSkillPoints();
@@ -148,22 +165,36 @@ function renderSkills() {
     const node = document.createElement('div');
     node.className = `skill-node ${stateClass}`;
     node.dataset.id = sk.id;
-    node.style.cssText = `left:${pos.x * 100}%;top:${_skillY(pos.tier)}px`;
-
-    const btnLabel = unlocked ? '✅ 習得済み' : `💎 ${sk.cost} SP`;
+    node.style.cssText = `left:${pos.x * 100}%;top:${_skillY(pos.tier)}px;cursor:pointer`;
     node.innerHTML = `
       <div class="sk-icon">${sk.emoji}</div>
-      <div class="sk-name">${sk.name}</div>
-      <div class="sk-eff">${sk.desc}</div>
-      <button class="sk-btn ${unlocked ? 'sk-done' : ''}"
-        onclick="unlockSkill('${sk.id}')"
-        ${unlocked || !canUnlock ? 'disabled' : ''}>
-        ${btnLabel}
-      </button>`;
+      <div class="sk-name">${sk.name}</div>`;
+    node.addEventListener('click', e => { e.stopPropagation(); showSkillDetail(sk.id); });
     wrap.appendChild(node);
   });
 
   container.appendChild(wrap);
+
+  // 詳細パネル（ツリー下部にsticky）
+  const prevOpen = document.getElementById('skillDetailPanel')?.dataset.openId;
+  const detail = document.createElement('div');
+  detail.id = 'skillDetailPanel';
+  detail.className = 'skill-detail-panel';
+  detail.style.display = 'none';
+  detail.innerHTML = `
+    <button class="skill-detail-close" onclick="closeSkillDetail()">✕</button>
+    <div class="skill-detail-header">
+      <span class="skill-detail-emoji" id="sdEmoji"></span>
+      <div>
+        <div class="skill-detail-name" id="sdName"></div>
+        <div class="skill-detail-cost" id="sdCost"></div>
+      </div>
+    </div>
+    <div class="skill-detail-desc" id="sdDesc"></div>
+    <button class="sk-btn" id="sdBtn"></button>`;
+  container.appendChild(detail);
+
+  if (prevOpen) showSkillDetail(prevOpen);
 
   // DOM確定後にSVG線を描画。リサイズ時も再描画
   requestAnimationFrame(() => {
@@ -172,6 +203,47 @@ function renderSkills() {
     window._skillTreeRO = new ResizeObserver(() => _drawSkillLines());
     window._skillTreeRO.observe(wrap);
   });
+}
+
+function showSkillDetail(id) {
+  const sk = SKILLS.find(s => s.id === id);
+  const panel = document.getElementById('skillDetailPanel');
+  if (!sk || !panel) return;
+
+  const unlocked = !!state.skills?.[sk.id];
+  const canUnlock = canUnlockSkill(sk);
+  const avail = getAvailableSkillPoints();
+
+  panel.dataset.openId = id;
+  document.getElementById('sdEmoji').textContent = sk.emoji;
+  document.getElementById('sdName').textContent = sk.name;
+  document.getElementById('sdDesc').textContent = sk.desc;
+  document.getElementById('sdCost').textContent =
+    unlocked ? '✅ 習得済み' : `必要SP: ${sk.cost}（残り ${avail} SP）`;
+
+  const btn = document.getElementById('sdBtn');
+  if (unlocked) {
+    btn.textContent = '✅ 習得済み';
+    btn.className = 'sk-btn sk-done';
+    btn.disabled = true;
+  } else if (canUnlock) {
+    btn.textContent = `💎 習得する（${sk.cost} SP）`;
+    btn.className = 'sk-btn';
+    btn.disabled = false;
+    btn.onclick = () => { unlockSkill(id); showSkillDetail(id); };
+  } else {
+    btn.textContent = !sk.requires.every(r => state.skills?.[r])
+      ? '🔒 前提スキル未習得' : '💎 SP不足';
+    btn.className = 'sk-btn';
+    btn.disabled = true;
+  }
+
+  panel.style.display = 'block';
+}
+
+function closeSkillDetail() {
+  const panel = document.getElementById('skillDetailPanel');
+  if (panel) { panel.style.display = 'none'; delete panel.dataset.openId; }
 }
 
 function _skillY(tier) {

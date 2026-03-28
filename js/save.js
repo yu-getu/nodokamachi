@@ -30,8 +30,7 @@ function loadGame() {
     state.unlockedAreas = d.unlockedAreas || [1];
     state.research = d.research || {};
     BUILDINGS.forEach(b => {
-      if (!state.buildings[b.id]) state.buildings[b.id] = { level: 0, msReached: [] };
-      if (!state.buildings[b.id].msReached) state.buildings[b.id].msReached = [];
+      if (!state.buildings[b.id]) state.buildings[b.id] = { level: 0 };
     });
     if (!state.unlockedAreas) state.unlockedAreas = [1];
     if (!state.research) state.research = {};

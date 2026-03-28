@@ -15,22 +15,9 @@ function setBulkMode(n) {
 // ── グローバルCPS計算 ──
 function getCps() {
   const base = BUILDINGS.reduce((s, b) => s + getBuildingCps(b), 0);
-  return base * getAchievMult() * getPrestigeMult() * (1 + getPrestigeSkillEffect('cps_perm'));
+  return base * getAchievCpsBonus() * getPrestigeMult() * (1 + getPrestigeSkillEffect('cps_perm'));
 }
 function getEffectiveCps() { return getCps() * getEventMult() * getSeasonMult() * getBeautyMult() * getWeekendMult(); }
-
-// ひと稼ぎ用：マイルストーン倍率を除いたCPS
-function getEffectiveCpsWithoutMs() {
-  const base = BUILDINGS.reduce((s, b) => {
-    const lv = state.buildings[b.id]?.level || 0;
-    if (!lv) return s;
-    const baseCps = b.baseCps * lv * (1 + lv * 0.10);
-    return s + baseCps * getResearchMult(b.id) * getSkillCpsMult(b)
-             * getDecoAreaMult(b.area) * getDecoBuildingMult(b.id);
-  }, 0);
-  return base * getAchievMult() * getPrestigeMult()
-       * getEventMult() * getSeasonMult() * getBeautyMult() * getWeekendMult();
-}
 
 // ── アクション ──
 function buyBuilding(id) {
@@ -48,15 +35,14 @@ function buyBuilding(id) {
     : `⬆️ ${b.emoji}${b.name} Lv.${nl}に強化！(+${count})`);
   spawnFloatCoins(`-${fmt(totalCost)}`);
   playBuildSfx();
-  checkMilestones(id);
   checkAchievements();
   renderQuests();
   render();
 }
 
 function manualHarvest() {
-  const clickMult = Math.max(1, 8 / (1 + getTotalLv() / 40));
-  const bonus = Math.max(1, getEffectiveCpsWithoutMs() * clickMult * getSkillCollectMult() * getDecoCollectMult());
+  const clickSec = (2 + getSkillEffect('click_sec')) * getDecoCollectMult();
+  const bonus = Math.max(1, getEffectiveCps() * clickSec);
   state.coins += bonus; state.totalEarned += bonus;
   spawnFloatCoins(`+${fmt(bonus)}`);
   playHarvestSfx();

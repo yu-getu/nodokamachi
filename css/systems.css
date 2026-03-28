@@ -656,7 +656,7 @@
 
 .skill-node {
     position: absolute;
-    width: 100px;
+    width: 88px;
     transform: translate(-50%, -50%);
     border-radius: 12px;
     padding: 8px 6px 7px;
@@ -664,7 +664,12 @@
     z-index: 1;
     border: 2px solid;
     transition: transform .15s, box-shadow .15s;
-    box-sizing: border-box
+    box-sizing: border-box;
+    user-select: none
+}
+
+.skill-node:hover {
+    transform: translate(-50%, -50%) scale(1.06)
 }
 
 .sk-unlocked {
@@ -711,11 +716,7 @@
 }
 
 .sk-eff {
-    font-size: 9px;
-    color: var(--muted);
-    line-height: 1.4;
-    margin-bottom: 4px;
-    word-break: keep-all
+    display: none
 }
 
 .sk-cost {
@@ -762,6 +763,64 @@
     transform: translateY(-50%);
     pointer-events: none;
     letter-spacing: .03em
+}
+
+/* スキル詳細パネル */
+.skill-detail-panel {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    border: 2px solid var(--prestige);
+    border-radius: 14px 14px 0 0;
+    padding: 14px 16px 16px;
+    margin-top: 12px;
+    box-shadow: 0 -4px 18px rgba(156,39,176,.18);
+    z-index: 10
+}
+
+.skill-detail-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 2px 6px;
+    line-height: 1
+}
+
+.skill-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px
+}
+
+.skill-detail-emoji {
+    font-size: 30px;
+    line-height: 1
+}
+
+.skill-detail-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text)
+}
+
+.skill-detail-cost {
+    font-size: 11px;
+    color: var(--prestige);
+    font-weight: 700;
+    margin-top: 2px
+}
+
+.skill-detail-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 12px
 }
 
 .sk-legend {

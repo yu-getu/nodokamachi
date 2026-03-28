@@ -58,60 +58,17 @@ function getBulkInfo(b) {
   return { count, totalCost };
 }
 
+
 function getBuildingCps(b) {
   const lv = state.buildings[b.id] ? state.buildings[b.id].level : 0;
   if (lv === 0) return 0;
-  const msCount = (state.buildings[b.id].msReached || []).length;
   const base = b.baseCps * lv * (1 + lv * 0.10);
-  const msBase = 2 + getPrestigeSkillEffect('ms_base');
-  return base * Math.pow(msBase, msCount) * getResearchMult(b.id) * getSkillCpsMult(b)
+  return base * getResearchMult(b.id) * getSkillCpsMult(b)
     * getDecoAreaMult(b.area) * getDecoBuildingMult(b.id);
-}
-
-function getMilestoneCount(bid) {
-  const lv = state.buildings[bid].level;
-  return MILESTONES.filter(ms => lv >= ms).length;
-}
-
-function getNextMilestone(lv, maxLv) {
-  for (const ms of MILESTONES) {
-    if (lv < ms && ms <= maxLv) return ms;
-  }
-  return null;
 }
 
 function getTotalLv() {
   return BUILDINGS.reduce((s, b) => s + state.buildings[b.id].level, 0);
-}
-
-let msToastTimer = null;
-function checkMilestones(bid) {
-  const b = BUILDINGS.find(x => x.id === bid);
-  const lv = state.buildings[bid].level;
-  const reached = state.buildings[bid].msReached || [];
-  const maxLv = getMaxLevel();
-
-  for (const ms of MILESTONES) {
-    if (ms > maxLv) break;
-    if (lv >= ms && !reached.includes(ms)) {
-      reached.push(ms);
-      state.buildings[bid].msReached = reached;
-      showMsToast(b, ms);
-      addLog(`🌟 ${b.emoji}${b.name} Lv${ms} マイルストーン！CPS×2ボーナス！`);
-    }
-  }
-}
-
-function showMsToast(b, ms) {
-  const t = document.getElementById('msToast');
-  document.getElementById('msToastIcon').textContent = b.emoji;
-  document.getElementById('msToastTitle').textContent = `Lv${ms} マイルストーン！`;
-  document.getElementById('msToastBody').textContent = `${b.name}がLv${ms}に到達しました`;
-  document.getElementById('msToastBonus').textContent = `✨ ${b.name}のCPS ×2！`;
-  t.classList.add('show');
-  playMilestoneSfx();
-  if (msToastTimer) clearTimeout(msToastTimer);
-  msToastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
 function unlockArea(areaId) {
@@ -124,7 +81,7 @@ function unlockArea(areaId) {
   playUnlockSfx();
   addLog(`🏙️ ${area.emoji}${area.name}を解放！新しい建物が建てられます！`);
   BUILDINGS.filter(b => b.area === areaId).forEach(b => {
-    if (!state.buildings[b.id]) state.buildings[b.id] = { level: 0, msReached: [] };
+    if (!state.buildings[b.id]) state.buildings[b.id] = { level: 0 };
   });
   checkAchievements();
   render();
