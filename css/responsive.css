@@ -329,7 +329,8 @@
   #panel-achiev,
   #panel-prestige,
   #panel-skill,
-  #panel-lvdesign {
+  #panel-lvdesign,
+  #panel-record {
     grid-column: 2;
     grid-row: 4 / 8;
     align-self: start;
