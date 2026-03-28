@@ -5,7 +5,7 @@ function saveGame() {
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       coins: state.coins, totalEarned: state.totalEarned, buildings: state.buildings,
-      savedAt: Date.now(), prestigeCount: state.prestigeCount,
+      savedAt: Date.now(), prestigeCount: state.prestigeCount, activeEvents: state.activeEvents,
       achievements: state.achievements, eventCount: state.eventCount, stormCount: state.stormCount,
       daily: state.daily, decorations: state.decorations,
       unlockedAreas: state.unlockedAreas, research: state.research,
@@ -15,6 +15,9 @@ function saveGame() {
       stormHarvested: state.stormHarvested, nightPlayed: state.nightPlayed,
       rapidHarvested: state.rapidHarvested, silentMinutes: state.silentMinutes,
       idledAtStart: state.idledAtStart,
+      totalHarvestCount: state.totalHarvestCount, totalSpent: state.totalSpent,
+      totalPlaySecs: state.totalPlaySecs, maxCps: state.maxCps, maxCoins: state.maxCoins,
+      firstPlayedAt: state.firstPlayedAt,
     }));
     state.lastSaved = Date.now(); updateSaveStatus();
     addLog('💾 セーブしました！');
@@ -27,6 +30,7 @@ function loadGame() {
     const d = JSON.parse(raw);
     state.coins = d.coins || 50; state.totalEarned = d.totalEarned || 0;
     state.buildings = d.buildings || {}; state.prestigeCount = d.prestigeCount || 0;
+    state.activeEvents = d.activeEvents || [];
     state.achievements = d.achievements || {}; state.eventCount = d.eventCount || 0;
     state.stormCount = d.stormCount || 0;
     state.daily = d.daily || { lastClaimDate: null, streak: 0, totalClaimed: 0 };
@@ -49,6 +53,12 @@ function loadGame() {
     state.rapidHarvested = d.rapidHarvested || false;
     state.silentMinutes = d.silentMinutes || 0;
     state.idledAtStart = d.idledAtStart || false;
+    state.totalHarvestCount = d.totalHarvestCount || 0;
+    state.totalSpent = d.totalSpent || 0;
+    state.totalPlaySecs = d.totalPlaySecs || 0;
+    state.maxCps = d.maxCps || 0;
+    state.maxCoins = d.maxCoins || 0;
+    state.firstPlayedAt = d.firstPlayedAt || Date.now();
     const offSec = Math.min((Date.now() - d.savedAt) / 1000, 24 * 3600);
     if (offSec > 30 && getCps() > 0) {
       // オフライン効率：基本50% + 世代スキル効果（上限100%）

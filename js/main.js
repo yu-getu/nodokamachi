@@ -27,6 +27,7 @@ function buyBuilding(id) {
 
   const wasZero = state.buildings[id].level === 0;
   state.coins -= totalCost;
+  state.totalSpent = (state.totalSpent || 0) + totalCost;
   state.buildings[id].level += count;
   const nl = state.buildings[id].level;
 
@@ -45,11 +46,12 @@ function manualHarvest() {
   const clickSec = (2 + getSkillEffect('click_sec')) * getDecoCollectMult();
   const bonus = Math.max(1, getEffectiveCps() * clickSec);
   state.coins += bonus; state.totalEarned += bonus;
+  state.totalHarvestCount = (state.totalHarvestCount || 0) + 1;
   spawnFloatCoins(`+${fmt(bonus)}`);
   playHarvestSfx();
 
   // 嵐中ひと稼ぎ
-  if (state.activeEvent === 'storm') state.stormHarvested = true;
+  if ((state.activeEvents || []).some(ae => ae.eventId === 'storm')) state.stormHarvested = true;
 
   // 急連打（30秒以内に10回）
   const now = Date.now();
@@ -110,6 +112,12 @@ function tick() {
     }
     renderSeason();
   }
+
+  // 統計追跡
+  state.totalPlaySecs = (state.totalPlaySecs || 0) + dt;
+  const curCps = getEffectiveCps();
+  if (curCps > (state.maxCps || 0)) state.maxCps = curCps;
+  if (state.coins > (state.maxCoins || 0)) state.maxCoins = state.coins;
 
   tickCount++;
   updateEventBadge();

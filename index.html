@@ -69,13 +69,7 @@
     <div class="town-area" id="townArea">
       <div id="weatherLayer"></div>
       <div class="buildings-row" id="buildingsRow"></div>
-      <div class="event-badge" id="eventBadge" style="display:none">
-        <span class="event-badge-icon" id="eventBadgeIcon"></span>
-        <div class="event-badge-body">
-          <div class="event-badge-title" id="eventBadgeTitle"></div>
-          <div class="event-badge-timer" id="eventBadgeTimer"></div>
-        </div>
-      </div>
+      <div class="event-badge-container" id="eventBadgeContainer"></div>
     </div>
 
     <div class="stats-bar">
@@ -95,6 +89,7 @@
       <button class="tab" onclick="switchTab('achiev')" id="tab-achiev">🏅 実績</button>
       <button class="tab" onclick="switchTab('prestige')" id="tab-prestige">⭐ 転生</button>
       <button class="tab" onclick="switchTab('skill')" id="tab-skill">🌟 スキル</button>
+      <button class="tab" onclick="switchTab('record')" id="tab-record">📊 記録</button>
     </div>
 
     <div class="cps-detail-bar" id="cpsDetailBar">
@@ -186,6 +181,12 @@
       <p style="font-size:10px;color:var(--muted);margin-bottom:10px">建物1種がLv10に初到達するごとに+1SP・実績10件ごとに+1SP・転生ごとに+3SP。スキルは転生でリセットされます。
       </p>
       <div id="skillTreeContent"></div>
+    </div>
+
+    <!-- 記録パネル -->
+    <div class="panel" id="panel-record" style="display:none">
+      <div class="panel-title">📊 これまでの歩み</div>
+      <div id="recordGrid"></div>
     </div>
 
     <!-- クエストパネル -->

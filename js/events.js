@@ -2,10 +2,12 @@
 //  イベントシステム
 // ══════════════════════════════
 function getEventMult() {
-  if (!state.activeEvent) return 1;
-  if (Date.now() > state.activeEvent.endsAt) { state.activeEvent = null; state.eventDiscount = 1; return 1; }
-  const m = state.activeEvent.mult;
-  // 花火台シナジー：イベント倍率をさらに強化（悪イベントには適用しない）
+  const now = Date.now();
+  state.activeEvents = (state.activeEvents || []).filter(ae => now <= ae.endsAt);
+  state.eventDiscount = state.activeEvents.reduce((best, ae) => Math.min(best, ae.discount || 1), 1);
+  if (!state.activeEvents.length) return 1;
+  const m = state.activeEvents.reduce((prod, ae) => prod * (ae.mult || 1), 1);
+  // 花火台シナジー：合計倍率がプラスの場合のみ強化
   if (m > 1) return m * (1 + getDecoEventBonus());
   return m;
 }
@@ -17,8 +19,14 @@ function triggerRandomEvent() {
   state.eventCount++;
   if (ev.id === 'storm' || ev.id === 'lightning') state.stormCount++;
   const now = Date.now();
-  state.activeEvent = { eventId: ev.id, endsAt: ev.dur > 0 ? now + ev.dur * 1000 : now, mult: ev.mult || 1 };
-  state.eventDiscount = ev.discount || 1;
+  if (!state.activeEvents) state.activeEvents = [];
+  const newEndsAt = ev.dur > 0 ? now + ev.dur * 1000 : now;
+  const existing = state.activeEvents.find(ae => ae.eventId === ev.id);
+  if (existing) {
+    existing.endsAt = newEndsAt;
+  } else {
+    state.activeEvents.push({ eventId: ev.id, endsAt: newEndsAt, mult: ev.mult || 1, discount: ev.discount || 1 });
+  }
   if (ev.bonus === 'cps' || ev.bonus === 'cps30') {
     const sec = ev.bonusSec || 30;
     const b = Math.floor(getCps() * sec);
@@ -69,20 +77,34 @@ function scheduleNextEvent() {
 }
 
 function updateEventBadge() {
-  const badge = document.getElementById('eventBadge');
-  if (!badge) return;
-  const ae = state.activeEvent;
-  if (!ae || ae.dur === 0) { badge.style.display = 'none'; return; }
+  const container = document.getElementById('eventBadgeContainer');
+  if (!container) return;
+  const now = Date.now();
+  const active = (state.activeEvents || []).filter(ae => ae.endsAt > now + 100);
 
-  const remaining = Math.max(0, Math.ceil((ae.endsAt - Date.now()) / 1000));
-  if (remaining <= 0) { badge.style.display = 'none'; return; }
+  // 不要になったバッジを削除
+  container.querySelectorAll('.event-badge').forEach(el => {
+    if (!active.find(ae => ae.eventId === el.dataset.eventId)) el.remove();
+  });
 
-  const ev = EVENTS.find(e => e.id === ae.eventId);
-  if (!ev) { badge.style.display = 'none'; return; }
-
-  badge.style.display = 'flex';
-  badge.className = `event-badge ev-${ev.type}`;
-  document.getElementById('eventBadgeIcon').textContent  = ev.icon;
-  document.getElementById('eventBadgeTitle').textContent = ev.title;
-  document.getElementById('eventBadgeTimer').textContent = `残り ${remaining}秒`;
+  // 追加・タイマー更新
+  active.forEach(ae => {
+    const ev = EVENTS.find(e => e.id === ae.eventId);
+    if (!ev) return;
+    const remaining = Math.max(0, Math.ceil((ae.endsAt - now) / 1000));
+    let badge = container.querySelector(`[data-event-id="${ae.eventId}"]`);
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.className = `event-badge ev-${ev.type}`;
+      badge.dataset.eventId = ae.eventId;
+      badge.innerHTML = `
+        <span class="event-badge-icon">${ev.icon}</span>
+        <div class="event-badge-body">
+          <div class="event-badge-title">${ev.title}</div>
+          <div class="event-badge-timer"></div>
+        </div>`;
+      container.appendChild(badge);
+    }
+    badge.querySelector('.event-badge-timer').textContent = `残り ${remaining}秒`;
+  });
 }

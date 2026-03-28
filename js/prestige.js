@@ -29,7 +29,7 @@ function doPrestige() {
   state.prestigeSp = (state.prestigeSp || 0) + 3;
   state.coins = 50; state.totalEarned = 0;
   BUILDINGS.forEach(b => { state.buildings[b.id] = { level: 0 }; });
-  state.activeEvent = null; state.eventDiscount = 1; state.skills = {}; state.research = {};
+  state.activeEvents = []; state.eventDiscount = 1; state.skills = {}; state.research = {};
   const newMax = getMaxLevel();
   const curMult = getPrestigeMult().toFixed(1);
   addLog(`⭐ プレステージ転生(${state.prestigeCount}回目)！Lv上限→${newMax}、CPS倍率×${curMult}、世代SP+3`);

@@ -38,11 +38,13 @@ function claimDaily() {
 
   if (reward.multiplier > 1) {
     const dur = (reward.duration || 3600) * 1000;
-    state.activeEvent = {
+    if (!state.activeEvents) state.activeEvents = [];
+    state.activeEvents.push({
       eventId: 'daily7',
       endsAt: Date.now() + dur,
       mult: reward.multiplier,
-    };
+      discount: 1,
+    });
     addLog(`👑 7日連続ログイン！${reward.duration / 3600}時間CPS×${reward.multiplier}ボーナス！`);
     spawnFloatCoins(`👑×${reward.multiplier}`);
   } else {
