@@ -20,10 +20,13 @@ function getDecoBuildingMult(buildingId) {
   const b = BUILDINGS.find(x => x.id === buildingId);
   if (!b) return 1;
   const dm = 1 + getSkillEffect('deco_mult');
+  const unlockedAreas = state.unlockedAreas || [1];
   let bonus = 0;
   Object.entries(state.decoSlots || {}).forEach(([bId, slots]) => {
     const pb = BUILDINGS.find(x => x.id === bId);
     if (!pb || !slots) return;
+    if ((state.buildings?.[bId]?.level || 0) <= 0) return;
+    if (!unlockedAreas.includes(pb.area)) return;
     slots.forEach(decoId => {
       const d = DECORATIONS.find(x => x.id === decoId);
       if (!d) return;
@@ -46,9 +49,14 @@ function getDecoBuildingMult(buildingId) {
 // 手動収穫ボーナス
 function getDecoCollectMult() {
   const dm = 1 + getSkillEffect('deco_mult');
+  const unlockedAreas = state.unlockedAreas || [1];
   let bonus = 0;
-  Object.values(state.decoSlots || {}).forEach(slots => {
-    (slots || []).forEach(decoId => {
+  Object.entries(state.decoSlots || {}).forEach(([bId, slots]) => {
+    const pb = BUILDINGS.find(x => x.id === bId);
+    if (!pb || !slots) return;
+    if ((state.buildings?.[bId]?.level || 0) <= 0) return;
+    if (!unlockedAreas.includes(pb.area)) return;
+    slots.forEach(decoId => {
       const d = DECORATIONS.find(x => x.id === decoId);
       if (d && d.effect.type === 'collect') bonus += d.effect.value;
     });
@@ -94,7 +102,8 @@ function placeDecoration(buildingId, decoId) {
   const b = BUILDINGS.find(x => x.id === buildingId);
   const d = DECORATIONS.find(x => x.id === decoId);
   addLog(`🌺 ${d.emoji}${d.name}を${b.emoji}${b.name}に設置！`);
-  renderDecoModal(buildingId);
+  if (_decoModalBuildingId) renderDecoModal(_decoModalBuildingId);
+  if (_decoSelectDecoId) renderDecoSelectModal(_decoSelectDecoId);
   renderDeco();
   render();
 }
@@ -104,6 +113,7 @@ function removeDecoration(buildingId, decoId) {
   if (!state.decoSlots?.[buildingId]) return;
   state.decoSlots[buildingId] = state.decoSlots[buildingId].filter(id => id !== decoId);
   renderDecoModal(buildingId);
+  if (_decoSelectDecoId) renderDecoSelectModal(_decoSelectDecoId);
   renderDeco();
   render();
 }
@@ -238,6 +248,85 @@ function renderDecoModal(buildingId) {
   }
 }
 
+// ── 飾りタブからの配置先選択モーダル ──
+let _decoSelectDecoId = null;
+
+function openDecoSelectModal(decoId) {
+  _decoSelectDecoId = decoId;
+  document.getElementById('decoSelectModal').classList.add('show');
+  renderDecoSelectModal(decoId);
+}
+
+function closeDecoSelectModal() {
+  document.getElementById('decoSelectModal').classList.remove('show');
+  _decoSelectDecoId = null;
+}
+
+function renderDecoSelectModal(decoId) {
+  const d = DECORATIONS.find(x => x.id === decoId);
+  if (!d) return;
+
+  document.getElementById('decoSelectEmoji').textContent = d.emoji;
+  document.getElementById('decoSelectTitle').textContent = `${d.name} の配置先`;
+  document.getElementById('decoSelectEffect').textContent = d.effectDesc;
+
+  const list = document.getElementById('decoSelectList');
+  list.innerHTML = '';
+
+  // 現在この飾りが置かれている施設ID
+  const currentBId = Object.keys(state.decoSlots || {}).find(bid =>
+    (state.decoSlots[bid] || []).includes(decoId)
+  );
+
+  // 解放済みエリアかつレベル>0の建物のみ表示
+  const unlockedAreas = state.unlockedAreas || [1];
+  BUILDINGS.forEach(b => {
+    if (!unlockedAreas.includes(b.area)) return;
+    const lv = (state.buildings || {})[b.id] || 0;
+    if (lv <= 0) return;
+
+    const slots = (state.decoSlots || {})[b.id] || [];
+    const isHere = slots.includes(decoId);
+    const isFull = !isHere && slots.length >= 3;
+    const isWrongTarget = d.target && d.target !== b.id;
+
+    const div = document.createElement('div');
+    div.className = `deco-select-building-item${isHere ? ' current' : ''}${isFull ? ' full' : ''}`;
+
+    let btnHtml;
+    if (isHere) {
+      btnHtml = `<span class="deco-select-here">✅ 設置中</span>`;
+    } else if (isFull) {
+      btnHtml = `<button class="btn-deco-place" disabled>満杯</button>`;
+    } else {
+      const label = currentBId ? (isWrongTarget ? '移動（効果なし）' : '移動') : (isWrongTarget ? '配置（効果なし）' : '配置');
+      btnHtml = `<button class="btn-deco-place${isWrongTarget ? ' no-effect' : ''}${currentBId ? ' move' : ''}"
+        onclick="placeDecorationFromSelect('${b.id}','${decoId}')">${label}</button>`;
+    }
+
+    div.innerHTML = `
+      <span class="deco-select-b-emoji">${b.emoji}</span>
+      <div class="deco-select-b-info">
+        <div class="deco-select-b-name">${b.name} <span class="deco-select-b-slots">${slots.length}/3</span></div>
+        ${isWrongTarget ? `<div class="deco-wrong-target" style="font-size:10px">⚠️ この施設では効果なし</div>` : ''}
+      </div>
+      ${btnHtml}`;
+    list.appendChild(div);
+  });
+
+  if (list.children.length === 0) {
+    list.innerHTML = '<div class="deco-modal-empty">建設済みの施設がありません</div>';
+  }
+}
+
+function placeDecorationFromSelect(buildingId, decoId) {
+  placeDecoration(buildingId, decoId);
+  // モーダルを再描画
+  renderDecoSelectModal(decoId);
+  // decoGrid も更新
+  renderDeco();
+}
+
 // ── デコレーションタブ（カタログ表示）──
 function renderDeco() {
   const grid = document.getElementById('decoGrid');
@@ -313,7 +402,8 @@ function _renderDecoItem(d, grid, owned, focusUnlocked = true) {
     ${targetB && !isLocked ? `<div class="deco-target-label">🎯 対象施設：${targetB.emoji}${targetB.name}</div>` : ''}
     <div class="deco-synergy">🔗 ${isLocked ? '???' : d.effectDesc}</div>
     ${isOwned
-      ? `<div class="deco-placed-info">${placedAt ? `📍 ${placedAt}に設置中` : '⚪ 未配置'}</div>`
+      ? `<div class="deco-placed-info">${placedAt ? `📍 ${placedAt}に設置中` : '⚪ 未配置'}</div>
+         <button class="btn-deco-open" onclick="openDecoSelectModal('${d.id}')">🔄 配置変更</button>`
       : isLocked
         ? `<button class="btn-buy" disabled>🔒 解放が必要</button>`
         : `<button class="btn-buy" onclick="buyDecoration('${d.id}')" ${canAfford ? '' : 'disabled'}>

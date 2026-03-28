@@ -81,46 +81,42 @@ function getSkillQuestMult() {
 
 
 const SKILL_POS = {
-  // ── Tier 1 ──
-  farm_mastery:    { x: 0.25, tier: 1 },
-  commerce_art:    { x: 0.75, tier: 1 },
-  // ── Tier 2 ──
-  beauty_power:    { x: 0.08, tier: 2 },
-  nature_beauty:   { x: 0.22, tier: 2 },
-  farm_market:     { x: 0.38, tier: 2 },
-  culture_bloom:   { x: 0.54, tier: 2 },
-  event_sense:     { x: 0.70, tier: 2 },
-  thrift:          { x: 0.88, tier: 2 },
-  // ── Tier 3 ──
-  foundation_1:    { x: 0.08, tier: 3 },
-  healing_spirit:  { x: 0.22, tier: 3 },
-  culture_healing: { x: 0.38, tier: 3 },
-  city_dream:      { x: 0.54, tier: 3 },
-  offline_master:  { x: 0.72, tier: 3 },
-  research_gift:   { x: 0.88, tier: 3 },
-  // ── Tier 4 ──
-  town_vitality:   { x: 0.08, tier: 4 },
-  beauty_all:      { x: 0.24, tier: 4 },
-  city_space:      { x: 0.40, tier: 4 },
-  event_lord:      { x: 0.56, tier: 4 },
-  space_ambition:  { x: 0.74, tier: 4 },
-  quest_wisdom:    { x: 0.90, tier: 4 },
-  // ── Tier 5 ──
-  foundation_2:    { x: 0.08, tier: 5 },
-  miracle_town:    { x: 0.30, tier: 5 },
-  deep_sea_power:  { x: 0.62, tier: 5 },
-  all_harmony:     { x: 0.88, tier: 5 },
-  // ── Tier 6 ──
-  achiev_eye:      { x: 0.20, tier: 6 },
-  dim_mastery:     { x: 0.50, tier: 6 },
-  galaxy_civ:      { x: 0.80, tier: 6 },
-  // ── Tier 7 ──
-  foundation_3:    { x: 0.08, tier: 7 },
-  cosmos_wisdom:   { x: 0.40, tier: 7 },
-  dim_enlighten:   { x: 0.70, tier: 7 },
+  // 左列（生産強化）x=0.20
+  farm_mastery:   { x: 0.20, tier: 1 },
+  culture_bloom:  { x: 0.20, tier: 2 },
+  town_vitality:  { x: 0.20, tier: 3 },
+  miracle_town:   { x: 0.20, tier: 4 },
+  galaxy_civ:     { x: 0.20, tier: 5 },
+  healing_spirit: { x: 0.20, tier: 6 },
+  city_dream:     { x: 0.20, tier: 7 },
+  deep_sea_power: { x: 0.20, tier: 8 },
+  dim_mastery:    { x: 0.20, tier: 9 },
+  dim_enlighten:  { x: 0.20, tier: 10 },
+  // 中列（飾り・礎）x=0.50
+  commerce_art:   { x: 0.50, tier: 1 },
+  nature_beauty:  { x: 0.50, tier: 2 },
+  foundation_1:   { x: 0.50, tier: 3 },
+  foundation_2:   { x: 0.50, tier: 4 },
+  foundation_3:   { x: 0.50, tier: 5 },
+  beauty_power:   { x: 0.50, tier: 6 },
+  event_sense:    { x: 0.50, tier: 7 },
+  event_lord:     { x: 0.50, tier: 8 },
+  beauty_all:     { x: 0.50, tier: 9 },
+  all_harmony:    { x: 0.50, tier: 10 },
+  // 右列（効率・特殊）x=0.80
+  thrift:         { x: 0.80, tier: 1 },
+  research_gift:  { x: 0.80, tier: 2 },
+  space_ambition: { x: 0.80, tier: 3 },
+  achiev_eye:     { x: 0.80, tier: 4 },
+  cosmos_wisdom:  { x: 0.80, tier: 5 },
+  offline_master: { x: 0.80, tier: 6 },
+  quest_wisdom:   { x: 0.80, tier: 7 },
+  farm_market:    { x: 0.80, tier: 8 },
+  city_space:     { x: 0.80, tier: 9 },
+  all_sync:       { x: 0.80, tier: 10 },
 };
-const SKILL_ROW_H = 130;
-const SKILL_TOP_PAD = 16;
+const SKILL_ROW_H = 110;
+const SKILL_TOP_PAD = 30;
 
 function _skillY(tier) {
   return SKILL_TOP_PAD + (tier - 0.5) * SKILL_ROW_H;
@@ -150,9 +146,18 @@ function renderSkills() {
   const wrap = document.createElement('div');
   wrap.className = 'skill-tree-wrap';
   wrap.id = 'skillTreeWrap';
-  wrap.style.height = (7 * SKILL_ROW_H + SKILL_TOP_PAD * 2) + 'px';
+  wrap.style.height = (10 * SKILL_ROW_H + SKILL_TOP_PAD * 2) + 'px';
 
-  for (let t = 1; t <= 7; t++) {
+  // 列ヘッダー
+  [['🥕 生産強化', 0.20], ['🌿 飾り・礎', 0.50], ['📜 効率・特殊', 0.80]].forEach(([label, x]) => {
+    const hdr = document.createElement('div');
+    hdr.className = 'sk-col-header';
+    hdr.textContent = label;
+    hdr.style.cssText = `left:${x * 100}%;top:6px;transform:translateX(-50%)`;
+    wrap.appendChild(hdr);
+  });
+
+  for (let t = 1; t <= 10; t++) {
     const lbl = document.createElement('div');
     lbl.className = 'sk-tier-label';
     lbl.textContent = `T${t}`;

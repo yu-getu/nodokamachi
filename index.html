@@ -263,6 +263,19 @@
     </div>
   </div>
 
+  <!-- 飾り→施設選択モーダル -->
+  <div class="modal-overlay" id="decoSelectModal" onclick="if(event.target===this)closeDecoSelectModal()">
+    <div class="modal deco-modal">
+      <div class="modal-icon" id="decoSelectEmoji">🌺</div>
+      <h2 id="decoSelectTitle">配置先を選ぶ</h2>
+      <p class="deco-select-effect" id="decoSelectEffect"></p>
+      <div class="deco-modal-avail-wrap">
+        <div class="deco-modal-avail" id="decoSelectList"></div>
+      </div>
+      <button class="btn-modal" onclick="closeDecoSelectModal()" style="margin-top:14px">閉じる</button>
+    </div>
+  </div>
+
   <!-- 飾り配置モーダル -->
   <div class="modal-overlay" id="decoModal" onclick="if(event.target===this)closeDecoModal()">
     <div class="modal deco-modal">
@@ -324,7 +337,7 @@
   <script src="js/ui.js"></script>
   <script src="js/main.js"></script>
   <!-- DEBUG: デバッグ時のみ有効化（本番はコメントアウト） -->
-  <script src="js/debug.js"></script>
+  <!-- <script src="js/debug.js"></script> -->
 </body>
 
 </html>

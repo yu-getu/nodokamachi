@@ -17,7 +17,7 @@ const DAILY_REWARDS = [
 
 // フェーズ定義: [最大Lv, コスト倍率, フェーズ名, フェーズカラーCSS]
 const PHASES = [
-  { maxLv: 25,  mult: 1.5, name: '開拓期',   colorClass: 'phase-1', dot: 'dot-p1' },
+  { maxLv: 25,  mult: 1.40, name: '開拓期',   colorClass: 'phase-1', dot: 'dot-p1' },
   { maxLv: 50,  mult: 1.20, name: '成長期',   colorClass: 'phase-2', dot: 'dot-p2' },
   { maxLv: 100,  mult: 1.15, name: '円熟期',   colorClass: 'phase-3', dot: 'dot-p3' },
   { maxLv: 200, mult: 1.12, name: 'レジェンド', colorClass: 'phase-4', dot: 'dot-p4' },
@@ -42,7 +42,7 @@ const BUILDINGS = [
   {id:'bakery',       name:'パン屋',           emoji:'🥐', baseCost:720,               baseCps:3.2,           desc:'焼きたてパンの香り',        area:1},
   {id:'farmcoop',     name:'農協',             emoji:'🌾', baseCost:2880,              baseCps:10,            desc:'農家を支える地域組合',      area:1},
   {id:'orchard',      name:'果樹園',           emoji:'🍎', baseCost:11520,             baseCps:30,            desc:'実り豊かな果樹の農園',      area:1},
-  {id:'ranch',        name:'牧場',             emoji:'🐄', baseCost:46080,             baseCps:90,            desc:'のどかな草原の牧場',        area:1},
+  {id:'ranch',        name:'牧場',             emoji:'🐄', baseCost:46080,             baseCps:60,            desc:'のどかな草原の牧場',        area:1},
   // ── 第2区「商店街」（×3比、candyshop=80,000 > ranch）──
   {id:'candyshop',    name:'駄菓子屋',         emoji:'🍬', baseCost:80000,             baseCps:39,            desc:'懐かしい甘いお菓子',        area:2},
   {id:'cafe',         name:'喫茶店',           emoji:'☕', baseCost:240000,            baseCps:133,           desc:'ゆったりコーヒータイム',    area:2},
@@ -117,83 +117,101 @@ const RESEARCH_TIERS = [
   { tier: 5, mult: 5.00, costMult: 1500000, label: '街の誇り', emoji: '🏅', advancedOnly: true },
 ];
 
-// 世代スキルツリー定義（転生専用・永続）
+// 世代スキルツリー定義（3列×8段）
 const PRESTIGE_SKILLS = [
-  // Tier 1（各1PSP・前提なし）
-  {id:'legacy_memory',  name:'遺産の記憶', emoji:'📜', cost:1, tier:1, requires:[],                            effect:'offline_mult',      value:0.15, desc:'オフライン効率 +15%'},
-  {id:'ancestor_grace', name:'先祖の加護', emoji:'🙏', cost:1, tier:1, requires:[],                            effect:'prestige_sp_bonus', value:1,    desc:'転生ごとに通常SP +1'},
-  {id:'unlock_bulk_lv', name:'一括強化',   emoji:'⬆️', cost:1, tier:1, requires:[],                            effect:'unlock_feature',    value:0,    desc:'建物の一括レベルアップを解放（×10・×100・MAX）'},
-  {id:'unlock_bulk_sk', name:'まとめ習得', emoji:'📚', cost:1, tier:1, requires:[],                            effect:'unlock_feature',    value:0,    desc:'スキル・世代スキルのまとめて習得を解放'},
-  {id:'unlock_bulk_res',name:'一括研究',   emoji:'🔬', cost:1, tier:1, requires:[],                            effect:'unlock_feature',    value:0,    desc:'施設の全Tier一括研究を解放'},
-  // Tier 2（各2PSP）
-  {id:'gen_bond',       name:'世代の絆',   emoji:'🔗', cost:2, tier:2, requires:['legacy_memory'],             effect:'cps_perm',          value:0.20, desc:'全CPS +20% 永続'},
-  {id:'deco_focus',     name:'飾りの極意', emoji:'🎯', cost:2, tier:2, requires:['legacy_memory'],             effect:'unlock_feature',    value:0,    desc:'施設特化飾りを解放。特定の施設を集中強化できる飾りが購入可能になる'},
-  {id:'harvest_gift',   name:'稼ぎの才覚', emoji:'🪙', cost:2, tier:2, requires:[],                            effect:'click_sec',         value:2,    desc:'ひと稼ぎ +2秒分'},
-  {id:'history_mark',   name:'歴史の刻印', emoji:'⚖️', cost:2, tier:2, requires:['ancestor_grace'],            effect:'cps_perm',          value:0.25, desc:'全CPS +25% 永続'},
-  // Tier 3（各3PSP）
-  {id:'legend_grace',   name:'伝説の加護', emoji:'⭐', cost:3, tier:3, requires:['gen_bond'],                  effect:'prestige_cps_rate', value:0.2,  desc:'転生ごとのCPS増加率 +0.2'},
-  {id:'harvest_art',    name:'稼ぎの奥義', emoji:'⚡', cost:3, tier:3, requires:['harvest_gift'],              effect:'click_sec',         value:4,    desc:'ひと稼ぎ +4秒分'},
-  {id:'gods_will',      name:'神々の意志', emoji:'🌟', cost:3, tier:3, requires:['history_mark'],              effect:'cost_perm',         value:0.15, desc:'全建物コスト -15% 永続'},
-  // Tier 4（各4PSP）
-  {id:'genesis_power',  name:'創世の力',   emoji:'🌌', cost:4, tier:4, requires:['legend_grace','gods_will'], effect:'cps_perm',          value:0.50, desc:'全CPS +50% 永続'},
-  {id:'harvest_legend', name:'稼ぎの伝説', emoji:'🌾', cost:4, tier:4, requires:['harvest_art'],              effect:'click_mult',        value:1.0,  desc:'ひと稼ぎ量 ×2（永続）'},
+  // ── 左列：CPS永続強化 ──
+  {id:'legacy_memory',  name:'遺産の記憶', emoji:'📜', cost:1, tier:1, requires:[],               effect:'offline_mult',      value:0.15, desc:'オフライン効率 +15%'},
+  {id:'gen_bond',       name:'世代の絆',   emoji:'🔗', cost:2, tier:2, requires:['legacy_memory'],effect:'cps_perm',          value:0.20, desc:'全CPS +20% 永続'},
+  {id:'history_mark',   name:'歴史の刻印', emoji:'⚖️', cost:2, tier:3, requires:['gen_bond'],     effect:'cps_perm',          value:0.25, desc:'全CPS +25% 永続'},
+  {id:'legend_grace',   name:'伝説の加護', emoji:'⭐', cost:3, tier:4, requires:['history_mark'], effect:'prestige_cps_rate', value:0.2,  desc:'転生ごとのCPS増加率 +0.2'},
+  {id:'genesis_power',  name:'創世の力',   emoji:'🌌', cost:4, tier:5, requires:['legend_grace'],  effect:'cps_perm',          value:0.50, desc:'全CPS +50% 永続'},
+  {id:'eternal_bond',   name:'永遠の絆',   emoji:'💫', cost:5, tier:6, requires:['genesis_power'], effect:'cps_perm',          value:0.75, desc:'全CPS +75% 永続'},
+  {id:'world_soul',     name:'世界の魂',   emoji:'🌏', cost:5, tier:7, requires:['eternal_bond'],  effect:'prestige_cps_rate', value:0.3,  desc:'転生ごとのCPS増加率 さらに+0.3'},
+  {id:'divine_heritage',name:'神代の遺産', emoji:'👑', cost:6, tier:8, requires:['world_soul'],    effect:'cps_perm',          value:1.0,  desc:'全CPS +100% 永続'},
+  // ── 中列：アンロック・特殊 ──
+  {id:'unlock_bulk_lv', name:'一括強化',   emoji:'⬆️', cost:1, tier:1, requires:[],               effect:'unlock_feature',    value:0,    desc:'建物の一括レベルアップを解放（×10・×100・MAX）'},
+  {id:'unlock_bulk_sk', name:'まとめ習得', emoji:'📚', cost:1, tier:2, requires:['unlock_bulk_lv'],effect:'unlock_feature',    value:0,    desc:'スキル・世代スキルのまとめて習得を解放'},
+  {id:'unlock_bulk_res',name:'一括研究',   emoji:'🔬', cost:1, tier:3, requires:['unlock_bulk_sk'],effect:'unlock_feature',    value:0,    desc:'施設の全Tier一括研究を解放'},
+  {id:'gods_will',      name:'神々の意志', emoji:'🌟', cost:3, tier:4, requires:['unlock_bulk_res'],effect:'cost_perm',         value:0.15, desc:'全建物コスト -15% 永続'},
+  {id:'deco_focus',     name:'飾りの極意', emoji:'🎯', cost:2, tier:5, requires:['gods_will'],     effect:'unlock_feature',    value:0,    desc:'施設特化飾りを解放。特定の施設を集中強化できる飾りが購入可能になる'},
+  {id:'wisdom_bond',    name:'知恵の絆',   emoji:'📖', cost:3, tier:6, requires:['deco_focus'],    effect:'prestige_sp_bonus', value:2,    desc:'転生ごとに通常SP +2（追加）'},
+  {id:'eternal_economy',name:'永遠の経済', emoji:'💰', cost:4, tier:7, requires:['wisdom_bond'],   effect:'cost_perm',         value:0.15, desc:'全建物コスト さらに-15% 永続（計-30%）'},
+  {id:'cosmic_archive', name:'宇宙の記録', emoji:'🗂️', cost:5, tier:8, requires:['eternal_economy'],effect:'offline_mult',     value:0.30, desc:'オフライン効率 +30% 永続'},
+  // ── 右列：稼ぎ強化 ──
+  {id:'ancestor_grace', name:'先祖の加護', emoji:'🙏', cost:1, tier:1, requires:[],               effect:'prestige_sp_bonus', value:1,    desc:'転生ごとに通常SP +1'},
+  {id:'harvest_gift',   name:'稼ぎの才覚', emoji:'🪙', cost:2, tier:2, requires:['ancestor_grace'],effect:'click_sec',         value:2,    desc:'ひと稼ぎ +2秒分'},
+  {id:'harvest_art',    name:'稼ぎの奥義', emoji:'⚡', cost:3, tier:3, requires:['harvest_gift'],  effect:'click_sec',         value:4,    desc:'ひと稼ぎ +4秒分'},
+  {id:'harvest_legend', name:'稼ぎの伝説', emoji:'🌾', cost:4, tier:4, requires:['harvest_art'],   effect:'click_mult',        value:1.0,  desc:'ひと稼ぎ量 ×2（永続）'},
+  {id:'harvest_master', name:'稼ぎの極み', emoji:'🎯', cost:4, tier:5, requires:['harvest_legend'],effect:'click_sec',         value:6,    desc:'ひと稼ぎ +6秒分'},
+  {id:'harvest_god',    name:'稼ぎの神',   emoji:'🌟', cost:5, tier:6, requires:['harvest_master'],effect:'click_mult',        value:1.0,  desc:'ひと稼ぎ量 さらに×2（永続）'},
+  {id:'legacy_harvest', name:'遺産の恵み', emoji:'✨', cost:5, tier:7, requires:['harvest_god'],   effect:'click_sec',         value:10,   desc:'ひと稼ぎ +10秒分'},
+  {id:'eternal_fortune',name:'永遠の幸運', emoji:'🍀', cost:6, tier:8, requires:['legacy_harvest'],effect:'click_mult',        value:2.0,  desc:'ひと稼ぎ量 さらに×3（永続）'},
 ];
 const PRESTIGE_SKILL_POS = {
-  legacy_memory:  { x: 0.10, tier: 1 },
-  ancestor_grace: { x: 0.90, tier: 1 },
-  unlock_bulk_lv: { x: 0.35, tier: 1 },
-  unlock_bulk_sk: { x: 0.55, tier: 1 },
-  unlock_bulk_res:{ x: 0.74, tier: 1 },
-  gen_bond:       { x: 0.15, tier: 2 },
-  deco_focus:     { x: 0.38, tier: 2 },
-  harvest_gift:   { x: 0.60, tier: 2 },
-  history_mark:   { x: 0.85, tier: 2 },
-  legend_grace:   { x: 0.20, tier: 3 },
-  harvest_art:    { x: 0.50, tier: 3 },
-  gods_will:      { x: 0.80, tier: 3 },
-  genesis_power:  { x: 0.25, tier: 4 },
-  harvest_legend: { x: 0.75, tier: 4 },
+  // 左列（x=0.20）
+  legacy_memory:   { x: 0.20, tier: 1 },
+  gen_bond:        { x: 0.20, tier: 2 },
+  history_mark:    { x: 0.20, tier: 3 },
+  legend_grace:    { x: 0.20, tier: 4 },
+  genesis_power:   { x: 0.20, tier: 5 },
+  eternal_bond:    { x: 0.20, tier: 6 },
+  world_soul:      { x: 0.20, tier: 7 },
+  divine_heritage: { x: 0.20, tier: 8 },
+  // 中列（x=0.50）
+  unlock_bulk_lv:  { x: 0.50, tier: 1 },
+  unlock_bulk_sk:  { x: 0.50, tier: 2 },
+  unlock_bulk_res: { x: 0.50, tier: 3 },
+  gods_will:       { x: 0.50, tier: 4 },
+  deco_focus:      { x: 0.50, tier: 5 },
+  wisdom_bond:     { x: 0.50, tier: 6 },
+  eternal_economy: { x: 0.50, tier: 7 },
+  cosmic_archive:  { x: 0.50, tier: 8 },
+  // 右列（x=0.80）
+  ancestor_grace:  { x: 0.80, tier: 1 },
+  harvest_gift:    { x: 0.80, tier: 2 },
+  harvest_art:     { x: 0.80, tier: 3 },
+  harvest_legend:  { x: 0.80, tier: 4 },
+  harvest_master:  { x: 0.80, tier: 5 },
+  harvest_god:     { x: 0.80, tier: 6 },
+  legacy_harvest:  { x: 0.80, tier: 7 },
+  eternal_fortune: { x: 0.80, tier: 8 },
 };
 
-// スキルツリー定義
+// スキルツリー定義（3列×10段）
 const SKILLS = [
-  // Tier 1（前提なし・1SP）
-  {id:'farm_mastery',   name:'大地の恵み',   emoji:'🥕', cost:1, tier:1, requires:[], effect:'cps_area1',     value:0.30, desc:'農村エリア全建物のCPS +30%'},
-  {id:'commerce_art',   name:'商いの才',     emoji:'🏪', cost:1, tier:1, requires:[], effect:'cps_area2',     value:0.30, desc:'商店街エリア全建物のCPS +30%'},
-  // Tier 2（2SP）
-  {id:'beauty_power',   name:'美の力',       emoji:'🌺', cost:2, tier:2, requires:['farm_mastery'],           effect:'beauty_mult',   value:0.5,  desc:'美観ボーナス ×1.5'},
-  {id:'nature_beauty',  name:'自然の美',     emoji:'🌿', cost:2, tier:2, requires:['farm_mastery'],           effect:'deco_mult',     value:0.25, desc:'全デコレーション効果 +25%'},
-  {id:'culture_bloom',  name:'文化の花開き', emoji:'📚', cost:2, tier:2, requires:['commerce_art'],           effect:'cps_area3',     value:0.40, desc:'文化エリア全建物のCPS +40%'},
-  {id:'thrift',         name:'節約の極意',   emoji:'✂️', cost:2, tier:2, requires:['commerce_art'],           effect:'cost_down',     value:0.15, desc:'全建物のコスト -15%'},
-  {id:'event_sense',    name:'イベント感知', emoji:'🎪', cost:2, tier:2, requires:['farm_mastery'],           effect:'event_mult',    value:0.30, desc:'イベント効果倍率 +30%'},
-  {id:'farm_market',    name:'農商連携',     emoji:'🤝', cost:2, tier:2, requires:['farm_mastery','commerce_art'], effect:'cps_synergy', areas:[1,2], value:0.25, desc:'農村・商店街エリアが互いに+25%（両区解放時）'},
-  // Tier 3（2〜3SP）
-  {id:'foundation_1',   name:'礎の目覚め',   emoji:'🏡', cost:2, tier:3, requires:['farm_mastery'],           effect:'foundation_rate', value:0.002, desc:'農村各建物Lv×0.2% を乗算で全建物CPS強化。農村全Lv100で全体×3'},
-  {id:'healing_spirit', name:'癒やしの精神', emoji:'🌿', cost:2, tier:3, requires:['beauty_power'],           effect:'cps_area4',     value:0.50, desc:'癒やしエリア全建物のCPS +50%'},
-  {id:'city_dream',     name:'都市の夢',     emoji:'🏙️', cost:2, tier:3, requires:['culture_bloom'],          effect:'cps_area5',     value:0.50, desc:'娯楽エリア全建物のCPS +50%'},
-  {id:'offline_master', name:'倹約の境地',   emoji:'💤', cost:2, tier:3, requires:['thrift'],                 effect:'offline_mult',  value:0.25, desc:'オフライン効率 +25%'},
-  {id:'research_gift',  name:'研究の才能',   emoji:'🔬', cost:2, tier:3, requires:['thrift'],                 effect:'research_cost', value:0.25, desc:'研究コスト -25%'},
-  {id:'culture_healing',name:'文癒融合',     emoji:'🌿', cost:3, tier:3, requires:['farm_market'],            effect:'cps_synergy', areas:[3,4], value:0.30, desc:'文化・癒やしエリアが互いに+30%（両区解放時）'},
-  // Tier 4（2〜3SP）
-  {id:'town_vitality',  name:'街の活気',     emoji:'✨', cost:3, tier:4, requires:['healing_spirit','city_dream'], effect:'cps_all',  value:0.30, desc:'全建物のCPS +30%'},
-  {id:'beauty_all',     name:'美と力の融合', emoji:'💫', cost:3, tier:4, requires:['nature_beauty','beauty_power'], effect:'cps_all', value:0.20, desc:'全建物のCPS +20%'},
-  {id:'city_space',     name:'都宙連帯',     emoji:'🌌', cost:3, tier:4, requires:['culture_healing'],            effect:'cps_synergy', areas:[5,6], value:0.35, desc:'都市・宇宙エリアが互いに+35%（両区解放時）'},
-  {id:'event_lord',     name:'祭典の主',     emoji:'🎆', cost:3, tier:4, requires:['event_sense'],               effect:'event_dur',   value:0.50, desc:'イベント継続時間 +50%'},
-  {id:'space_ambition', name:'宇宙への野望', emoji:'🚀', cost:3, tier:4, requires:['research_gift'],              effect:'cps_area6', value:0.80, desc:'宇宙エリア全建物のCPS +80%'},
-  {id:'quest_wisdom',   name:'知恵の報酬',   emoji:'📜', cost:2, tier:4, requires:['research_gift'],             effect:'quest_reward', value:0.40, desc:'クエスト報酬 +40%'},
-  // Tier 5（3〜4SP）
-  {id:'foundation_2',   name:'礎の力',       emoji:'🏯', cost:3, tier:5, requires:['foundation_1'],           effect:'foundation_rate', value:0.003, desc:'礎レート +0.3%/Lv → 計0.5%。農村全Lv100で全体×11倍'},
-  {id:'miracle_town',   name:'奇跡の街',     emoji:'🌟', cost:3, tier:5, requires:['town_vitality','space_ambition'], effect:'cps_all', value:0.50, desc:'全建物のCPS +50%'},
-  {id:'deep_sea_power', name:'深海の覇権',   emoji:'🌊', cost:3, tier:5, requires:['space_ambition'],         effect:'cps_area7',   value:0.60, desc:'深海エリア全建物のCPS +60%'},
-  {id:'all_harmony',    name:'全区調和',     emoji:'🌐', cost:4, tier:5, requires:['city_space'],              effect:'cps_synergy', areas:[1,2,3,4,5,6,7,8], value:0.20, desc:'全エリアが互いに+20%（全区解放時）'},
-  // Tier 6（3〜4SP）
-  {id:'achiev_eye',     name:'実績の目',     emoji:'👁️', cost:3, tier:6, requires:['miracle_town'],           effect:'achiev_cps',  value:0.02, desc:'実績1件ごとに全CPS +2%'},
-  {id:'dim_mastery',    name:'異次元の理',   emoji:'🔮', cost:3, tier:6, requires:['deep_sea_power'],         effect:'cps_area8',   value:0.70, desc:'異次元エリア全建物のCPS +70%'},
-  {id:'galaxy_civ',     name:'銀河文明',     emoji:'🌌', cost:4, tier:6, requires:['achiev_eye'],             effect:'cps_mult',    value:1.0,  desc:'全建物のCPS ×2'},
-  // Tier 7（5SP）
-  {id:'foundation_3',   name:'礎の真髄',     emoji:'🌍', cost:5, tier:7, requires:['foundation_2'],           effect:'foundation_rate', value:0.005, desc:'礎レート +0.5%/Lv → 計1.0%。農村全Lv100で全体×64倍'},
-  {id:'cosmos_wisdom',  name:'宇宙の全知',   emoji:'🌠', cost:5, tier:7, requires:['all_harmony','achiev_eye'], effect:'cps_mult',  value:0.50, desc:'全建物のCPS ×1.5'},
-  {id:'dim_enlighten',  name:'異次元の悟り', emoji:'💎', cost:5, tier:7, requires:['galaxy_civ','dim_mastery'], effect:'cps_mult',  value:2.0,  desc:'全建物のCPS ×3'},
+  // ── 左列：生産強化 ──
+  {id:'farm_mastery',   name:'大地の恵み',   emoji:'🥕', cost:1, tier:1,  requires:[],                 effect:'cps_area1',       value:0.20,  desc:'農村エリア全建物のCPS +20%'},
+  {id:'culture_bloom',  name:'文化の花開き', emoji:'📚', cost:2, tier:2,  requires:['farm_mastery'],    effect:'cps_all',         value:0.10,  desc:'全建物のCPS +10%'},
+  {id:'town_vitality',  name:'街の活気',     emoji:'✨', cost:2, tier:3,  requires:['culture_bloom'],   effect:'cps_all',         value:0.15,  desc:'全建物のCPS +15%'},
+  {id:'miracle_town',   name:'奇跡の街',     emoji:'🌟', cost:3, tier:4,  requires:['town_vitality'],   effect:'cps_all',         value:0.20,  desc:'全建物のCPS +20%'},
+  {id:'galaxy_civ',     name:'銀河文明',     emoji:'🌌', cost:4, tier:5,  requires:['miracle_town'],    effect:'cps_mult',        value:0.50,  desc:'全建物のCPS ×1.5'},
+  {id:'healing_spirit', name:'癒やしの精神', emoji:'🌿', cost:3, tier:6,  requires:['galaxy_civ'],      effect:'cps_area4',       value:0.30,  desc:'癒やしエリア全建物のCPS +30%'},
+  {id:'city_dream',     name:'都市の夢',     emoji:'🏙️', cost:3, tier:7,  requires:['healing_spirit'],  effect:'cps_area5',       value:0.30,  desc:'娯楽エリア全建物のCPS +30%'},
+  {id:'deep_sea_power', name:'深海の覇権',   emoji:'🌊', cost:4, tier:8,  requires:['city_dream'],      effect:'cps_area7',       value:0.35,  desc:'深海エリア全建物のCPS +35%'},
+  {id:'dim_mastery',    name:'異次元の理',   emoji:'🔮', cost:4, tier:9,  requires:['deep_sea_power'],  effect:'cps_area8',       value:0.40,  desc:'異次元エリア全建物のCPS +40%'},
+  {id:'dim_enlighten',  name:'異次元の悟り', emoji:'💎', cost:5, tier:10, requires:['dim_mastery'],     effect:'cps_mult',        value:0.50,  desc:'全建物のCPS ×1.5'},
+  // ── 中列：飾り・礎 ──
+  {id:'commerce_art',   name:'商いの才',     emoji:'🏪', cost:1, tier:1,  requires:[],                 effect:'cps_area2',       value:0.20,  desc:'商店街エリア全建物のCPS +20%'},
+  {id:'nature_beauty',  name:'自然の美',     emoji:'🌿', cost:2, tier:2,  requires:['commerce_art'],   effect:'deco_mult',       value:0.15,  desc:'全デコレーション効果 +15%'},
+  {id:'foundation_1',   name:'礎の目覚め',   emoji:'🏡', cost:2, tier:3,  requires:['nature_beauty'],  effect:'foundation_rate', value:0.002, desc:'農村各建物Lv×0.2%を全建物CPS強化（農村全Lv100で全体×3）'},
+  {id:'foundation_2',   name:'礎の力',       emoji:'🏯', cost:3, tier:4,  requires:['foundation_1'],   effect:'foundation_rate', value:0.003, desc:'礎レート +0.3%/Lv → 計0.5%（農村全Lv100で全体×11倍）'},
+  {id:'foundation_3',   name:'礎の真髄',     emoji:'🌍', cost:5, tier:5,  requires:['foundation_2'],   effect:'foundation_rate', value:0.005, desc:'礎レート +0.5%/Lv → 計1.0%（農村全Lv100で全体×64倍）'},
+  {id:'beauty_power',   name:'美の力',       emoji:'🌺', cost:3, tier:6,  requires:['foundation_3'],   effect:'beauty_mult',     value:0.30,  desc:'美観ボーナス ×1.3'},
+  {id:'event_sense',    name:'イベント感知', emoji:'🎪', cost:3, tier:7,  requires:['beauty_power'],   effect:'event_mult',      value:0.20,  desc:'イベント効果倍率 +20%'},
+  {id:'event_lord',     name:'祭典の主',     emoji:'🎆', cost:4, tier:8,  requires:['event_sense'],    effect:'event_dur',       value:0.30,  desc:'イベント継続時間 +30%'},
+  {id:'beauty_all',     name:'美と力の融合', emoji:'💫', cost:4, tier:9,  requires:['event_lord'],     effect:'cps_all',         value:0.15,  desc:'全建物のCPS +15%'},
+  {id:'all_harmony',    name:'全区調和',     emoji:'🌐', cost:5, tier:10, requires:['beauty_all'],     effect:'cps_all',         value:0.20,  desc:'全建物のCPS +20%'},
+  // ── 右列：効率・特殊 ──
+  {id:'thrift',         name:'知恵の報酬',   emoji:'📜', cost:1, tier:1,  requires:[],                 effect:'quest_reward',    value:0.30,  desc:'クエスト報酬 +30%'},
+  {id:'research_gift',  name:'研究の才能',   emoji:'🔬', cost:2, tier:2,  requires:['thrift'],          effect:'research_cost',   value:0.20,  desc:'研究コスト -20%'},
+  {id:'space_ambition', name:'宇宙への野望', emoji:'🚀', cost:3, tier:3,  requires:['research_gift'],   effect:'cps_area6',       value:0.40,  desc:'宇宙エリア全建物のCPS +40%'},
+  {id:'achiev_eye',     name:'実績の目',     emoji:'👁️', cost:3, tier:4,  requires:['space_ambition'],  effect:'achiev_cps',      value:0.01,  desc:'実績1件ごとに全CPS +1%'},
+  {id:'cosmos_wisdom',  name:'宇宙の全知',   emoji:'🌠', cost:5, tier:5,  requires:['achiev_eye'],      effect:'cps_mult',        value:0.30,  desc:'全建物のCPS ×1.3'},
+  {id:'offline_master', name:'倹約の境地',   emoji:'💤', cost:3, tier:6,  requires:['cosmos_wisdom'],   effect:'offline_mult',    value:0.20,  desc:'オフライン効率 +20%'},
+  {id:'quest_wisdom',   name:'クエストの極意',emoji:'📋',cost:3, tier:7,  requires:['offline_master'],  effect:'quest_reward',    value:0.30,  desc:'クエスト報酬 +30%'},
+  {id:'farm_market',    name:'農商連携',     emoji:'🤝', cost:4, tier:8,  requires:['quest_wisdom'],    effect:'cps_synergy', areas:[1,2], value:0.15, desc:'農村・商店街エリアが互いに+15%（両区解放時）'},
+  {id:'city_space',     name:'都宙連帯',     emoji:'🌌', cost:4, tier:9,  requires:['farm_market'],     effect:'cps_synergy', areas:[5,6], value:0.20, desc:'娯楽・宇宙エリアが互いに+20%（両区解放時）'},
+  {id:'all_sync',       name:'全区同調',     emoji:'⚡', cost:5, tier:10, requires:['city_space'],      effect:'cps_mult',        value:0.50,  desc:'全建物のCPS ×1.5'},
 ];
 
 const EVENTS = [
@@ -253,9 +271,6 @@ const DECORATIONS = [
   { id:'rainbow',      name:'虹のアーチ',     emoji:'🌈', cost:80000000,  desc:'虹がかかる神秘的な門',               effect:{type:'global_cps', value:0.08}, effectDesc:'全施設 CPS +8%' },
   { id:'cosmic_tree',  name:'宇宙の大樹',     emoji:'🌳', cost:8e21,      desc:'宇宙の力を宿した伝説の大樹',         effect:{type:'global_cps', value:0.10}, effectDesc:'全施設 CPS +10%' },
   { id:'mystic_gate',  name:'神秘の門',       emoji:'🌀', cost:3e25,      desc:'異世界への扉が全てを加速する',       effect:{type:'global_cps', value:0.15}, effectDesc:'全施設 CPS +15%' },
-  // ─ 収穫強化（collect）─
-  { id:'stage',        name:'野外舞台',       emoji:'🎭', cost:100000,    desc:'ひと稼ぎを応援してくれる舞台',       effect:{type:'collect',    value:1.0},  effectDesc:'手動収穫 ×2' },
-  { id:'fireworks',    name:'花火台',         emoji:'🎆', cost:8000000,   desc:'夜空を彩る花火が活力を与える',       effect:{type:'collect',    value:2.0},  effectDesc:'手動収穫 ×3' },
   // ─ 施設特化（focusOnly: 転生スキル「飾りの極意」解放後に購入可・target施設に設置時のみ効果発動）─
   { id:'focus_badge',  name:'名工の認定証',   emoji:'🏅', cost:300000,    desc:'農協に認定された施設だけに授けられる証',   effect:{type:'self_cps', value:1.5},  effectDesc:'農協に設置時 CPS ×2.5', focusOnly:true, target:'farmcoop'  },
   { id:'focus_crown',  name:'施設の王冠',     emoji:'👑', cost:3000000,   desc:'城に掲げられてこそ輝く黄金の王冠',        effect:{type:'self_cps', value:3.0},  effectDesc:'城に設置時 CPS ×4',     focusOnly:true, target:'castle'    },

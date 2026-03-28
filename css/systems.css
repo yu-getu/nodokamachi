@@ -987,6 +987,63 @@
     border-color: var(--btn2)
 }
 
+/* ── 飾りタブ：配置先選択モーダル ── */
+.deco-select-effect {
+    font-size: 11px;
+    color: var(--brown);
+    margin: 2px 0 8px;
+    text-align: center
+}
+
+.deco-select-building-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1.5px solid #e8d8b0;
+    background: #fffdf5;
+    margin-bottom: 6px
+}
+
+.deco-select-building-item.current {
+    border-color: var(--green);
+    background: #f1f8f1
+}
+
+.deco-select-building-item.full {
+    opacity: .6
+}
+
+.deco-select-b-emoji {
+    font-size: 24px;
+    flex-shrink: 0
+}
+
+.deco-select-b-info {
+    flex: 1;
+    min-width: 0
+}
+
+.deco-select-b-name {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text)
+}
+
+.deco-select-b-slots {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted)
+}
+
+.deco-select-here {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--green2);
+    white-space: nowrap
+}
+
 /* ── スキルツリー ── */
 .skill-sp-bar {
     background: linear-gradient(135deg, #f3e5f5, #e1bee7);
@@ -1170,6 +1227,16 @@
     cursor: default
 }
 
+.sk-col-header {
+    position: absolute;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--brown);
+    opacity: .75;
+    pointer-events: none;
+    white-space: nowrap
+}
+
 .sk-tier-label {
     position: absolute;
     left: 3px;
@@ -1184,6 +1251,7 @@
 
 /* スキル詳細パネル */
 .skill-detail-panel {
+    position: relative;
     background: #fff;
     border: 2px solid var(--prestige);
     border-radius: 14px;

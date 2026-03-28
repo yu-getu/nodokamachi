@@ -45,7 +45,10 @@ function buyBuilding(id) {
 
 let _harvestTimestamps = [];
 function manualHarvest() {
-  const clickSec = (1 + getSkillEffect('click_sec')) * getDecoCollectMult() * getSkillClickMult();
+  const clickSec = (1 + getSkillEffect('click_sec') + getPrestigeSkillEffect('click_sec'))
+    * getDecoCollectMult()
+    * getSkillClickMult()
+    * (1 + getPrestigeSkillEffect('click_mult'));
   const bonus = Math.max(1, getEffectiveCps() * clickSec);
   state.coins += bonus; state.totalEarned += bonus;
   state.totalHarvestCount = (state.totalHarvestCount || 0) + 1;

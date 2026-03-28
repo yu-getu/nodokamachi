@@ -216,13 +216,22 @@ function renderPrestigeSkillTree() {
   const container = document.getElementById('prestigeSkillTree');
   container.innerHTML = '';
 
-  const TIER_H = 130, TOP_PAD = 16;
+  const TIER_H = 110, TOP_PAD = 30;
   const wrap = document.createElement('div');
   wrap.className = 'skill-tree-wrap';
   wrap.id = 'pskTreeWrap';
-  wrap.style.height = (4 * TIER_H + TOP_PAD * 2) + 'px';
+  wrap.style.height = (8 * TIER_H + TOP_PAD * 2) + 'px';
 
-  for (let t = 1; t <= 4; t++) {
+  // 列ヘッダー
+  [['📜 CPS永続強化', 0.20], ['⬆️ アンロック・特殊', 0.50], ['🙏 稼ぎ強化', 0.80]].forEach(([label, x]) => {
+    const hdr = document.createElement('div');
+    hdr.className = 'sk-col-header';
+    hdr.textContent = label;
+    hdr.style.cssText = `left:${x * 100}%;top:6px;transform:translateX(-50%)`;
+    wrap.appendChild(hdr);
+  });
+
+  for (let t = 1; t <= 8; t++) {
     const lbl = document.createElement('div');
     lbl.className = 'sk-tier-label';
     lbl.textContent = `T${t}`;

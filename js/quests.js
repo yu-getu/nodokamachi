@@ -17,7 +17,7 @@ function generateQuests() {
     // フロア: そのレベルに到達するまでの建物コストの約15%
     const costFloors = { 1: b.baseCost * 0.5, 5: b.baseCost * 2, 10: b.baseCost * 5, 25: b.baseCost * 15, 50: b.baseCost * 40 };
     targets.forEach(target => {
-      if (lv < target) pool.push({
+      if (lv < target && target - lv <= 20) pool.push({
         id: `${b.id}_lv${target}`, emoji: b.emoji,
         label: `${b.name}をLv${target}にする`,
         type: 'building_level', buildingId: b.id, target,

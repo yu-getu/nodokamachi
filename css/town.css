@@ -231,6 +231,8 @@
     padding: 8px 12px;
     margin: 8px 0;
     gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* ── ひと稼ぎ建物 ── */
@@ -245,7 +247,7 @@
 }
 
 .hv-coin {
-    font-size: 52px;
+    font-size: 100px;
     line-height: 1;
     filter: drop-shadow(0 3px 8px rgba(200,160,0,.5));
     animation: hvFloat 2.2s ease-in-out infinite;

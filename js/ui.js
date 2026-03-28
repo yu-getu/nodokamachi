@@ -214,15 +214,18 @@ function renderTown() {
     row.appendChild(hint);
   }
 
-  // デコ列
+  // デコ列（現在のエリアの建物に設置中の飾りのみ表示）
   const decoRow = document.getElementById('decoRow');
   if (decoRow) decoRow.remove();
-  const owned = DECORATIONS.filter(d => (state.decoOwned || {})[d.id]);
-  if (owned.length > 0) {
+  const areaBuildingIds = BUILDINGS.filter(b => b.area === cur.id && (state.buildings[b.id]?.level || 0) > 0).map(b => b.id);
+  const areaDecos = areaBuildingIds.flatMap(bId => (state.decoSlots || {})[bId] || [])
+    .map(decoId => DECORATIONS.find(d => d.id === decoId))
+    .filter(Boolean);
+  if (areaDecos.length > 0) {
     const dr = document.createElement('div');
     dr.id = 'decoRow';
     dr.style.cssText = 'display:flex;gap:6px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;margin-top:4px';
-    dr.innerHTML = owned.map(d => `<span style="font-size:26px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.15))" title="${d.name}">${d.emoji}</span>`).join('');
+    dr.innerHTML = areaDecos.map(d => `<span style="font-size:26px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.15))" title="${d.name}">${d.emoji}</span>`).join('');
     document.getElementById('townArea').appendChild(dr);
   }
 }
