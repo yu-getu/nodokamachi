@@ -1,161 +1,9 @@
 // ══════════════════════════════
-//  UI描画・ヘルパー関数
+//  UI描画（render系関数）
+//  依存: ui-helpers.js, 全システムファイル
 // ══════════════════════════════
-function fmt(n){
-  if(n>=1e44) return (n/1e44).toFixed(2)+'載';
-  if(n>=1e40) return (n/1e40).toFixed(2)+'正';
-  if(n>=1e36) return (n/1e36).toFixed(2)+'澗';
-  if(n>=1e32) return (n/1e32).toFixed(2)+'溝';
-  if(n>=1e28) return (n/1e28).toFixed(2)+'穰';
-  if(n>=1e24) return (n/1e24).toFixed(2)+'秭';
-  if(n>=1e20) return (n/1e20).toFixed(2)+'垓';
-  if(n>=1e16) return (n/1e16).toFixed(2)+'京';
-  if(n>=1e12) return (n/1e12).toFixed(2)+'兆';
-  if(n>=1e8)  return (n/1e8).toFixed(2)+'億';
-  if(n>=1e4)  return (n/1e4).toFixed(1)+'万';
-  return Math.floor(n).toLocaleString();
-}
 
-function switchTab(name) {
-  ['shop','research','deco','achiev','prestige','skill','record'].forEach(t=>{
-    document.getElementById(`panel-${t}`).style.display=t===name?'':'none';
-    document.getElementById(`tab-${t}`).classList.toggle('active',t===name);
-  });
-  if(name==='research') renderResearch();
-  if(name==='deco') renderDeco();
-  if(name==='achiev') renderAchiev();
-  if(name==='prestige') renderPrestige();
-  if(name==='skill') renderSkills();
-  if(name==='record') renderRecord();
-}
-
-function getWeekendMult() {
-  const d = new Date().getDay();
-  return (d === 0 || d === 6) ? 1.3 : 1;
-}
-
-function renderWeekendBadge() {
-  const badge = document.getElementById('weekendBadge');
-  badge.style.display = getWeekendMult() > 1 ? 'flex' : 'none';
-}
-
-function renderStats() {
-  document.getElementById('coinCount').textContent=fmt(state.coins);
-  const cps=getEffectiveCps();
-  const fmtCps = n => n>=1e4 ? fmt(n) : n.toFixed(2);
-  document.getElementById('cps').textContent=fmtCps(cps);
-  document.getElementById('totalEarned').textContent=fmt(state.totalEarned);
-  document.getElementById('maxLvCap').textContent=getMaxLevel();
-  if (document.getElementById('cpsDetailBar')?.classList.contains('open')) renderCpsDetail();
-}
-
-let _cpsDetailOpen = false;
-function toggleCpsDetail() {
-  _cpsDetailOpen = !_cpsDetailOpen;
-  const bar = document.getElementById('cpsDetailBar');
-  const hint = document.getElementById('cpsDetailHint');
-  bar.classList.toggle('open', _cpsDetailOpen);
-  if (hint) hint.textContent = _cpsDetailOpen ? '▲' : '▼';
-  if (_cpsDetailOpen) renderCpsDetail();
-}
-
-function renderCpsDetail() {
-  const fmtMult = v => v >= 10 ? `×${v.toFixed(1)}` : `×${v.toFixed(2)}`;
-  const baseCps = getCps() / getAchievCpsBonus() / getPrestigeMult() / (1 + getPrestigeSkillEffect('cps_perm'));
-
-  const buffs = [];
-
-  // 基本CPS
-  buffs.push({ icon:'🏗️', label:'建物CPS', raw: baseCps >= 1e4 ? fmt(baseCps) : baseCps.toFixed(2), type:'base' });
-
-  // 転生倍率
-  const pm = getPrestigeMult();
-  if (pm > 1) buffs.push({ icon:'⭐', label:'転生', raw: fmtMult(pm), type:'buff' });
-
-  // 転生スキル永続ボーナス
-  const cpsPerm = getPrestigeSkillEffect('cps_perm');
-  if (cpsPerm > 0) buffs.push({ icon:'🌌', label:'転生スキル', raw:`+${(cpsPerm*100).toFixed(0)}%`, type:'buff' });
-
-  // 実績ボーナス
-  const am = getAchievCpsBonus();
-  if (am > 1) buffs.push({ icon:'🏅', label:'実績の目', raw: fmtMult(am), type:'buff' });
-
-  // 季節
-  const season = getCurrentSeason();
-  const sm = season.cpsMult;
-  buffs.push({ icon: season.emoji, label: season.name, raw: fmtMult(sm), type: sm >= 1 ? 'buff' : 'debuff' });
-
-  // 美観
-  const bm = getBeautyMult();
-  if (bm > 1.001) buffs.push({ icon:'✨', label:'美観', raw: fmtMult(bm), type:'buff' });
-
-  // 週末
-  const wm = getWeekendMult();
-  if (wm > 1) buffs.push({ icon:'🎉', label:'週末', raw: fmtMult(wm), type:'buff' });
-
-  // イベント（重ねがけ対応）
-  const now_ev = Date.now();
-  (state.activeEvents || []).filter(ae => now_ev <= ae.endsAt && (ae.mult || 1) !== 1).forEach(ae => {
-    const ev = EVENTS.find(e => e.id === ae.eventId);
-    const m = ae.mult || 1;
-    buffs.push({ icon: ev?.icon || '🎪', label: ev?.title?.replace(/[！。]/g,'') || 'イベント', raw: fmtMult(m), type: m >= 1 ? 'buff' : 'debuff' });
-  });
-
-  // 合計
-  const total = getEffectiveCps();
-
-  const el = document.getElementById('cpsDetailContent');
-  el.innerHTML = buffs.map(b => `
-    <div class="cps-buff-pill cps-buff-${b.type}">
-      <span class="cps-buff-icon">${b.icon}</span>
-      <span class="cps-buff-label">${b.label}</span>
-      <span class="cps-buff-val">${b.raw}</span>
-    </div>`).join('') +
-    `<div class="cps-buff-pill cps-buff-total">
-      <span class="cps-buff-icon">⏱️</span>
-      <span class="cps-buff-label">合計</span>
-      <span class="cps-buff-val">${total >= 1e4 ? fmt(total) : total.toFixed(2)}/秒</span>
-    </div>`;
-}
-
-let _townViewArea = 0;
-
-function _updateTownMeta(area) {
-  const label = document.getElementById('townAreaLabel');
-  const icon  = document.getElementById('townCenterIcon');
-  if (label) label.textContent = `${area.emoji} ${area.name}`;
-  if (icon)  icon.textContent  = area.emoji;
-}
-
-let _townSliding = false;
-function changeTownArea(dir) {
-  if (_townSliding) return;
-  const unlocked = AREAS.filter(a => (state.unlockedAreas || [1]).includes(a.id));
-  const newIdx = Math.max(0, Math.min(unlocked.length - 1, _townViewArea + dir));
-  if (newIdx === _townViewArea) return;
-
-  _townSliding = true;
-  const content = document.getElementById('townContent');
-  const outClass = dir > 0 ? 'tc-out-left'  : 'tc-out-right';
-  const inClass  = dir > 0 ? 'tc-in-right'  : 'tc-in-left';
-
-  // 背景色・ラベル・中央アイコンを即時切り替え
-  _townViewArea = newIdx;
-  document.getElementById('townArea').dataset.area = unlocked[newIdx].id;
-  _updateTownMeta(unlocked[newIdx]);
-
-  content.classList.add(outClass);
-  setTimeout(() => {
-    content.classList.remove(outClass);
-    renderTown();
-    content.classList.add(inClass);
-    setTimeout(() => {
-      content.classList.remove(inClass);
-      _townSliding = false;
-    }, 240);
-  }, 180);
-}
-
+// ── 町ビュー ──
 function _mkBuildingEl(b, i) {
   const lv = state.buildings[b.id].level;
   const d = document.createElement('div');
@@ -174,17 +22,15 @@ function renderTown() {
   _townViewArea = Math.max(0, Math.min(unlocked.length - 1, _townViewArea));
   const cur = unlocked[_townViewArea];
 
-  // エリア背景
   document.getElementById('townArea').dataset.area = cur.id;
 
-  // ナビゲーション更新
   const prevBtn = document.getElementById('townNavPrev');
   const nextBtn = document.getElementById('townNavNext');
   if (prevBtn) prevBtn.disabled = (_townViewArea === 0);
   if (nextBtn) nextBtn.disabled = (_townViewArea === unlocked.length - 1);
   _updateTownMeta(cur);
 
-  // ひと稼ぎ（上段）
+  // ひと稼ぎ
   const harvestRow = document.getElementById('harvestRow');
   harvestRow.innerHTML = '';
   harvestRow.style.cursor = 'pointer';
@@ -201,7 +47,7 @@ function renderTown() {
   };
   harvestRow.appendChild(hNode);
 
-  // 建物列（下段）
+  // 建物列
   const row = document.getElementById('buildingsRow');
   row.innerHTML = '';
   const areaBuildings = BUILDINGS.filter(b => b.area === cur.id && (state.buildings[b.id]?.level || 0) > 0);
@@ -214,7 +60,7 @@ function renderTown() {
     row.appendChild(hint);
   }
 
-  // デコ列（現在のエリアの建物に設置中の飾りのみ表示）
+  // デコ列
   const decoRow = document.getElementById('decoRow');
   if (decoRow) decoRow.remove();
   const areaBuildingIds = BUILDINGS.filter(b => b.area === cur.id && (state.buildings[b.id]?.level || 0) > 0).map(b => b.id);
@@ -230,10 +76,10 @@ function renderTown() {
   }
 }
 
+// ── ショップ ──
 function renderShop() {
   const grid=document.getElementById('shopGrid'); grid.innerHTML='';
 
-  // 一括購入モード切り替えバー
   const bulkWrap = document.getElementById('bulkBarWrap');
   bulkWrap.innerHTML = '';
   const bulkUnlocked = !!state.prestigeSkills?.unlock_bulk_lv;
@@ -339,6 +185,7 @@ function renderShop() {
   });
 }
 
+// ── 実績 ──
 function _makeAchievCard(a) {
   const ok = !!state.achievements[a.id];
   const isHidden = !!a.hidden && !ok;
@@ -390,7 +237,7 @@ function renderAchiev() {
   });
 }
 
-
+// ── 記録 ──
 function renderRecord() {
   const el = document.getElementById('recordGrid');
   const fmtSec = s => {
@@ -431,28 +278,5 @@ function renderRecord() {
     </div>`).join('');
 }
 
+// ── 統合レンダリング ──
 function render() { renderStats(); renderTown(); renderShop(); renderSeason(); renderWeekendBadge(); updateEventBadge(); }
-
-function addLog(msg) {
-  const log=document.getElementById('log'), now=new Date();
-  const t=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-  const e=document.createElement('div'); e.className='log-entry';
-  e.textContent=`[${t}] ${msg}`; log.insertBefore(e,log.firstChild);
-  while(log.children.length>20) log.removeChild(log.lastChild);
-}
-
-function showOfflineModal(sec,coins) {
-  const h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60);
-  document.getElementById('offlineMsg').textContent=`${h>0?h+'時間':''} ${m}分の間、街が働き続けました（効率50%）`;
-  document.getElementById('offlineCoins').textContent=`+${fmt(coins)} 🪙`;
-  document.getElementById('offlineModal').classList.add('show');
-}
-
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-
-function spawnFloatCoins(text) {
-  const btn=document.getElementById('harvestSpot'), r=btn.getBoundingClientRect();
-  const el=document.createElement('div'); el.className='float-coin';
-  el.textContent=`🪙${text}`; el.style.left=(r.left+r.width/2-20)+'px'; el.style.top=(r.top-10)+'px';
-  document.body.appendChild(el); setTimeout(()=>el.remove(),1300);
-}

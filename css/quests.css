@@ -1,0 +1,255 @@
+/* ── デイリーボーナス ── */
+.daily-bar {
+    width: 100%;
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    border: 2px solid var(--green);
+    border-radius: 16px;
+    padding: 11px 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    cursor: pointer;
+    transition: box-shadow .2s
+}
+
+.daily-bar:hover {
+    box-shadow: 0 4px 16px rgba(76, 175, 80, .2)
+}
+
+.daily-bar.claimed {
+    background: var(--panel);
+    border-color: #ccc;
+    cursor: default
+}
+
+.daily-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
+
+.daily-icon {
+    font-size: 28px
+}
+
+.daily-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--green2)
+}
+
+.daily-bar.claimed .daily-title {
+    color: var(--muted)
+}
+
+.daily-subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 1px
+}
+
+.daily-streak {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--btn2)
+}
+
+.btn-daily {
+    background: linear-gradient(135deg, var(--green), var(--green2));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 7px 14px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 800;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 var(--green2);
+    white-space: nowrap;
+    transition: transform .1s
+}
+
+.btn-daily:active {
+    transform: translateY(2px)
+}
+
+.btn-daily:disabled {
+    background: #ccc;
+    box-shadow: 0 3px 0 #aaa;
+    cursor: not-allowed
+}
+
+/* ── クエスト ── */
+.quest-panel {
+    width: 100%;
+    background: var(--panel);
+    border-radius: 20px;
+    padding: 14px 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .07);
+    margin-bottom: 12px
+}
+
+.quest-panel-title {
+    font-family: 'Kaisei Decol', serif;
+    font-size: 15px;
+    color: var(--brown);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.quest-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px solid #e8d8b0;
+    background: linear-gradient(135deg, #fffdf5, #fef9ed);
+    margin-bottom: 8px
+}
+
+.quest-item:last-child {
+    margin-bottom: 0
+}
+
+.quest-item.done {
+    border-color: var(--green);
+    background: linear-gradient(135deg, #f1f8e9, #e8f5e9)
+}
+
+.quest-item.claimed {
+    border-color: #ccc;
+    background: #f5f5f5;
+    opacity: .65
+}
+
+.quest-emoji {
+    font-size: 22px;
+    flex-shrink: 0
+}
+
+.quest-info {
+    flex: 1;
+    min-width: 0
+}
+
+.quest-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 3px
+}
+
+.quest-progress-bar {
+    height: 5px;
+    background: #e8d8b0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 2px
+}
+
+.quest-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--green2));
+    border-radius: 3px;
+    transition: width .4s
+}
+
+.quest-count {
+    font-size: 9px;
+    color: var(--muted);
+    font-weight: 700
+}
+
+.quest-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0
+}
+
+.quest-reward {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--coin2);
+    white-space: nowrap
+}
+
+.btn-quest {
+    background: linear-gradient(135deg, var(--green), var(--green2));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 800;
+    font-size: 10px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 var(--green2);
+    white-space: nowrap
+}
+
+.btn-quest:disabled {
+    background: #ccc;
+    box-shadow: 0 2px 0 #aaa;
+    cursor: not-allowed;
+    color: #999
+}
+
+/* デイリーモーダルカレンダー */
+.daily-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin: 14px 0
+}
+
+.daily-day {
+    border-radius: 10px;
+    padding: 6px 2px;
+    text-align: center;
+    border: 2px solid #e8d8b0;
+    background: #fafafa
+}
+
+.daily-day.past {
+    background: #e8f5e9;
+    border-color: var(--green);
+    opacity: .7
+}
+
+.daily-day.today {
+    background: linear-gradient(135deg, #fff8e1, #fffde7);
+    border-color: var(--coin2);
+    transform: scale(1.05)
+}
+
+.daily-day.future {
+    opacity: .4
+}
+
+.daily-day-num {
+    font-size: 9px;
+    color: var(--muted);
+    font-weight: 700
+}
+
+.daily-day-icon {
+    font-size: 18px;
+    line-height: 1.3
+}
+
+.daily-day-bonus {
+    font-size: 8px;
+    color: var(--coin2);
+    font-weight: 800
+}

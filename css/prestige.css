@@ -1,0 +1,186 @@
+/* ── プレステージ ── */
+.prestige-panel {
+    background: linear-gradient(135deg, #f3e5f5, #ede7f6);
+    border: 2px solid var(--prestige);
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 12px;
+    width: 100%
+}
+
+.prestige-panel .panel-title {
+    color: var(--prestige2)
+}
+
+.prestige-info {
+    font-size: 13px;
+    color: #5e35b1;
+    line-height: 1.8;
+    margin-bottom: 12px
+}
+
+.prestige-bonus-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px
+}
+
+.prestige-bonus-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #4a148c;
+    font-weight: 700
+}
+
+.pb-icon {
+    font-size: 16px
+}
+
+.prestige-req {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    line-height: 1.7
+}
+
+.prestige-req strong {
+    color: var(--prestige2)
+}
+
+.progress-bar-wrap {
+    background: #e1bee7;
+    border-radius: 8px;
+    height: 10px;
+    margin: 6px 0 14px;
+    overflow: hidden;
+    position: relative
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--prestige), var(--prestige2));
+    border-radius: 8px;
+    transition: width .5s
+}
+
+.prestige-bonus-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #ffd54f, #ff9800);
+    border-radius: 8px;
+    transition: width .5s;
+    display: none
+}
+
+.btn-prestige {
+    width: 100%;
+    background: linear-gradient(135deg, var(--prestige), var(--prestige2));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--prestige2);
+    transition: transform .1s, box-shadow .1s
+}
+
+.btn-prestige:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--prestige2)
+}
+
+.btn-prestige:disabled {
+    background: #ccc;
+    box-shadow: 0 4px 0 #aaa;
+    cursor: not-allowed
+}
+
+.prestige-bonus-sp-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--prestige2);
+    background: linear-gradient(135deg, #f3e5f5, #ede7f6);
+    border: 1.5px solid var(--prestige);
+    border-radius: 8px;
+    padding: 5px 10px;
+    margin-bottom: 8px
+}
+
+.prestige-bonus-sp-label strong {
+    color: var(--prestige2);
+    font-size: 13px
+}
+
+.prestige-history {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #9c27b0;
+    text-align: center
+}
+
+/* ── レベルデザイン表 ── */
+.lv-design-panel {
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.8
+}
+
+.lv-design-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, .06)
+}
+
+.lv-design-row:last-child {
+    border-bottom: none
+}
+
+.lv-range {
+    font-weight: 800;
+    width: 70px;
+    flex-shrink: 0
+}
+
+.lv-phase-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0
+}
+
+.dot-p1 {
+    background: var(--green)
+}
+
+.dot-p2 {
+    background: #0288d1
+}
+
+.dot-p3 {
+    background: var(--btn2)
+}
+
+.dot-p4 {
+    background: var(--prestige)
+}
+
+.lv-detail {
+    flex: 1;
+    color: var(--muted)
+}
+
+.lv-ms-note {
+    color: var(--coin2);
+    font-weight: 800
+}

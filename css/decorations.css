@@ -1,0 +1,402 @@
+/* ── デコレーション ── */
+.beauty-bar {
+    width: 100%;
+    background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+    border: 2px solid #e91e63;
+    border-radius: 16px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
+
+.beauty-icon {
+    font-size: 24px
+}
+
+.beauty-info {
+    flex: 1
+}
+
+.beauty-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #880e4f
+}
+
+.beauty-sub {
+    font-size: 11px;
+    color: #c2185b
+}
+
+.deco-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px
+}
+
+.deco-item {
+    background: linear-gradient(135deg, #fff9f0, #fef5e7);
+    border: 2px solid #e8d8b0;
+    border-radius: 14px;
+    padding: 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    transition: border-color .15s
+}
+
+.deco-item.owned {
+    border-color: var(--green);
+    background: linear-gradient(135deg, #f1f8e9, #e8f5e9)
+}
+
+.deco-item.affordable {
+    border-color: var(--green)
+}
+
+.deco-item-top {
+    display: flex;
+    align-items: center;
+    gap: 8px
+}
+
+.deco-emoji {
+    font-size: 28px
+}
+
+.deco-name {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text)
+}
+
+.deco-desc {
+    font-size: 10px;
+    color: var(--muted)
+}
+
+.deco-effect {
+    font-size: 10px;
+    color: var(--green2);
+    font-weight: 700;
+    margin-top: 2px
+}
+
+.deco-synergy {
+    font-size: 10px;
+    color: var(--prestige);
+    font-weight: 700;
+    margin-top: 1px
+}
+
+.deco-placed-info {
+    font-size: 10px;
+    color: var(--green2);
+    font-weight: 700;
+    margin-top: 2px
+}
+
+.deco-focus-header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 10px 0 4px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--prestige2);
+    border-top: 2px solid #e8d8f8;
+    padding-top: 10px
+}
+
+.deco-focus-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px
+}
+
+.deco-focus-badge.unlocked {
+    background: #e8f5e9;
+    color: var(--green2)
+}
+
+.deco-focus-badge.locked {
+    background: #f3e5f5;
+    color: var(--prestige2)
+}
+
+.deco-item.focus-locked {
+    opacity: .5;
+    filter: grayscale(.6);
+    border-style: dashed
+}
+
+.deco-target-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--prestige2);
+    margin-top: 2px
+}
+
+.deco-wrong-target {
+    display: block;
+    font-size: 9px;
+    color: #e65100;
+    font-weight: 700;
+    margin-top: 1px
+}
+
+.deco-avail-item.wrong-target {
+    opacity: .7
+}
+
+.btn-deco-place.no-effect {
+    background: #ff8f00;
+    border-color: #ff8f00
+}
+
+.btn-deco-place.no-effect:hover {
+    opacity: .85
+}
+
+/* ── 飾りボタン（ショップカード内）── */
+.btn-deco-open {
+    width: 100%;
+    margin-top: 4px;
+    padding: 4px 6px;
+    border-radius: 8px;
+    border: 1.5px solid #e8d8b0;
+    background: #fff9f0;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--brown);
+    cursor: pointer;
+    transition: all .12s
+}
+
+.btn-deco-open:hover {
+    background: #fef5e7;
+    border-color: var(--coin2)
+}
+
+.btn-deco-open.has-deco {
+    border-color: var(--green);
+    color: var(--green2);
+    background: #f1f8e9
+}
+
+/* ── 飾り配置モーダル ── */
+.deco-modal {
+    max-width: 380px;
+    width: 92vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column
+}
+
+.deco-modal-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 4px
+}
+
+.deco-slot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 2px solid #e8d8b0;
+    background: #fff9f0;
+    min-height: 44px
+}
+
+.deco-slot.filled {
+    border-color: var(--green);
+    background: linear-gradient(135deg, #f1f8e9, #e8f5e9)
+}
+
+.deco-slot.empty {
+    border-style: dashed;
+    opacity: .6
+}
+
+.deco-slot-empty-label {
+    font-size: 11px;
+    color: var(--muted);
+    flex: 1;
+    text-align: center
+}
+
+.deco-slot-emoji {
+    font-size: 22px;
+    flex-shrink: 0
+}
+
+.deco-slot-info {
+    flex: 1;
+    min-width: 0
+}
+
+.deco-slot-name {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text)
+}
+
+.deco-slot-effect {
+    font-size: 10px;
+    color: var(--prestige);
+    font-weight: 700
+}
+
+.btn-deco-remove {
+    padding: 3px 7px;
+    border-radius: 7px;
+    border: 1.5px solid #e57373;
+    background: #fff;
+    color: #e57373;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    flex-shrink: 0
+}
+
+.btn-deco-remove:hover {
+    background: #ffebee
+}
+
+.deco-modal-avail-wrap {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 35vh;
+    border: 1.5px solid #e8d8b0;
+    border-radius: 10px;
+    padding: 4px 0;
+    margin-top: 8px
+}
+
+.deco-modal-section-title {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--muted);
+    padding: 6px 10px 2px;
+    text-transform: uppercase;
+    letter-spacing: .5px
+}
+
+.deco-modal-empty {
+    font-size: 11px;
+    color: var(--muted);
+    padding: 12px;
+    text-align: center
+}
+
+.deco-avail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-bottom: 1px solid #f0e8d8
+}
+
+.deco-avail-item:last-child {
+    border-bottom: none
+}
+
+.deco-avail-item.placed-elsewhere {
+    opacity: .8
+}
+
+.deco-cur-building {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 9px
+}
+
+.btn-deco-place {
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 1.5px solid var(--green);
+    background: var(--green);
+    color: #fff;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity .12s
+}
+
+.btn-deco-place:disabled {
+    opacity: .4;
+    cursor: default
+}
+
+.btn-deco-place.move {
+    background: var(--btn2);
+    border-color: var(--btn2)
+}
+
+/* ── 飾りタブ：配置先選択モーダル ── */
+.deco-select-effect {
+    font-size: 11px;
+    color: var(--brown);
+    margin: 2px 0 8px;
+    text-align: center
+}
+
+.deco-select-building-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1.5px solid #e8d8b0;
+    background: #fffdf5;
+    margin-bottom: 6px
+}
+
+.deco-select-building-item.current {
+    border-color: var(--green);
+    background: #f1f8f1
+}
+
+.deco-select-building-item.full {
+    opacity: .6
+}
+
+.deco-select-b-emoji {
+    font-size: 24px;
+    flex-shrink: 0
+}
+
+.deco-select-b-info {
+    flex: 1;
+    min-width: 0
+}
+
+.deco-select-b-name {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text)
+}
+
+.deco-select-b-slots {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted)
+}
+
+.deco-select-here {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--green2);
+    white-space: nowrap
+}

@@ -1,0 +1,342 @@
+/* ── スキルツリー ── */
+.skill-sp-bar {
+    background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+    border: 2px solid var(--prestige2);
+    border-radius: 16px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
+
+.skill-sp-icon {
+    font-size: 24px
+}
+
+.skill-sp-info {
+    flex: 1
+}
+
+.skill-sp-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--prestige2)
+}
+
+.skill-sp-sub {
+    font-size: 11px;
+    color: var(--prestige)
+}
+
+#skillTreeContent,
+#prestigeSkillTree {
+    overflow-y: auto;
+    max-height: 55vh;
+    border: 1.5px solid #e8d8f8;
+    border-radius: 12px;
+    padding: 4px 0
+}
+
+.skill-tree-wrap {
+    position: relative;
+    width: 100%;
+    overflow: visible
+}
+
+/* 選択中ノード：金色の強調枠 */
+.skill-node.sk-highlight-selected {
+    border-color: #f5c430 !important;
+    box-shadow: 0 0 0 3px rgba(245,196,48,.5), 0 4px 16px rgba(245,196,48,.4) !important;
+    z-index: 2
+}
+
+/* 強調中はホバーで動かない */
+.skill-node.sk-highlight-selected:hover,
+.skill-node.sk-highlight-chain:hover {
+    transform: translate(-50%, -50%) !important
+}
+
+/* 前提チェーンノード：紫の強調枠 */
+.skill-node.sk-highlight-chain {
+    border-color: #9c27b0 !important;
+    box-shadow: 0 0 0 2px rgba(156,39,176,.4), 0 2px 10px rgba(156,39,176,.3) !important;
+    opacity: 1 !important
+}
+
+/* 無関係ノード：減光 */
+.skill-node.sk-highlight-dim {
+    opacity: 0.3 !important;
+    filter: grayscale(60%)
+}
+
+.skill-node {
+    position: absolute;
+    width: 88px;
+    transform: translate(-50%, -50%);
+    border-radius: 12px;
+    padding: 8px 6px 7px;
+    text-align: center;
+    z-index: 1;
+    border: 2px solid;
+    transition: transform .15s, box-shadow .15s;
+    box-sizing: border-box;
+    user-select: none
+}
+
+.skill-node:hover {
+    transform: translate(-50%, -50%) scale(1.06)
+}
+
+.sk-unlocked {
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    border-color: #4caf50;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, .25)
+}
+
+.sk-available {
+    background: linear-gradient(135deg, #f3e5f5, #ede7f6);
+    border-color: var(--prestige);
+    cursor: pointer
+}
+
+.sk-available:hover {
+    transform: translate(-50%, -50%) scale(1.06);
+    box-shadow: 0 4px 14px rgba(156, 39, 176, .3)
+}
+
+.sk-prereq {
+    background: linear-gradient(135deg, #fdf5ff, #f9edff);
+    border-color: #ce93d8;
+    opacity: .8
+}
+
+.sk-locked {
+    background: #f5f5f5;
+    border-color: #ddd;
+    opacity: .5;
+    filter: grayscale(.3)
+}
+
+.sk-icon {
+    font-size: 22px;
+    line-height: 1.2
+}
+
+.sk-name {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 3px 0 2px;
+    line-height: 1.2
+}
+
+.sk-eff {
+    display: none
+}
+
+.sk-cost {
+    font-size: 8px;
+    font-weight: 800;
+    color: var(--prestige2);
+    margin-bottom: 3px
+}
+
+.sk-btn {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, var(--prestige), var(--prestige2));
+    color: white;
+    border: none;
+    border-radius: 7px;
+    padding: 4px 0;
+    font-size: 10px;
+    font-weight: 800;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 2px 0 var(--prestige2)
+}
+
+.sk-btn:disabled {
+    background: #bbb;
+    box-shadow: 0 2px 0 #aaa;
+    cursor: default
+}
+
+.sk-btn.sk-done {
+    background: linear-gradient(135deg, #81c784, var(--green));
+    box-shadow: 0 2px 0 var(--green2);
+    cursor: default
+}
+
+.sk-btn.sk-btn-all {
+    margin-top: 5px;
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    box-shadow: 0 2px 0 #e65100
+}
+
+.sk-btn.sk-btn-all:disabled {
+    background: #bbb;
+    box-shadow: 0 2px 0 #aaa;
+    cursor: default
+}
+
+.sk-col-header {
+    position: absolute;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--brown);
+    opacity: .75;
+    pointer-events: none;
+    white-space: nowrap
+}
+
+.sk-tier-label {
+    position: absolute;
+    left: 3px;
+    font-size: 8px;
+    font-weight: 800;
+    color: var(--muted);
+    opacity: .55;
+    transform: translateY(-50%);
+    pointer-events: none;
+    letter-spacing: .03em
+}
+
+/* スキル詳細パネル */
+.skill-detail-panel {
+    position: relative;
+    background: #fff;
+    border: 2px solid var(--prestige);
+    border-radius: 14px;
+    padding: 14px 16px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 18px rgba(156,39,176,.18);
+    z-index: 10
+}
+
+.skill-detail-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 2px 6px;
+    line-height: 1
+}
+
+.skill-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px
+}
+
+.skill-detail-emoji {
+    font-size: 30px;
+    line-height: 1
+}
+
+.skill-detail-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text)
+}
+
+.skill-detail-cost {
+    font-size: 11px;
+    color: var(--prestige);
+    font-weight: 700;
+    margin-top: 2px
+}
+
+.skill-detail-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 12px
+}
+
+.sk-legend {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap
+}
+
+.sk-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: var(--muted)
+}
+
+.sk-legend-line {
+    width: 20px;
+    height: 3px;
+    border-radius: 2px
+}
+
+/* ── 世代スキルツリー（PSK） ── */
+.psk-section {
+    background: linear-gradient(135deg, #f3e5f5, #ede7f6);
+    border: 2px solid var(--prestige);
+    border-radius: 18px;
+    padding: 16px;
+    margin-top: 18px
+}
+
+.psk-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--prestige2);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px
+}
+
+.psk-sp-bar {
+    background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+    border: 2px solid var(--prestige2);
+    border-radius: 16px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.psk-sp-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--prestige2);
+    display: block
+}
+
+/* PSK ツリーノード */
+.psk-unlocked {
+    background: linear-gradient(135deg, #fff9c4, #ffee58) !important;
+    border-color: #f5c430 !important;
+    box-shadow: 0 2px 8px rgba(245, 196, 48, .3) !important
+}
+
+.psk-unlocked .sk-btn {
+    background: linear-gradient(135deg, #f5c430, #f9a825) !important;
+    box-shadow: 0 2px 0 #f57f17 !important
+}
+
+.psk-available {
+    background: linear-gradient(135deg, #f3e5f5, #ede7f6) !important;
+    border-color: var(--prestige) !important;
+    cursor: pointer !important
+}
+
+.psk-available:hover {
+    transform: translate(-50%, -50%) scale(1.06) !important;
+    box-shadow: 0 4px 14px rgba(156, 39, 176, .35) !important
+}
