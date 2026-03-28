@@ -278,28 +278,34 @@
     margin-bottom: 0;
   }
 
-  .daily-bar {
+  .cps-detail-bar {
     grid-column: 1;
     grid-row: 4;
     margin-bottom: 0;
   }
 
-  .quest-panel {
+  .daily-bar {
     grid-column: 1;
     grid-row: 5;
+    margin-bottom: 0;
+  }
+
+  .quest-panel {
+    grid-column: 1;
+    grid-row: 6;
     align-self: start;
     margin-bottom: 0;
   }
 
   .save-bar {
     grid-column: 1;
-    grid-row: 6;
+    grid-row: 7;
     margin-bottom: 0;
   }
 
   .log {
     grid-column: 1;
-    grid-row: 7;
+    grid-row: 8;
     max-height: 160px;
   }
 
