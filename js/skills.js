@@ -98,11 +98,13 @@ const SKILL_POS = {
   city_space:      { x: 0.50, tier: 4 },
   space_ambition:  { x: 0.74, tier: 4 },
   // ── Tier 5 ──
-  miracle_town:    { x: 0.30, tier: 5 },
-  all_harmony:     { x: 0.70, tier: 5 },
+  miracle_town:    { x: 0.18, tier: 5 },
+  deep_sea_power:  { x: 0.50, tier: 5 },
+  all_harmony:     { x: 0.82, tier: 5 },
   // ── Tier 6 ──
-  achiev_eye:      { x: 0.30, tier: 6 },
-  galaxy_civ:      { x: 0.70, tier: 6 },
+  achiev_eye:      { x: 0.20, tier: 6 },
+  dim_mastery:     { x: 0.50, tier: 6 },
+  galaxy_civ:      { x: 0.80, tier: 6 },
 };
 const SKILL_ROW_H = 170;
 const SKILL_TOP_PAD = 24;

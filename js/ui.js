@@ -17,7 +17,7 @@ function fmt(n){
 }
 
 function switchTab(name) {
-  ['shop','research','deco','achiev','prestige','skill','lvdesign'].forEach(t=>{
+  ['shop','research','deco','achiev','prestige','skill'].forEach(t=>{
     document.getElementById(`panel-${t}`).style.display=t===name?'':'none';
     document.getElementById(`tab-${t}`).classList.toggle('active',t===name);
   });
@@ -26,7 +26,6 @@ function switchTab(name) {
   if(name==='achiev') renderAchiev();
   if(name==='prestige') renderPrestige();
   if(name==='skill') renderSkills();
-  if(name==='lvdesign') renderLvDesign();
 }
 
 function getWeekendMult() {
@@ -173,7 +172,7 @@ function renderShop() {
       card.innerHTML = `
         <div>
           <div class="area-locked-name">🔒 ${area.emoji} ${area.name}</div>
-          <div class="area-locked-info">${area.desc}（新建物3種類）</div>
+          <div class="area-locked-info">${area.desc}</div>
         </div>
         <button class="btn-buy" id="areaBtn${area.id}" onclick="unlockArea(${area.id})" ${canAfford?'':'disabled'}>
           🪙${fmt(area.unlockCost)} 解放
@@ -255,66 +254,6 @@ function renderAchiev() {
   });
 }
 
-function renderLvDesign() {
-  const maxLv=getMaxLevel();
-  const rows = BUILDINGS.map(b=>{
-    const snapshots=[1,10,25,50,100].filter(lv=>lv<=maxLv).map(snapLv=>{
-      const origLv=state.buildings[b.id].level;
-      state.buildings[b.id].level=snapLv-1;
-      const cost=getBuildingCost(b);
-      state.buildings[b.id].level=origLv;
-      const cps=b.baseCps*snapLv*(1+snapLv*.15);
-      return {lv:snapLv,cost,cps};
-    });
-    return {b,snapshots};
-  });
-
-  let html=`
-    <div class="lv-design-panel">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">
-        現在のLv上限：<strong style="color:var(--prestige2)">Lv${maxLv}</strong>
-        （転生${state.prestigeCount}回 × +${PRESTIGE_LV_BONUS}）
-      </div>
-      <div style="margin-bottom:14px">
-        <div style="font-weight:800;font-size:12px;color:var(--brown);margin-bottom:6px">📐 フェーズ定義</div>`;
-  PHASES.forEach(p=>{
-    const cap=Math.min(p.maxLv,maxLv);
-    html+=`<div class="lv-design-row">
-      <div class="lv-range">〜Lv${cap}</div>
-      <div class="lv-phase-dot ${p.dot}"></div>
-      <div class="lv-detail">${p.name}（コスト倍率×${p.mult}）${cap<p.maxLv?'<span style="color:#e53935">（上限外）</span>':''}</div>
-    </div>`;
-  });
-  if(maxLv>100){
-    html+=`<div class="lv-design-row">
-      <div class="lv-range">101〜${maxLv}</div>
-      <div class="lv-phase-dot dot-p4"></div>
-      <div class="lv-detail">転生拡張（倍率×${PHASES[3].mult}継続）</div>
-    </div>`;
-  }
-  html+=`</div><div>
-    <div style="font-weight:800;font-size:12px;color:var(--brown);margin-bottom:6px">📊 建物別コスト早見表</div>
-    <div style="overflow-x:auto"><table style="width:100%;font-size:10px;border-collapse:collapse">
-    <thead><tr style="background:var(--warm)">
-      <th style="padding:5px;text-align:left">建物</th>
-      <th style="padding:5px">Lv1</th>
-      <th style="padding:5px">Lv10</th>
-      <th style="padding:5px">Lv25</th>
-      <th style="padding:5px">Lv50</th>
-      ${maxLv>=100?'<th style="padding:5px">Lv100</th>':''}
-    </tr></thead><tbody>`;
-  rows.forEach(({b,snapshots})=>{
-    html+=`<tr style="border-bottom:1px solid #e8d8b0">
-      <td style="padding:5px;font-weight:800">${b.emoji}${b.name}</td>`;
-    snapshots.forEach(s=>{
-      html+=`<td style="padding:5px;text-align:center;color:var(--muted)">${fmt(s.cost)}</td>`;
-    });
-    if(snapshots.length<5) html+=`<td style="padding:5px;text-align:center;color:#ccc">-</td>`;
-    html+=`</tr>`;
-  });
-  html+=`</tbody></table></div></div></div>`;
-  document.getElementById('lvDesignContent').innerHTML=html;
-}
 
 function render() { renderStats(); renderTown(); renderShop(); renderSeason(); renderWeekendBadge(); updateEventBadge(); }
 

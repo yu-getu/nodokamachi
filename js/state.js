@@ -78,6 +78,20 @@ const BUILDINGS = [
   {id:'dysonring',    name:'ダイソンリング',   emoji:'💫', baseCost:1.35e16,          baseCps:1000000000000, desc:'恒星のエネルギーを収穫',    area:6},
   {id:'galaxystation',name:'銀河ステーション', emoji:'🌠', baseCost:4.05e16,          baseCps:3230000000000, desc:'銀河の交差点',              area:6},
   {id:'spaceciv',     name:'宇宙文明',         emoji:'🌍', baseCost:1.215e17,         baseCps:10500000000000,desc:'宇宙に広がる新文明',        area:6},
+  // ── 第7区「深海都市」（×3比、aquarium=1.8e17 > spaceciv）──
+  {id:'aquarium',     name:'水族館',           emoji:'🐠', baseCost:1.8e17,           baseCps:1e13,          desc:'幻想的な深海の生き物たち',  area:7},
+  {id:'deepseasub',   name:'深海調査船',       emoji:'🦈', baseCost:5.4e17,           baseCps:3.5e13,        desc:'未知の深海を調査する船',    area:7},
+  {id:'seabase',      name:'海底基地',         emoji:'🐙', baseCost:1.62e18,          baseCps:1.2e14,        desc:'深海に建設された研究拠点',  area:7},
+  {id:'tidalpower',   name:'潮力発電所',       emoji:'🌊', baseCost:4.86e18,          baseCps:4e14,          desc:'海の力でエネルギーを生む',  area:7},
+  {id:'oceancity',    name:'海洋都市',         emoji:'🐋', baseCost:1.458e19,         baseCps:1.3e15,        desc:'海に浮かぶ巨大都市',        area:7},
+  {id:'deepkingdom',  name:'深海王国',         emoji:'🔱', baseCost:4.374e19,         baseCps:4.2e15,        desc:'深海を支配する神秘の王国',  area:7},
+  // ── 第8区「異次元世界」（×3比、magicircle=6e19 > deepkingdom）──
+  {id:'magicircle',   name:'魔法陣',           emoji:'🪄', baseCost:6e19,             baseCps:4.5e15,        desc:'異次元への扉を開く紋様',    area:8},
+  {id:'dimgate',      name:'次元の扉',         emoji:'🌀', baseCost:1.8e20,           baseCps:1.5e16,        desc:'異世界をつなぐ神秘の門',    area:8},
+  {id:'otherworld',   name:'異界の塔',         emoji:'🗼', baseCost:5.4e20,           baseCps:5e16,          desc:'異次元エネルギーを集める塔',area:8},
+  {id:'illpalace',    name:'幻月の宮殿',       emoji:'🌙', baseCost:1.62e21,          baseCps:1.65e17,       desc:'夢と現実の狭間に浮かぶ宮殿',area:8},
+  {id:'eyeofall',     name:'万象の眼',         emoji:'👁️', baseCost:4.86e21,          baseCps:5.5e17,        desc:'あらゆる次元を見通す巨大な眼',area:8},
+  {id:'dimempire',    name:'異次元帝国',       emoji:'💎', baseCost:1.458e22,         baseCps:1.8e18,        desc:'無数の次元を統べる帝国',    area:8},
 ];
 
 // エリア定義
@@ -89,6 +103,8 @@ const AREAS = [
   {id:4, name:'第4区', emoji:'🌿', unlockCost:4000000000,       desc:'いやしの里エリア'},
   {id:5, name:'第5区', emoji:'🏙️', unlockCost:1200000000000,    desc:'夢の都市エリア'},
   {id:6, name:'第6区', emoji:'🚀', unlockCost:420000000000000,  desc:'宇宙の夢エリア'},
+  {id:7, name:'第7区', emoji:'🌊', unlockCost:1.5e17,           desc:'深海都市エリア'},
+  {id:8, name:'第8区', emoji:'🔮', unlockCost:5e19,             desc:'異次元世界エリア'},
 ];
 
 // 研究定義
@@ -102,6 +118,8 @@ const RESEARCH = [
   {id:'entertain', name:'エンタメ産業', emoji:'🎡', cost:50000000000000,      desc:'娯楽エリア全建物のCPS ×2',      targets:['castle','amusement','stadium','skyscraper','airport','megaresort'],             mult:2},
   {id:'space',     name:'宇宙開発',     emoji:'🚀', cost:1e16,               desc:'宇宙エリア全建物のCPS ×2',      targets:['rocket','spaceport','colony','dysonring','galaxystation','spaceciv'],           mult:2},
   {id:'hypertech', name:'超技術革新',   emoji:'⚡', cost:3e16,               desc:'全建物のCPS ×1.5',              targets:['all'],                                                                         mult:1.5},
+  {id:'deepsea',   name:'深海開拓',     emoji:'🌊', cost:1.5e19,             desc:'深海エリア全建物のCPS ×2',      targets:['aquarium','deepseasub','seabase','tidalpower','oceancity','deepkingdom'],        mult:2},
+  {id:'dimension', name:'異次元探索',   emoji:'🔮', cost:5e20,               desc:'異次元エリア全建物のCPS ×2',    targets:['magicircle','dimgate','otherworld','illpalace','eyeofall','dimempire'],           mult:2},
 ];
 
 // 世代スキルツリー定義（転生専用・永続）
@@ -151,9 +169,11 @@ const SKILLS = [
   {id:'city_space',     name:'都宙連帯',     emoji:'🌌', cost:3, tier:4, requires:['culture_healing'],            effect:'cps_synergy', areas:[5,6], value:0.35, desc:'都市・宇宙エリアが互いに+35%（両区解放時）'},
   // Tier 5（3SP / 4SP）
   {id:'miracle_town',   name:'奇跡の街',     emoji:'🌟', cost:3, tier:5, requires:['town_vitality','space_ambition'], effect:'cps_all', value:0.50, desc:'全建物のCPS +50%'},
-  {id:'all_harmony',    name:'全区調和',     emoji:'🌐', cost:4, tier:5, requires:['city_space'],              effect:'cps_synergy', areas:[1,2,3,4,5,6], value:0.20, desc:'全エリアが互いに+20%（全区解放時）'},
-  // Tier 6（4SP）
+  {id:'deep_sea_power', name:'深海の覇権',   emoji:'🌊', cost:3, tier:5, requires:['space_ambition'],         effect:'cps_area7',   value:0.60, desc:'深海エリア全建物のCPS +60%'},
+  {id:'all_harmony',    name:'全区調和',     emoji:'🌐', cost:4, tier:5, requires:['city_space'],              effect:'cps_synergy', areas:[1,2,3,4,5,6,7,8], value:0.20, desc:'全エリアが互いに+20%（全区解放時）'},
+  // Tier 6（3SP / 4SP）
   {id:'achiev_eye',     name:'実績の目',     emoji:'👁️', cost:3, tier:6, requires:['miracle_town'],           effect:'achiev_cps',  value:0.02, desc:'実績1件ごとに全CPS +2%'},
+  {id:'dim_mastery',    name:'異次元の理',   emoji:'🔮', cost:3, tier:6, requires:['deep_sea_power'],         effect:'cps_area8',   value:0.70, desc:'異次元エリア全建物のCPS +70%'},
   {id:'galaxy_civ',     name:'銀河文明',     emoji:'🌌', cost:4, tier:6, requires:['achiev_eye'],             effect:'cps_mult',    value:1.0,  desc:'全建物のCPS ×2'},
 ];
 
@@ -254,7 +274,9 @@ const ACHIEVEMENTS = [
   {id:'area4',     icon:'🌿', name:'いやしの里開拓',  desc:'第4区を解放した',    reward:'称号',    check:s=>(s.unlockedAreas||[]).includes(4)},
   {id:'area5',     icon:'🏙️', name:'夢の都市開拓',    desc:'第5区を解放した',    reward:'称号',    check:s=>(s.unlockedAreas||[]).includes(5)},
   {id:'area6',     icon:'🚀', name:'宇宙への夢',      desc:'第6区を解放した',    reward:'称号',    check:s=>(s.unlockedAreas||[]).includes(6)},
-  {id:'all_areas', icon:'🗺️', name:'全区制覇',        desc:'全エリアを解放',     reward:'称号',    check:s=>(s.unlockedAreas||[]).length>=6},
+  {id:'area7',     icon:'🌊', name:'深海への潜行',    desc:'第7区を解放した',    reward:'称号',    check:s=>(s.unlockedAreas||[]).includes(7)},
+  {id:'area8',     icon:'🔮', name:'異次元の扉',      desc:'第8区を解放した',    reward:'称号',    check:s=>(s.unlockedAreas||[]).includes(8)},
+  {id:'all_areas', icon:'🗺️', name:'全区制覇',        desc:'全エリアを解放',     reward:'称号',    check:s=>(s.unlockedAreas||[]).length>=8},
   {id:'research_3',    icon:'🔬', name:'研究者',       desc:'3つの研究を完了',    reward:'称号',    check:s=>Object.keys(s.research||{}).length>=3},
   {id:'research_all',  icon:'🧪', name:'科学の申し子', desc:'全研究を完了',       reward:'称号',    check:s=>Object.keys(s.research||{}).length>=RESEARCH.length},
   {id:'weekend',       icon:'🎉', name:'週末の楽しみ', desc:'週末ボーナス中に遊んだ', reward:'記念称号', check:s=>getWeekendMult()>1&&getTotalLv()>=1},
