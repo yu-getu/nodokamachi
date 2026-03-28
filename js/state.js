@@ -97,14 +97,14 @@ const BUILDINGS = [
 // エリア定義
 // 解放コスト = 当エリア最後の2棟付近で解放できるよう設計（前区6棟目の約1.5倍）
 const AREAS = [
-  {id:1, name:'第1区', emoji:'🌾', unlockCost:0,                desc:'のどかな農村エリア'},
-  {id:2, name:'第2区', emoji:'🏪', unlockCost:35000,            desc:'にぎやかな商店街エリア'},
-  {id:3, name:'第3区', emoji:'📚', unlockCost:11000000,         desc:'文化の丘エリア'},
-  {id:4, name:'第4区', emoji:'🌿', unlockCost:4000000000,       desc:'いやしの里エリア'},
-  {id:5, name:'第5区', emoji:'🏙️', unlockCost:1200000000000,    desc:'夢の都市エリア'},
-  {id:6, name:'第6区', emoji:'🚀', unlockCost:420000000000000,  desc:'宇宙の夢エリア'},
-  {id:7, name:'第7区', emoji:'🌊', unlockCost:1.5e17,           desc:'深海都市エリア'},
-  {id:8, name:'第8区', emoji:'🔮', unlockCost:5e19,             desc:'異次元世界エリア'},
+  {id:1, name:'第1区', emoji:'🌾', unlockCost:0,        desc:'のどかな農村エリア'},
+  {id:2, name:'第2区', emoji:'🏪', unlockCost:100000,   desc:'にぎやかな商店街エリア'},
+  {id:3, name:'第3区', emoji:'📚', unlockCost:34000000, desc:'文化の丘エリア'},
+  {id:4, name:'第4区', emoji:'🌿', unlockCost:1.1e10,   desc:'いやしの里エリア'},
+  {id:5, name:'第5区', emoji:'🏙️', unlockCost:3.8e12,   desc:'夢の都市エリア'},
+  {id:6, name:'第6区', emoji:'🚀', unlockCost:1.28e15,  desc:'宇宙の夢エリア'},
+  {id:7, name:'第7区', emoji:'🌊', unlockCost:4.3e17,   desc:'深海都市エリア'},
+  {id:8, name:'第8区', emoji:'🔮', unlockCost:1.5e20,   desc:'異次元世界エリア'},
 ];
 
 // 研究定義
