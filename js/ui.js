@@ -173,7 +173,7 @@ function renderShop() {
       card.innerHTML = `
         <div>
           <div class="area-locked-name">🔒 ${area.emoji} ${area.name}</div>
-          <div class="area-locked-info">${area.desc}（新建物3種類）</div>
+          <div class="area-locked-info">${area.desc}</div>
         </div>
         <button class="btn-buy" id="areaBtn${area.id}" onclick="unlockArea(${area.id})" ${canAfford?'':'disabled'}>
           🪙${fmt(area.unlockCost)} 解放
