@@ -127,6 +127,7 @@ const PRESTIGE_SKILLS = [
   {id:'unlock_bulk_res',name:'一括研究',   emoji:'🔬', cost:1, tier:1, requires:[],                            effect:'unlock_feature',    value:0,    desc:'施設の全Tier一括研究を解放'},
   // Tier 2（各2PSP）
   {id:'gen_bond',       name:'世代の絆',   emoji:'🔗', cost:2, tier:2, requires:['legacy_memory'],             effect:'cps_perm',          value:0.20, desc:'全CPS +20% 永続'},
+  {id:'deco_focus',     name:'飾りの極意', emoji:'🎯', cost:2, tier:2, requires:['legacy_memory'],             effect:'unlock_feature',    value:0,    desc:'施設特化飾りを解放。特定の施設を集中強化できる飾りが購入可能になる'},
   {id:'harvest_gift',   name:'稼ぎの才覚', emoji:'🪙', cost:2, tier:2, requires:[],                            effect:'click_sec',         value:2,    desc:'ひと稼ぎ +2秒分'},
   {id:'history_mark',   name:'歴史の刻印', emoji:'⚖️', cost:2, tier:2, requires:['ancestor_grace'],            effect:'cps_perm',          value:0.25, desc:'全CPS +25% 永続'},
   // Tier 3（各3PSP）
@@ -143,9 +144,10 @@ const PRESTIGE_SKILL_POS = {
   unlock_bulk_lv: { x: 0.35, tier: 1 },
   unlock_bulk_sk: { x: 0.55, tier: 1 },
   unlock_bulk_res:{ x: 0.74, tier: 1 },
-  gen_bond:       { x: 0.20, tier: 2 },
-  harvest_gift:   { x: 0.50, tier: 2 },
-  history_mark:   { x: 0.80, tier: 2 },
+  gen_bond:       { x: 0.15, tier: 2 },
+  deco_focus:     { x: 0.38, tier: 2 },
+  harvest_gift:   { x: 0.60, tier: 2 },
+  history_mark:   { x: 0.85, tier: 2 },
   legend_grace:   { x: 0.20, tier: 3 },
   harvest_art:    { x: 0.50, tier: 3 },
   gods_will:      { x: 0.80, tier: 3 },
@@ -219,33 +221,47 @@ const SEASONS = [
     skyGrad:'linear-gradient(180deg,#e3f2fd 0%,#bbdefb 40%,#e8eaf6 70%,#b2ebf2 100%)', desc:'冬の静寂 -10%' },
 ];
 
-// effect.type: 'area_cps'|'building_cps'|'all_cps'|'collect'|'event_bonus'
+// effect.type: 'self_cps' | 'area_cps' | 'global_cps' | 'collect'
+// self_cps: 設置した施設のCPSを強化
+// area_cps: 設置した施設と同じエリアの全施設CPSを強化
+// global_cps: 設置場所に関わらず全施設CPSを強化
+// collect: 手動収穫ボーナスを強化
 const DECORATIONS = [
-  // ── 農村シナジー ──
-  { id:'flower',      name:'花壇',             emoji:'🌺', cost:500,              beautyPts:2,  desc:'色とりどりの花が農村を彩る',     effect:{type:'area_cps',     area:1,                              value:0.10}, effectDesc:'農村エリア CPS +10%' },
-  { id:'windmill',    name:'風車',             emoji:'🌬️', cost:3000,             beautyPts:4,  desc:'のどかな農村に映える風車',       effect:{type:'area_cps',     area:1,                              value:0.20}, effectDesc:'農村エリア CPS +20%' },
-  // ── 商店街シナジー ──
-  { id:'fountain',    name:'噴水',             emoji:'⛲', cost:2000,             beautyPts:3,  desc:'涼しげな噴水が人を呼ぶ',         effect:{type:'area_cps',     area:2,                              value:0.10}, effectDesc:'商店街エリア CPS +10%' },
-  { id:'market',      name:'朝市広場',         emoji:'🏪', cost:12000,            beautyPts:6,  desc:'にぎわう朝市が商いを盛んに',     effect:{type:'area_cps',     area:2,                              value:0.20}, effectDesc:'商店街エリア CPS +20%' },
-  // ── 文化の丘シナジー ──
-  { id:'lantern',     name:'灯籠',             emoji:'🏮', cost:1500,             beautyPts:3,  desc:'和風の灯りが社を照らす',         effect:{type:'building_cps', targets:['shrine'],                  value:0.30}, effectDesc:'神社 CPS +30%' },
-  { id:'statue',      name:'銅像',             emoji:'🗿', cost:8000,             beautyPts:6,  desc:'街のシンボルが文化を育む',       effect:{type:'area_cps',     area:3,                              value:0.15}, effectDesc:'文化エリア CPS +15%' },
-  { id:'shrinegate',  name:'鳥居',             emoji:'⛩️', cost:50000,            beautyPts:10, desc:'神聖な鳥居が場を清める',         effect:{type:'area_cps',     area:3,                              value:0.25}, effectDesc:'文化エリア CPS +25%' },
-  // ── いやしの里シナジー ──
-  { id:'park',        name:'公園',             emoji:'🌳', cost:5000,             beautyPts:5,  desc:'緑あふれる憩いの場所',           effect:{type:'area_cps',     area:4,                              value:0.15}, effectDesc:'癒やしエリア CPS +15%' },
-  { id:'beachresort', name:'ビーチリゾート',   emoji:'⛱️', cost:1000000,          beautyPts:20, desc:'海辺の癒やしスポット',           effect:{type:'area_cps',     area:4,                              value:0.25}, effectDesc:'癒やしエリア CPS +25%' },
-  { id:'japangarden', name:'日本庭園',         emoji:'🪷', cost:5000000,          beautyPts:30, desc:'静謐な和の庭が心を癒す',         effect:{type:'area_cps',     area:4,                              value:0.35}, effectDesc:'癒やしエリア CPS +35%' },
-  // ── 夢の都市シナジー ──
-  { id:'lighthouse',  name:'灯台',             emoji:'🗼', cost:15000,            beautyPts:8,  desc:'高くそびえ旅人を呼び込む',       effect:{type:'building_cps', targets:['inn','skyscraper'],        value:0.20}, effectDesc:'旅館・摩天楼 CPS +20%' },
-  { id:'bandstand',   name:'音楽堂',           emoji:'🎵', cost:30000,            beautyPts:12, desc:'音楽が響き娯楽を盛り上げる',     effect:{type:'building_cps', targets:['theater','amusement'],     value:0.25}, effectDesc:'劇場・遊園地 CPS +25%' },
-  { id:'observatory', name:'展望台',           emoji:'🔭', cost:80000,            beautyPts:16, desc:'街を一望する高台',               effect:{type:'area_cps',     area:5,                              value:0.20}, effectDesc:'娯楽エリア CPS +20%' },
-  // ── 宇宙の夢シナジー ──
-  { id:'telescope',   name:'大型望遠鏡',       emoji:'🌌', cost:5000000000,       beautyPts:35, desc:'宇宙の神秘を覗く大望遠鏡',       effect:{type:'area_cps',     area:6,                              value:0.25}, effectDesc:'宇宙エリア CPS +25%' },
-  { id:'spacelift',   name:'宇宙エレベーター', emoji:'🛗', cost:2000000000000,    beautyPts:50, desc:'宇宙へ続く架け橋',               effect:{type:'area_cps',     area:6,                              value:0.40}, effectDesc:'宇宙エリア CPS +40%' },
-  // ── 全体効果 ──
-  { id:'cherrytree',  name:'桜並木',           emoji:'🌸', cost:20000,            beautyPts:10, desc:'春風に舞う花びらが元気をくれる', effect:{type:'collect',                                           value:1.0},  effectDesc:'手動収穫ボーナス ×2' },
-  { id:'fireworks',   name:'花火台',           emoji:'🎆', cost:250000,           beautyPts:15, desc:'夜空を彩る花火がイベントを盛大に',effect:{type:'event_bonus',                                      value:0.50}, effectDesc:'イベント効果 +50%' },
-  { id:'solarpanel',  name:'太陽光パネル',     emoji:'☀️', cost:500000,           beautyPts:8,  desc:'再生エネルギーで街全体を底上げ', effect:{type:'all_cps',                                           value:0.05}, effectDesc:'全建物 CPS +5%' },
+  // ─ 自己強化（self_cps）─
+  { id:'potted_plant', name:'花鉢',           emoji:'🪴', cost:300,       desc:'玄関先を彩る小さな鉢植え',           effect:{type:'self_cps',   value:0.20}, effectDesc:'設置施設 CPS +20%' },
+  { id:'scarecrow',    name:'かかし',         emoji:'🪆', cost:1200,      desc:'畑を見守る愛嬌のあるかかし',         effect:{type:'self_cps',   value:0.30}, effectDesc:'設置施設 CPS +30%' },
+  { id:'lantern',      name:'提灯',           emoji:'🏮', cost:5000,      desc:'夜道を照らす温かな灯り',             effect:{type:'self_cps',   value:0.40}, effectDesc:'設置施設 CPS +40%' },
+  { id:'windmill',     name:'風車',           emoji:'🌬️', cost:25000,     desc:'のどかに回る風車小屋',               effect:{type:'self_cps',   value:0.60}, effectDesc:'設置施設 CPS +60%' },
+  { id:'bell',         name:'釣鐘',           emoji:'🔔', cost:150000,    desc:'清らかな音が施設に活力を与える',     effect:{type:'self_cps',   value:0.50}, effectDesc:'設置施設 CPS +50%' },
+  { id:'shrinegate',   name:'鳥居',           emoji:'⛩️', cost:600000,    desc:'聖域の入り口を示す赤い鳥居',         effect:{type:'self_cps',   value:0.80}, effectDesc:'設置施設 CPS +80%' },
+  { id:'zen_stone',    name:'石灯籠',         emoji:'🪨', cost:8000000,   desc:'庭を静謐に彩る石の灯籠',             effect:{type:'self_cps',   value:1.00}, effectDesc:'設置施設 CPS ×2' },
+  { id:'satellite',    name:'アンテナ',       emoji:'📡', cost:1e10,      desc:'信号を受け取る最新アンテナ',         effect:{type:'self_cps',   value:1.20}, effectDesc:'設置施設 CPS ×2.2' },
+  { id:'coral_deco',   name:'珊瑚の飾り',    emoji:'🐚', cost:3e15,      desc:'深海から持ち帰った珊瑚の置き物',     effect:{type:'self_cps',   value:1.50}, effectDesc:'設置施設 CPS ×2.5' },
+  { id:'dim_crystal',  name:'次元の水晶',    emoji:'🔮', cost:3e21,      desc:'異次元エネルギーを閉じ込めた水晶',   effect:{type:'self_cps',   value:2.00}, effectDesc:'設置施設 CPS ×3' },
+  // ─ エリア強化（area_cps）─
+  { id:'flower_bed',   name:'花壇',           emoji:'🌼', cost:2500,      desc:'色とりどりの花が咲く花壇',           effect:{type:'area_cps',   value:0.10}, effectDesc:'同エリア全施設 CPS +10%' },
+  { id:'fountain',     name:'噴水',           emoji:'⛲', cost:60000,     desc:'涼しげな噴水が人を集める',           effect:{type:'area_cps',   value:0.15}, effectDesc:'同エリア全施設 CPS +15%' },
+  { id:'statue',       name:'銅像',           emoji:'🗿', cost:500000,    desc:'街のシンボルとなる立派な銅像',       effect:{type:'area_cps',   value:0.18}, effectDesc:'同エリア全施設 CPS +18%' },
+  { id:'bamboo',       name:'竹林',           emoji:'🎋', cost:20000000,  desc:'風にそよぐ静かな竹林',               effect:{type:'area_cps',   value:0.22}, effectDesc:'同エリア全施設 CPS +22%' },
+  { id:'observatory',  name:'展望台',         emoji:'🔭', cost:300000000, desc:'街を一望する高い展望台',             effect:{type:'area_cps',   value:0.25}, effectDesc:'同エリア全施設 CPS +25%' },
+  { id:'space_lift',   name:'宇宙エレベーター',emoji:'🛗', cost:5e12,      desc:'宇宙へと続く巨大な架け橋',           effect:{type:'area_cps',   value:0.30}, effectDesc:'同エリア全施設 CPS +30%' },
+  { id:'coral_reef',   name:'珊瑚礁',         emoji:'🪸', cost:1e18,      desc:'幻想的な珊瑚の海',                   effect:{type:'area_cps',   value:0.35}, effectDesc:'同エリア全施設 CPS +35%' },
+  { id:'galaxy_mon',   name:'銀河の碑',       emoji:'🌌', cost:8e23,      desc:'銀河の歴史を刻んだ記念碑',           effect:{type:'area_cps',   value:0.40}, effectDesc:'同エリア全施設 CPS +40%' },
+  // ─ 全体強化（global_cps）─
+  { id:'cherrytree',   name:'桜並木',         emoji:'🌸', cost:30000,     desc:'春風に舞う桜の花びら',               effect:{type:'global_cps', value:0.03}, effectDesc:'全施設 CPS +3%' },
+  { id:'solar_panel',  name:'太陽光パネル',   emoji:'☀️', cost:2000000,   desc:'再生エネルギーで街を底上げ',         effect:{type:'global_cps', value:0.05}, effectDesc:'全施設 CPS +5%' },
+  { id:'rainbow',      name:'虹のアーチ',     emoji:'🌈', cost:80000000,  desc:'虹がかかる神秘的な門',               effect:{type:'global_cps', value:0.08}, effectDesc:'全施設 CPS +8%' },
+  { id:'cosmic_tree',  name:'宇宙の大樹',     emoji:'🌳', cost:8e21,      desc:'宇宙の力を宿した伝説の大樹',         effect:{type:'global_cps', value:0.10}, effectDesc:'全施設 CPS +10%' },
+  { id:'mystic_gate',  name:'神秘の門',       emoji:'🌀', cost:3e25,      desc:'異世界への扉が全てを加速する',       effect:{type:'global_cps', value:0.15}, effectDesc:'全施設 CPS +15%' },
+  // ─ 収穫強化（collect）─
+  { id:'stage',        name:'野外舞台',       emoji:'🎭', cost:100000,    desc:'ひと稼ぎを応援してくれる舞台',       effect:{type:'collect',    value:1.0},  effectDesc:'手動収穫 ×2' },
+  { id:'fireworks',    name:'花火台',         emoji:'🎆', cost:8000000,   desc:'夜空を彩る花火が活力を与える',       effect:{type:'collect',    value:2.0},  effectDesc:'手動収穫 ×3' },
+  // ─ 施設特化（focusOnly: 転生スキル「飾りの極意」解放後に購入可）─
+  { id:'focus_badge',  name:'名工の認定証',   emoji:'🏅', cost:300000,    desc:'名工が認めた施設だけに授けられる証', effect:{type:'self_cps',   value:1.5},  effectDesc:'設置施設 CPS ×2.5', focusOnly:true },
+  { id:'focus_crown',  name:'施設の王冠',     emoji:'👑', cost:3000000,   desc:'王冠を戴いた施設は飛躍的に輝く',    effect:{type:'self_cps',   value:3.0},  effectDesc:'設置施設 CPS ×4',   focusOnly:true },
+  { id:'focus_gem',    name:'秘宝の宝珠',     emoji:'💠', cost:50000000,  desc:'秘宝の力が施設の力を解き放つ',      effect:{type:'self_cps',   value:6.0},  effectDesc:'設置施設 CPS ×7',   focusOnly:true },
+  { id:'focus_star',   name:'星の加護石',     emoji:'🌟', cost:5e12,      desc:'星の力が宿る石が施設を守護する',    effect:{type:'self_cps',   value:12.0}, effectDesc:'設置施設 CPS ×13',  focusOnly:true },
+  { id:'focus_core',   name:'エーテルコア',   emoji:'⚗️', cost:5e18,      desc:'純粋なエーテルエネルギーの核',      effect:{type:'self_cps',   value:30.0}, effectDesc:'設置施設 CPS ×31',  focusOnly:true },
 ];
 
 const WEATHER_DEFS = {
@@ -505,7 +521,8 @@ let state = {
   activeEvents:[], eventDiscount:1,
   prestigeCount:0, achievements:{},
   eventCount:0, stormCount:0,
-  decorations: {},
+  decoOwned: {},
+  decoSlots: {},
   unlockedAreas: [1],
   research: {},
   quests: null,

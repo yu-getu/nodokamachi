@@ -217,7 +217,7 @@ function renderTown() {
   // デコ列
   const decoRow = document.getElementById('decoRow');
   if (decoRow) decoRow.remove();
-  const owned = DECORATIONS.filter(d => state.decorations[d.id]);
+  const owned = DECORATIONS.filter(d => (state.decoOwned || {})[d.id]);
   if (owned.length > 0) {
     const dr = document.createElement('div');
     dr.id = 'decoRow';
@@ -324,6 +324,11 @@ function renderShop() {
         <div class="lv-bar-track"><div class="lv-bar-fill" style="width:${isMax?100:barPct}%"></div></div>
       </div>
       <button class="btn-buy ${btnClass}" onclick="buyBuilding('${b.id}')" ${isMax||(!isMax&&!canAfford)?'disabled':''}>${btnText}</button>
+      ${lv > 0 ? (() => {
+        const decoSlots = (state.decoSlots || {})[b.id] || [];
+        const hasDeco = decoSlots.length > 0;
+        return `<button class="btn-deco-open${hasDeco ? ' has-deco' : ''}" onclick="openDecoModal('${b.id}')">🌺 飾り ${decoSlots.length}/3</button>`;
+      })() : ''}
     `;
     grid.appendChild(div);
     });

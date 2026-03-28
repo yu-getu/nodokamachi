@@ -45,7 +45,7 @@ function generateQuests() {
     });
   });
 
-  const decoCount = Object.values(state.decorations || {}).filter(Boolean).length;
+  const decoCount = Object.keys(state.decoOwned || {}).filter(id => state.decoOwned[id]).length;
   const decoSecs = { 1: 60, 3: 120, 5: 180, 8: 300, 10: 420 };
   // デコのコストフロア: 該当個数目のデコ購入コストの10%（概算）
   const decoFloors = { 1: 500, 3: 2000, 5: 8000, 8: 50000, 10: 200000 };
@@ -123,7 +123,7 @@ function getQuestProgress(q) {
     case 'building_level': return Math.min(state.buildings[q.buildingId]?.level || 0, q.target);
     case 'total_level': return Math.min(getTotalLv(), q.target);
     case 'earn': return Math.min(state.totalEarned, q.target);
-    case 'deco': return Math.min(Object.values(state.decorations || {}).filter(Boolean).length, q.target);
+    case 'deco': return Math.min(Object.keys(state.decoOwned || {}).filter(id => state.decoOwned[id]).length, q.target);
     case 'research': return Math.min(Object.keys(state.research || {}).length, q.target);
     case 'skill': return Math.min(Object.keys(state.skills || {}).length, q.target);
     case 'unlock_area': return (state.unlockedAreas || [1]).includes(q.areaId) ? 1 : 0;

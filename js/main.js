@@ -81,13 +81,14 @@ function tick() {
     const btn = el.querySelector('.btn-buy');
     if (btn && !isMax) btn.disabled = state.coins < cost;
   });
-  document.querySelectorAll('.deco-item').forEach((el, i) => {
-    const d = DECORATIONS[i]; if (!d) return;
-    const owned = !!state.decorations[d.id];
-    const canAfford = !owned && state.coins >= d.cost;
-    el.className = `deco-item ${owned ? 'owned' : canAfford ? 'affordable' : ''}`;
+  document.querySelectorAll('.deco-item').forEach(el => {
+    const d = DECORATIONS.find(x => x.id === el.dataset.decoId); if (!d) return;
+    const owned = !!(state.decoOwned || {})[d.id];
+    const isLocked = d.focusOnly && !state.prestigeSkills?.deco_focus;
+    const canAfford = !owned && !isLocked && state.coins >= d.cost;
+    el.className = `deco-item ${owned ? 'owned' : canAfford ? 'affordable' : ''} ${isLocked ? 'focus-locked' : ''}`;
     const btn = el.querySelector('.btn-buy');
-    if (btn && !owned) btn.disabled = !canAfford;
+    if (btn && !owned) btn.disabled = !canAfford || isLocked;
   });
   AREAS.forEach(area => {
     const btn = document.getElementById(`areaBtn${area.id}`);

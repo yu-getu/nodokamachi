@@ -144,6 +144,7 @@
           <div class="beauty-sub">CPS +<span id="beautyBonus">0</span>%ボーナス中</div>
         </div>
       </div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:10px">飾りを購入後、建設タブの各施設カードにある「🌺 飾り」ボタンから設置しよう。施設1つにつき最大3種類設置可能。</p>
       <div class="deco-grid" id="decoGrid"></div>
     </div>
 
@@ -256,6 +257,20 @@
         <button class="btn-modal" onclick="closeModal('prestigeModal')">閉じる</button>
         <button class="btn-modal purple" id="btnPrestigeConfirm" onclick="doPrestige()" disabled>転生する！</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 飾り配置モーダル -->
+  <div class="modal-overlay" id="decoModal" onclick="if(event.target===this)closeDecoModal()">
+    <div class="modal deco-modal">
+      <div class="modal-icon">🌺</div>
+      <h2 id="decoModalTitle">施設の飾り</h2>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:10px">最大3種類の飾りを設置できます</p>
+      <div class="deco-modal-slots" id="decoModalSlots"></div>
+      <div class="deco-modal-avail-wrap">
+        <div class="deco-modal-avail" id="decoModalAvail"></div>
+      </div>
+      <button class="btn-modal" onclick="closeDecoModal()" style="margin-top:14px">閉じる</button>
     </div>
   </div>
 
