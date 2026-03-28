@@ -47,7 +47,7 @@ function doPrestige() {
   state.prestigeCount++;
   state.prestigeSp = (state.prestigeSp || 0) + 3;
   state.allTimeTotalEarned = (state.allTimeTotalEarned || 0) + (state.totalEarned || 0);
-  state.coins = 50; state.totalEarned = 0;
+  state.coins = 0; state.totalEarned = 0;
   BUILDINGS.forEach(b => { state.buildings[b.id] = { level: 0 }; });
   state.activeEvents = []; state.eventDiscount = 1; state.skills = {}; state.research = {};
   const newMax = getMaxLevel();
