@@ -1,0 +1,82 @@
+/* ── 温泉旅館ミニゲーム ── */
+.onsen-gauge-wrap {
+    margin: 10px 0 12px
+}
+
+.onsen-bar-outer {
+    position: relative;
+    height: 32px;
+    background: #e3f2fd;
+    border-radius: 16px;
+    border: 2px solid #90caf9;
+    overflow: hidden;
+    margin-bottom: 6px
+}
+
+.onsen-zone {
+    position: absolute;
+    top: 0; bottom: 0;
+    background: rgba(2, 136, 209, 0.25);
+    border-left: 2px dashed #0288d1;
+    border-right: 2px dashed #0288d1
+}
+
+.onsen-temp-bar {
+    height: 100%;
+    border-radius: 14px;
+    width: 50%;
+    transition: width .1s, background .2s
+}
+
+.onsen-temp-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--muted);
+    margin-bottom: 10px
+}
+
+.onsen-timer { color: var(--text); font-size: 14px }
+
+.onsen-ctrl-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px
+}
+
+.onsen-ctrl-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform .1s
+}
+
+.onsen-ctrl-btn:active { transform: scale(.94) }
+.onsen-ctrl-btn:disabled { opacity: .4; cursor: default }
+
+.onsen-hot-btn  { background: linear-gradient(135deg, #ff7043, #e64a19); color: #fff; box-shadow: 0 3px 0 #bf360c }
+.onsen-cool-btn { background: linear-gradient(135deg, #42a5f5, #1565c0); color: #fff; box-shadow: 0 3px 0 #0d47a1 }
+
+.onsen-start-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--prestige), var(--prestige2));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--prestige2);
+    margin-bottom: 6px
+}
+
+.onsen-start-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #aaa; cursor: not-allowed }

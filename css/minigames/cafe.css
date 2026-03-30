@@ -1,0 +1,320 @@
+/* ── 喫茶店ミニゲーム ── */
+
+/* ── モーダル全体：温かみのある喫茶店 ── */
+.cafe-modal {
+    text-align: center;
+    min-width: 300px;
+    background: linear-gradient(170deg, #faf6f0 0%, #f5ede0 100%);
+    border: 2px solid #b8956a;
+    box-shadow: 0 8px 28px rgba(100,60,10,.14), 0 2px 0 #e0c898 inset
+}
+
+.cafe-modal h2 {
+    font-size: 22px;
+    color: #4a2800;
+    letter-spacing: .03em;
+    margin-bottom: 2px
+}
+
+/* ════════════════════════════════
+   コーヒーカップ イラスト
+   ════════════════════════════════ */
+.cafe-cup-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 14px
+}
+
+/* 湯気エリア */
+.cafe-steam-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    height: 28px;
+    overflow: hidden;
+    margin-bottom: 0
+}
+
+.cafe-steam {
+    width: 5px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, transparent, rgba(180,160,140,.45), transparent);
+    animation: cafeSteam 2s ease-in-out infinite;
+    opacity: 0;
+    transform: translateY(28px)
+}
+.cafe-steam:nth-child(2) { animation-delay: .55s; animation-duration: 2.3s }
+.cafe-steam:nth-child(3) { animation-delay: 1.1s; animation-duration: 1.8s }
+
+@keyframes cafeSteam {
+    0%   { transform: translateY(28px); opacity: 0 }
+    25%  { opacity: .55 }
+    75%  { opacity: .3 }
+    100% { transform: translateY(-4px) scaleX(1.5); opacity: 0 }
+}
+
+/* 湯気は GOOD 以上で表示 */
+.cafe-cup-good  .cafe-steam,
+.cafe-cup-perfect .cafe-steam { opacity: 1 }
+
+/* カップ全体ラッパー */
+.cafe-cup {
+    position: relative;
+    width: 130px;
+    height: 88px;
+    transition: filter .3s, transform .35s cubic-bezier(.34,1.56,.64,1)
+}
+
+/* ── カップ本体（磁器・白） ── */
+.cafe-cup-body {
+    position: absolute;
+    left: 16px;
+    top: 0;
+    width: 88px;
+    height: 66px;
+    background: linear-gradient(160deg, #f8f6f4 0%, #ece8e2 100%);
+    border-radius: 5px 5px 16px 16px;
+    border: 2.5px solid #c8c0b4;
+    overflow: hidden;
+    z-index: 2;
+    box-shadow: inset 0 1px 3px rgba(255,255,255,.8), inset 0 -2px 4px rgba(0,0,0,.08)
+}
+
+/* カップ内側（液体クリップ領域） */
+.cafe-cup-inner {
+    position: absolute;
+    inset: 5px 6px 4px 6px;
+    border-radius: 2px 2px 12px 12px;
+    overflow: hidden;
+    background: #e4ddd4
+}
+
+/* ── 上昇する液体 ── */
+.cafe-liquid {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 0%;
+    background: linear-gradient(180deg, #6b3318 0%, #3e1c08 100%);
+    transition: height .08s linear
+}
+
+/* クレマ（上面の泡） */
+.cafe-liquid::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg,
+        #c8804a, #d4905a, #c07040, #d4905a, #c8804a);
+    opacity: .7
+}
+
+/* ── フォーム（ミルク泡：PERFECTで出現） ── */
+.cafe-foam {
+    position: absolute;
+    top: -8px; left: 2px; right: 2px;
+    height: 10px;
+    background: linear-gradient(180deg, #f8f0e4 0%, #ead8c0 100%);
+    border-radius: 50% 50% 20% 20%;
+    opacity: 0;
+    transition: opacity .3s
+}
+
+/* ── カップのツヤ（左上の反射） ── */
+.cafe-cup-glare {
+    position: absolute;
+    top: 8px; left: 8px;
+    width: 12px; height: 26px;
+    background: linear-gradient(160deg, rgba(255,255,255,.7), transparent);
+    border-radius: 50%;
+    pointer-events: none
+}
+
+/* ── 取っ手 ── */
+.cafe-handle {
+    position: absolute;
+    right: 4px;
+    top: 18px;
+    width: 24px;
+    height: 28px;
+    border: 5px solid #c8c0b4;
+    border-left: none;
+    border-radius: 0 50% 50% 0;
+    background: transparent;
+    z-index: 1;
+    box-shadow: inset -2px 0 3px rgba(0,0,0,.08)
+}
+
+/* ── 受け皿 ── */
+.cafe-saucer {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 118px;
+    height: 13px;
+    background: linear-gradient(180deg, #f0ece6 0%, #dcd4c8 100%);
+    border-radius: 50%;
+    border: 2.5px solid #c0b8ac;
+    z-index: 1;
+    box-shadow: 0 3px 6px rgba(0,0,0,.12)
+}
+
+/* ── 状態ラベル ── */
+.cafe-cup-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: #9b7050;
+    margin-top: 8px;
+    height: 18px;
+    transition: color .3s
+}
+
+/* ── 状態別スタイル ── */
+/* 空 */
+.cafe-cup-empty .cafe-cup-body  { border-color: #c8c0b4 }
+
+/* 注いでいる途中 */
+.cafe-cup-pouring .cafe-cup-body { border-color: #b89070 }
+
+/* GOOD */
+.cafe-cup-good .cafe-cup-body {
+    border-color: #8b5a30;
+    box-shadow: inset 0 1px 3px rgba(255,255,255,.7), 0 0 10px rgba(120,70,20,.2)
+}
+.cafe-cup-good + .cafe-cup-label { color: #7a4820 }
+
+/* PERFECT */
+.cafe-cup-perfect {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 10px rgba(180,110,40,.6))
+}
+.cafe-cup-perfect .cafe-cup-body {
+    border-color: #6b3810;
+    box-shadow: inset 0 1px 3px rgba(255,255,255,.7), 0 0 16px rgba(160,90,20,.4)
+}
+.cafe-cup-perfect .cafe-foam { opacity: 1 }
+.cafe-cup-perfect + .cafe-cup-label { color: #5a2e08 }
+
+/* あふれ */
+.cafe-cup-overflow .cafe-cup-body {
+    border-color: #5a3010;
+    box-shadow: 0 0 0 3px rgba(80,40,10,.15)
+}
+.cafe-cup-overflow + .cafe-cup-label { color: #2a4a80 }
+
+/* ════════════════════════════════
+   注ぎ量バー
+   ════════════════════════════════ */
+.cafe-bar-wrap {
+    margin: 0 0 14px;
+    position: relative
+}
+
+/* コーヒーポット風フレーム */
+.cafe-pour-frame {
+    background: linear-gradient(180deg, #2c1a08 0%, #1e1008 100%);
+    border-radius: 12px;
+    padding: 10px 10px 8px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,.5), 0 3px 0 #110800, 0 5px 10px rgba(0,0,0,.25)
+}
+
+/* バー本体：コーヒーが流れ込むイメージ */
+.cafe-bar {
+    position: relative;
+    height: 34px;
+    background: #180e04;
+    border-radius: 8px;
+    border: 1.5px solid rgba(180, 120, 50, .2);
+    overflow: hidden;
+    margin-bottom: 0;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.6)
+}
+
+/* コーヒーが注がれるフィルバー */
+.cafe-fill {
+    height: 100%;
+    background: linear-gradient(90deg,
+        #3e1c08 0%,
+        #6b3318 40%,
+        #8b4a20 75%,
+        #a05828 100%
+    );
+    width: 0%;
+    transition: none;
+    position: relative
+}
+
+/* クレマライン（フィルバーの先端） */
+.cafe-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    right: 0;
+    width: 8px;
+    background: linear-gradient(90deg, transparent, rgba(200,130,60,.6));
+    border-radius: 0 4px 4px 0
+}
+
+/* バー上面のツヤ */
+.cafe-bar::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(255,255,255,.07), transparent);
+    pointer-events: none
+}
+
+/* GOODゾーン */
+.cafe-zone-good {
+    position: absolute;
+    top: 0; bottom: 0;
+    background: rgba(255, 200, 80, .18);
+    border-left:  1.5px solid rgba(255, 190, 60, .55);
+    border-right: 1.5px solid rgba(255, 190, 60, .55);
+    border-radius: 2px
+}
+
+/* PERFECTゾーン */
+.cafe-zone-perfect {
+    position: absolute;
+    top: 0; bottom: 0;
+    background: rgba(255, 245, 180, .28);
+    border-left:  2px solid rgba(255, 240, 140, .9);
+    border-right: 2px solid rgba(255, 240, 140, .9);
+    box-shadow: 0 0 10px rgba(255,230,80,.3);
+    border-radius: 2px
+}
+
+/* ラベル */
+.cafe-zone-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2px;
+    margin-top: 6px;
+    font-size: 9px;
+    font-weight: 800;
+    color: #887060
+}
+
+.cafe-zone-label-good    { color: #c09030 }
+.cafe-zone-label-perfect { color: #e0b840 }
+
+/* ════════════════════════════════
+   結果・ボタン
+   ════════════════════════════════ */
+.mg-result { /* 共通クラス利用 */ }
+
+/* 止めるボタン（cafe-modal内で上書き） */
+.cafe-modal .mg-action-btn {
+    background: linear-gradient(160deg, #6b3318 0%, #4a2010 55%, #321408 100%);
+    box-shadow: 0 5px 0 #1e0c04, 0 7px 16px rgba(80,30,0,.35);
+    font-size: 17px
+}
+
+.cafe-modal .mg-action-btn:active {
+    box-shadow: 0 1px 0 #1e0c04, 0 2px 6px rgba(80,30,0,.2)
+}

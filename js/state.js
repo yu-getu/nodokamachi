@@ -50,6 +50,15 @@ let state = {
   // ゲーム内時間（0=春の1日目 朝8時スタート）
   gameDay: 0,
   gameDayProgress: 8 / 24,
+  // ミニゲーム
+  bakeryGameLastDate: '',     bakeryGamePlaysToday: 0,
+  cafeGameLastDate: '',       cafeGamePlaysToday: 0,
+  shrineGameLastDate: '',     shrineGamePlaysToday: 0,
+  onsenGameLastDate: '',      onsenGamePlaysToday: 0,
+  amusementGameLastDate: '',  amusementGamePlaysToday: 0,
+  rocketGameLastDate: '',     rocketGamePlaysToday: 0,
+  deepseasubGameLastDate: '', deepseasubGamePlaysToday: 0,
+  dimgateGameLastDate: '',    dimgateGamePlaysToday: 0,
   // 統計
   totalHarvestCount: 0,
   totalSpent: 0,

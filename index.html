@@ -28,6 +28,15 @@
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/town.css">
   <link rel="stylesheet" href="css/shop.css">
+  <link rel="stylesheet" href="css/minigames/_shared.css">
+  <link rel="stylesheet" href="css/minigames/bakery.css">
+  <link rel="stylesheet" href="css/minigames/cafe.css">
+  <link rel="stylesheet" href="css/minigames/shrine.css">
+  <link rel="stylesheet" href="css/minigames/onsen.css">
+  <link rel="stylesheet" href="css/minigames/amusement.css">
+  <link rel="stylesheet" href="css/minigames/rocket.css">
+  <link rel="stylesheet" href="css/minigames/deepseasub.css">
+  <link rel="stylesheet" href="css/minigames/dimgate.css">
   <link rel="stylesheet" href="css/achievements.css">
   <link rel="stylesheet" href="css/prestige.css">
   <link rel="stylesheet" href="css/skills.css">
@@ -325,6 +334,223 @@
     </div>
   </div>
 
+  <!-- パン屋ミニゲームモーダル -->
+  <div class="modal-overlay" id="bakeryModal" onclick="if(event.target===this)closeBakeryGame()">
+    <div class="modal bakery-modal">
+      <h2>🥐 パン焼きタイム！</h2>
+      <div class="bk-oven-label">火加減がちょうどいいときに「焼く！」を押そう</div>
+      <!-- パンイラスト -->
+      <div class="bk-bread-stage">
+        <div class="bk-bread bk-bread-raw" id="bkBreadDisplay">
+          <div class="bk-bread-dome"></div>
+          <div class="bk-bread-base"></div>
+        </div>
+        <div class="bk-bread-label" id="bkBreadLabel">生焼け…</div>
+      </div>
+      <!-- 火加減バー -->
+      <div class="bk-bar-wrap">
+        <div class="bk-burner-frame">
+          <div class="bk-bar">
+            <div class="bk-zone-good"    id="bkZoneGood"    style="left:28%;width:44%"></div>
+            <div class="bk-zone-perfect" id="bkZonePerfect" style="left:42%;width:16%"></div>
+            <div class="bk-indicator"    id="bkIndicator"   style="left:calc(50% - 4px)"></div>
+          </div>
+          <div class="bk-zone-labels">
+            <span>🌡 弱火</span>
+            <span class="bk-zone-label-good">GOOD</span>
+            <span class="bk-zone-label-perfect">PERFECT</span>
+            <span class="bk-zone-label-good">GOOD</span>
+            <span>🔥 強火</span>
+          </div>
+        </div>
+      </div>
+      <div class="bk-result" id="bkResult"></div>
+      <div class="bk-reward-info" id="bkRewardInfo"></div>
+      <button class="bk-press-btn" id="bkPressBtn" onclick="pressBakeryBtn()">🔥 焼く！</button>
+      <div class="bk-cooldown" id="bkCooldown"></div>
+      <button class="btn-modal" onclick="closeBakeryGame()">閉じる</button>
+    </div>
+  </div>
+
+  <!-- 喫茶店ミニゲームモーダル -->
+  <div class="modal-overlay" id="cafeModal" onclick="if(event.target===this)closeCafeGame()">
+    <div class="modal cafe-modal">
+      <h2>☕ コーヒーを淹れよう！</h2>
+      <p class="mg-desc">ちょうどいい量になったら「止める！」を押そう</p>
+      <!-- カップイラスト -->
+      <div class="cafe-cup-stage">
+        <div class="cafe-steam-row">
+          <div class="cafe-steam"></div>
+          <div class="cafe-steam"></div>
+          <div class="cafe-steam"></div>
+        </div>
+        <div class="cafe-cup cafe-cup-empty" id="cafeCupDisplay">
+          <div class="cafe-cup-body">
+            <div class="cafe-cup-inner">
+              <div class="cafe-liquid" id="cafeLiquid">
+                <div class="cafe-foam" id="cafeFoam"></div>
+              </div>
+            </div>
+            <div class="cafe-cup-glare"></div>
+          </div>
+          <div class="cafe-handle"></div>
+          <div class="cafe-saucer"></div>
+        </div>
+        <div class="cafe-cup-label" id="cafeCupLabel">まだ空…</div>
+      </div>
+      <!-- 注ぎ量バー -->
+      <div class="cafe-bar-wrap">
+        <div class="cafe-pour-frame">
+          <div class="cafe-bar">
+            <div class="cafe-zone-good"    style="left:55%;width:25%"></div>
+            <div class="cafe-zone-perfect" style="left:65%;width:10%"></div>
+            <div class="cafe-fill" id="cafeFillBar"></div>
+          </div>
+          <div class="cafe-zone-labels">
+            <span>少なすぎ</span>
+            <span class="cafe-zone-label-good">GOOD</span>
+            <span class="cafe-zone-label-perfect">PERFECT</span>
+            <span>多すぎ</span>
+          </div>
+        </div>
+      </div>
+      <div class="mg-result" id="cafeResult"></div>
+      <button class="mg-action-btn" id="cafePressBtn" onclick="pressCafeBtn()">☕ 止める！</button>
+      <div class="mg-plays-remain" id="cafePlaysRemain"></div>
+      <button class="btn-modal" onclick="closeCafeGame()">閉じる</button>
+    </div>
+  </div>
+
+  <!-- 神社ミニゲームモーダル -->
+  <div class="modal-overlay" id="shrineModal" onclick="if(event.target===this)closeShrineGame()">
+    <div class="modal">
+      <h2>⛩️ おみくじを引こう！</h2>
+      <p class="mg-desc">運を天に任せて…ボタンを押すだけ！</p>
+      <div class="shrine-lot-wrap" style="text-align:center">
+        <div class="shrine-lot-display" id="shrineLotDisplay">🎋</div>
+      </div>
+      <div class="shrine-prob-table">
+        <span>大吉5%</span><span>吉20%</span><span>中吉35%</span>
+        <span>小吉25%</span><span>末吉10%</span><span>凶5%</span>
+      </div>
+      <div class="mg-result" id="shrineResult"></div>
+      <button class="mg-action-btn" id="shrinePressBtn" onclick="pressShrineBtn()">🎋 おみくじを引く</button>
+      <div class="mg-plays-remain" id="shrinePlaysRemain"></div>
+      <button class="btn-modal" onclick="closeShrineGame()">閉じる</button>
+    </div>
+  </div>
+
+  <!-- 温泉旅館ミニゲームモーダル -->
+  <div class="modal-overlay" id="onsenModal" onclick="if(event.target===this)closeOnsenGame()">
+    <div class="modal">
+      <h2>♨️ 湯加減を整えよう！</h2>
+      <p class="mg-desc">青いゾーン内に温度を保ち続けよう（6秒）</p>
+      <div class="onsen-gauge-wrap">
+        <div class="onsen-bar-outer">
+          <div class="onsen-zone" style="left:38%;width:24%"></div>
+          <div class="onsen-temp-bar" id="onsenTempBar" style="width:50%"></div>
+        </div>
+        <div class="onsen-temp-row">
+          <span>🧊 冷たい</span>
+          <span class="onsen-timer" id="onsenTimer">6秒</span>
+          <span>🔥 熱い</span>
+        </div>
+      </div>
+      <div class="onsen-ctrl-row">
+        <button class="onsen-ctrl-btn onsen-hot-btn"  id="onsenHotBtn"  onclick="onsenHot()"  disabled>🔥 熱く</button>
+        <button class="onsen-ctrl-btn onsen-cool-btn" id="onsenCoolBtn" onclick="onsenCool()" disabled>🧊 冷やす</button>
+      </div>
+      <div class="mg-result" id="onsenResult"></div>
+      <button class="onsen-start-btn" id="onsenStartBtn" onclick="startOnsenGame()">♨️ スタート！</button>
+      <div class="mg-plays-remain" id="onsenPlaysRemain"></div>
+      <button class="btn-modal" onclick="closeOnsenGame()">閉じる</button>
+    </div>
+  </div>
+
+  <!-- 遊園地ミニゲームモーダル -->
+  <div class="modal-overlay" id="amusementModal" onclick="if(event.target===this)closeAmusementGame()">
+    <div class="modal">
+      <h2>🎡 盛り上げタップ！</h2>
+      <p class="mg-desc">5秒間で連打！たくさん叩いて盛り上げよう！</p>
+      <div class="amus-hype-wrap">
+        <div class="amus-hype-bar-outer">
+          <div class="amus-hype-bar" id="amusHypeBar"></div>
+        </div>
+        <div class="amus-info-row">
+          <span id="amusTapCount">0 タップ</span>
+          <span id="amusTimer">5秒</span>
+        </div>
+      </div>
+      <div class="mg-result" id="amusementResult"></div>
+      <button class="amus-tap-btn" id="amusementTapBtn" onclick="amusementTap()">🎡 タップ！</button>
+      <div class="mg-plays-remain" id="amusementPlaysRemain"></div>
+      <button class="btn-modal" onclick="closeAmusementGame()">閉じる</button>
+    </div>
+  </div>
+
+  <!-- 宇宙基地ミニゲームモーダル -->
+  <div class="modal-overlay" id="rocketModal" onclick="if(event.target===this)closeRocketGame()">
+    <div class="modal">
+      <h2>🚀 ロケット発射！</h2>
+      <p class="mg-desc">「発射！」が表示された瞬間にボタンを押そう！</p>
+      <div class="rocket-countdown-wrap" style="text-align:center">
+        <div class="rocket-countdown" id="rocketCountdown">🚀</div>
+      </div>
+      <div class="mg-result" id="rocketResult"></div>
+      <button class="rocket-start-btn" onclick="startRocketCountdown()">▶ カウントダウン開始</button>
+      <button class="rocket-press-btn" id="rocketPressBtn" onclick="pressRocketBtn()" disabled>🚀 発射！</button>
+      <div class="mg-plays-remain" id="rocketPlaysRemain"></div>
+      <button class="btn-modal" onclick="closeRocketGame()">閉じる</button>
+    </div>
+  </div>
+
+  <!-- 深海調査船ミニゲームモーダル -->
+  <div class="modal-overlay" id="deepseasubModal" onclick="if(event.target===this)closeDeepseasubGame()">
+    <div class="modal">
+      <h2>🦈 ソナー探査！</h2>
+      <p class="mg-desc">回転アームがターゲット（ブリップ）に重なった瞬間に押そう！</p>
+      <div class="sonar-wrap">
+        <canvas id="sonarCanvas" width="180" height="180"></canvas>
+      </div>
+      <div class="sonar-legend">● = ターゲット（アームが近づくと光る）</div>
+      <div class="mg-result" id="deepseasubResult"></div>
+      <button class="sonar-press-btn" id="sonarPressBtn" onclick="pressDeepseasubBtn()">🔊 探査！</button>
+      <div class="mg-plays-remain" id="deepseasubPlaysRemain"></div>
+      <button class="btn-modal" onclick="closeDeepseasubGame()">閉じる</button>
+    </div>
+  </div>
+
+  <!-- 次元の扉ミニゲームモーダル -->
+  <div class="modal-overlay" id="dimgateModal" onclick="if(event.target===this)closeDimgateGame()">
+    <div class="modal">
+      <h2>🌀 次元の扉！</h2>
+      <p class="mg-desc">2本の針を同時にゾーンに合わせてボタンを押そう！</p>
+      <div class="dimgate-bars-wrap">
+        <div class="dimgate-bar-row">
+          <div class="dimgate-bar-label">次元A（紫）</div>
+          <div class="dimgate-bar dimgate-bar-a">
+            <div class="dimgate-zone-good"    style="left:25%;width:50%"></div>
+            <div class="dimgate-zone-perfect" style="left:40%;width:20%"></div>
+            <div class="dimgate-indicator" id="dimgateIndicatorA" style="left:calc(50% - 4px)"></div>
+          </div>
+        </div>
+        <div class="dimgate-bar-row">
+          <div class="dimgate-bar-label">次元B（青）</div>
+          <div class="dimgate-bar dimgate-bar-b">
+            <div class="dimgate-zone-good"    style="left:25%;width:50%"></div>
+            <div class="dimgate-zone-perfect" style="left:40%;width:20%"></div>
+            <div class="dimgate-indicator" id="dimgateIndicatorB" style="left:calc(50% - 4px)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="dimgate-hint">両方 PERFECT ゾーン → PERFECT！　両方 GOOD ゾーン → GOOD！</div>
+      <div class="mg-result" id="dimgateResult"></div>
+      <button class="dimgate-press-btn" id="dimgatePressBtn" onclick="pressDimgateBtn()">🌀 次元を開く！</button>
+      <div class="mg-plays-remain" id="dimgatePlaysRemain"></div>
+      <button class="btn-modal" onclick="closeDimgateGame()">閉じる</button>
+    </div>
+  </div>
+
   <!-- マイルストーントースト -->
   <div id="msToast" class="ms-toast">
     <div class="ms-toast-icon" id="msToastIcon"></div>
@@ -349,6 +575,16 @@
   <script src="js/daily.js"></script>
   <script src="js/quests.js"></script>
   <script src="js/save.js"></script>
+  <script src="js/minigames/_registry.js"></script>
+  <script src="js/minigames/_shared.js"></script>
+  <script src="js/minigames/bakery.js"></script>
+  <script src="js/minigames/cafe.js"></script>
+  <script src="js/minigames/shrine.js"></script>
+  <script src="js/minigames/onsen.js"></script>
+  <script src="js/minigames/amusement.js"></script>
+  <script src="js/minigames/rocket.js"></script>
+  <script src="js/minigames/deepseasub.js"></script>
+  <script src="js/minigames/dimgate.js"></script>
   <script src="js/ui-render.js"></script>
   <script src="js/main.js"></script>
   <!-- DEBUG: デバッグ時のみ有効化（本番はコメントアウト） -->

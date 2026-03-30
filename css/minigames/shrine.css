@@ -1,0 +1,29 @@
+/* ── 神社ミニゲーム ── */
+.shrine-lot-wrap {
+    margin: 14px 0 10px
+}
+
+.shrine-lot-display {
+    font-size: 56px;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    transition: all .3s cubic-bezier(.34,1.56,.64,1)
+}
+
+.shrine-daikichi { color: #f5c430; text-shadow: 0 0 16px rgba(245,196,48,.6) }
+.shrine-kichi    { color: var(--green2) }
+.shrine-chukichi { color: var(--green) }
+.shrine-shokichi { color: var(--muted) }
+.shrine-suekichi { color: #aaa }
+.shrine-kyo      { color: #e53935; filter: grayscale(.4) }
+
+.shrine-prob-table {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    font-size: 9px;
+    color: var(--muted);
+    font-weight: 700
+}
