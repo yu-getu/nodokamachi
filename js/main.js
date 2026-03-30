@@ -20,12 +20,34 @@ function getCps() {
 function getEffectiveCps() { return getCps() * getEventMult() * getSeasonMult() * getBeautyMult() * getWeekendMult(); }
 
 // ── アクション ──
+// ── 建物マイルストーン判定 ──
+const _BUILDING_MILESTONES = [10, 25, 50, 100];
+const _MILESTONE_CFG = {
+  10:  { icon: '🌱', title: 'Lv10達成！',  body: '施設が軌道に乗り始めた！' },
+  25:  { icon: '🌿', title: 'Lv25達成！',  body: 'まちのシンボルに成長した！' },
+  50:  { icon: '⭐', title: 'Lv50達成！',  body: '円熟の域に達した施設！' },
+  100: { icon: '👑', title: 'Lv100達成！', body: '伝説級の施設として名を馳せる！' },
+};
+function _checkBuildingMilestone(b, prevLv, newLv) {
+  const milestones = [..._BUILDING_MILESTONES];
+  // 200以降は100刻み
+  for (let m = 200; m <= newLv + 100; m += 100) milestones.push(m);
+  const hit = milestones.filter(ms => prevLv < ms && newLv >= ms);
+  if (hit.length === 0) return;
+  const ms = hit[hit.length - 1];
+  const cfg = _MILESTONE_CFG[ms] || { icon: '💎', title: `Lv${ms}達成！`, body: '超越の領域へ踏み込んだ！' };
+  showMilestoneToast(cfg.icon, `${b.emoji}${b.name} ${cfg.title}`, cfg.body);
+  spawnMilestoneParticles();
+  playMilestoneSfx();
+}
+
 function buyBuilding(id) {
   const b = BUILDINGS.find(x => x.id === id);
   const { count, totalCost } = getBulkInfo(b);
   if (count === 0) return;
 
   const wasZero = state.buildings[id].level === 0;
+  const prevLv = state.buildings[id].level;
   state.coins -= totalCost;
   state.totalSpent = (state.totalSpent || 0) + totalCost;
   if (state.eventDiscount < 1) state.boughtDuringDiscount = true;
@@ -38,6 +60,7 @@ function buyBuilding(id) {
     : `⬆️ ${b.emoji}${b.name} Lv.${nl}に強化！(+${count})`);
   spawnFloatCoins(`-${fmt(totalCost)}`);
   playBuildSfx();
+  _checkBuildingMilestone(b, prevLv, nl);
   checkAchievements();
   renderQuests();
   render();
@@ -178,6 +201,7 @@ if (state.prestigeCount > 0) {
 render();
 renderDailyBar();
 checkQuestRefresh();
+renderQuests();
 initSound();
 updateSky();
 initWeather();

@@ -84,8 +84,10 @@ function unlockArea(areaId) {
   state.coins -= area.unlockCost;
   state.unlockedAreas = [...(state.unlockedAreas || [1]), areaId];
   spawnFloatCoins(`-${fmt(area.unlockCost)}`);
-  playUnlockSfx();
+  playMilestoneSfx();
   addLog(`🏙️ ${area.emoji}${area.name}を解放！新しい建物が建てられます！`);
+  showMilestoneToast(area.emoji, `${area.name}を解放！`, area.desc, '新しい施設が建設可能になった！');
+  spawnMilestoneParticles();
   BUILDINGS.filter(b => b.area === areaId).forEach(b => {
     if (!state.buildings[b.id]) state.buildings[b.id] = { level: 0 };
   });

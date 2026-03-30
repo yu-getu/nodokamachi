@@ -49,6 +49,7 @@ function playAchievSfx() { playTones([523, 659, 784, 1047], 0.5, 0.22); }
 function playHarvestSfx() { playTones([440, 550], 0.18, 0.18); }
 function playQuestSfx() { playTones([523, 659, 784], 0.4, 0.25); }
 function playUnlockSfx() { playTones([330, 440, 554, 659], 0.45, 0.22); }
+function playMilestoneSfx() { playTones([392, 494, 587, 698, 784, 988], 0.6, 0.28, 'sine'); }
 function playEventSfx(type) {
   if (type === 'great') {
     // ファンファーレ：上昇アルペジオ＋高音フィナーレ

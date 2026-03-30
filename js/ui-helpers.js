@@ -178,3 +178,33 @@ function spawnFloatCoins(text) {
   el.textContent=`🪙${text}`; el.style.left=(r.left+r.width/2-20)+'px'; el.style.top=(r.top-10)+'px';
   document.body.appendChild(el); setTimeout(()=>el.remove(),1300);
 }
+
+// ── マイルストーン演出 ──
+let _msToastTimer = null;
+function showMilestoneToast(icon, title, body, bonus = '') {
+  const el = document.getElementById('msToast');
+  document.getElementById('msToastIcon').textContent = icon;
+  document.getElementById('msToastTitle').textContent = title;
+  document.getElementById('msToastBody').textContent = body;
+  const bonusEl = document.getElementById('msToastBonus');
+  bonusEl.textContent = bonus;
+  bonusEl.style.display = bonus ? '' : 'none';
+  if (_msToastTimer) clearTimeout(_msToastTimer);
+  el.classList.add('show');
+  _msToastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+function spawnMilestoneParticles() {
+  const emojis = ['✨', '🎊', '⭐', '🌟', '💫', '🎉'];
+  for (let i = 0; i < 10; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'milestone-particle';
+      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      el.style.left = (15 + Math.random() * 70) + '%';
+      el.style.top  = (20 + Math.random() * 50) + '%';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1600);
+    }, i * 70);
+  }
+}

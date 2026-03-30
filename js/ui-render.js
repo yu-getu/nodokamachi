@@ -240,8 +240,10 @@ function renderAchiev() {
 // ── 記録 ──
 function renderRecord() {
   const el = document.getElementById('recordGrid');
+
   const fmtSec = s => {
-    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+    const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
+    if (d > 0) return `${d}日${h}時間${m}分`;
     if (h > 0) return `${h}時間${m}分`;
     return `${m}分`;
   };
@@ -250,32 +252,101 @@ function renderRecord() {
     const d = new Date(ts);
     return `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}`;
   };
-  const achievCount = Object.values(state.achievements || {}).filter(Boolean).length;
-  const totalLv = BUILDINGS.reduce((s, b) => s + (state.buildings[b.id]?.level || 0), 0);
+  const row = (icon, label, value) =>
+    `<div class="record-row"><span class="record-icon">${icon}</span><span class="record-label">${label}</span><span class="record-value">${value}</span></div>`;
+  const barRow = (icon, label, value, pct, colorClass = '') =>
+    `<div class="record-row"><span class="record-icon">${icon}</span>
+      <div class="record-label-wrap">
+        <div class="record-label-bar"><span class="record-label">${label}</span><span class="record-value">${value}</span></div>
+        <div class="record-bar-track"><div class="record-bar-fill ${colorClass}" style="width:${Math.min(100, pct).toFixed(1)}%"></div></div>
+      </div></div>`;
+  const section = (title, content) =>
+    `<div class="record-section"><div class="record-section-title">${title}</div>${content}</div>`;
+
+  // 集計
+  const achievCount     = Object.values(state.achievements || {}).filter(Boolean).length;
+  const totalLv         = BUILDINGS.reduce((s, b) => s + (state.buildings[b.id]?.level || 0), 0);
   const unlockedAreaCount = (state.unlockedAreas || [1]).length;
+  const skillCount      = Object.keys(state.skills || {}).length;
+  const pskillCount     = Object.keys(state.prestigeSkills || {}).length;
+  const researchCount   = Object.keys(state.research || {}).length;
+  const decoOwnedCount  = Object.keys(state.decoOwned || {}).filter(id => state.decoOwned[id]).length;
+  const lv100Count      = BUILDINGS.filter(b => (state.buildings[b.id]?.level || 0) >= 100).length;
+  const highestB        = BUILDINGS.reduce((best, b) =>
+    (state.buildings[b.id]?.level || 0) > (state.buildings[best.id]?.level || 0) ? b : best, BUILDINGS[0]);
+  const highestLv       = state.buildings[highestB.id]?.level || 0;
+  const top3            =[...BUILDINGS]
+    .filter(b => (state.buildings[b.id]?.level || 0) > 0)
+    .sort((a, b) => getBuildingCps(b) - getBuildingCps(a))
+    .slice(0, 3);
+  const totalCps        = getCps();
+  const achievPct       = ACHIEVEMENTS.length > 0 ? achievCount / ACHIEVEMENTS.length * 100 : 0;
+  const areaPct         = unlockedAreaCount / AREAS.length * 100;
 
-  const rows = [
-    { icon:'📅', label:'プレイ開始日', value: fmtDate(state.firstPlayedAt) },
-    { icon:'⏱️', label:'総プレイ時間', value: fmtSec(state.totalPlaySecs || 0) },
-    { icon:'🪙', label:'総収入（今世代）', value: fmt(state.totalEarned || 0) },
-    { icon:'💫', label:'総収入（全世代合計）', value: fmt((state.allTimeTotalEarned || 0) + (state.totalEarned || 0)) },
-    { icon:'💸', label:'総支出', value: fmt(state.totalSpent || 0) },
-    { icon:'👆', label:'総ひと稼ぎ回数', value: `${(state.totalHarvestCount || 0).toLocaleString()} 回` },
-    { icon:'⚡', label:'最高CPS', value: fmt(state.maxCps || 0) + '/秒' },
-    { icon:'💰', label:'最高所持コイン', value: fmt(state.maxCoins || 0) },
-    { icon:'⭐', label:'転生回数', value: `${state.prestigeCount || 0} 回` },
-    { icon:'🏅', label:'実績解除数', value: `${achievCount} / ${ACHIEVEMENTS.length} 件` },
-    { icon:'🏗️', label:'建物総レベル', value: `Lv ${totalLv.toLocaleString()}` },
-    { icon:'🗺️', label:'解放エリア数', value: `${unlockedAreaCount} / ${AREAS.length} エリア` },
-    { icon:'🎪', label:'イベント発生数', value: `${state.eventCount || 0} 回` },
-  ];
+  let html = '';
 
-  el.innerHTML = rows.map(r => `
-    <div class="record-row">
-      <span class="record-icon">${r.icon}</span>
-      <span class="record-label">${r.label}</span>
-      <span class="record-value">${r.value}</span>
-    </div>`).join('');
+  // ── プレイ記録 ──
+  html += section('📅 プレイ記録',
+    row('📅', 'プレイ開始日', fmtDate(state.firstPlayedAt)) +
+    row('⏱️', '総プレイ時間', fmtSec(state.totalPlaySecs || 0)) +
+    row('🪙', '今世代累計収入', fmt(state.totalEarned || 0)) +
+    row('💫', '全世代累計収入', fmt((state.allTimeTotalEarned || 0) + (state.totalEarned || 0))) +
+    row('💸', '累計支出', fmt(state.totalSpent || 0)) +
+    row('👆', 'ひと稼ぎ回数', `${(state.totalHarvestCount || 0).toLocaleString()} 回`) +
+    row('🔥', 'デイリー連続記録', `${state.daily?.streak || 0} 日`) +
+    row('🎁', 'デイリーボーナス受取', `${state.daily?.totalClaimed || 0} 回`)
+  );
+
+  // ── 収益記録 ──
+  html += section('⚡ 収益記録',
+    row('⚡', '最高CPS', `${fmt(state.maxCps || 0)} /秒`) +
+    row('📈', '現在CPS', `${fmt(getEffectiveCps())} /秒`) +
+    row('💰', '最高所持コイン', fmt(state.maxCoins || 0))
+  );
+
+  // ── CPS貢献トップ施設 ──
+  if (top3.length > 0) {
+    const medals = ['🥇', '🥈', '🥉'];
+    const topHtml = top3.map((b, i) => {
+      const cps = getBuildingCps(b);
+      const pct = totalCps > 0 ? cps / totalCps * 100 : 0;
+      return `<div class="record-top-building">
+        <span class="record-top-rank">${medals[i]}</span>
+        <span class="record-top-emoji">${b.emoji}</span>
+        <div class="record-top-info">
+          <div class="record-top-name">${b.name} <span class="record-top-lv">Lv${state.buildings[b.id].level}</span></div>
+          <div class="record-top-bar-track"><div class="record-top-bar-fill" style="width:${Math.min(100,pct).toFixed(1)}%"></div></div>
+        </div>
+        <span class="record-top-cps">${fmt(cps)}/秒<span class="record-top-pct">${pct.toFixed(1)}%</span></span>
+      </div>`;
+    }).join('');
+    html += section('🏆 CPS貢献トップ施設', topHtml);
+  }
+
+  // ── 施設記録 ──
+  html += section('🏗️ 施設記録',
+    row('🏗️', '建物総レベル', `${totalLv.toLocaleString()} Lv`) +
+    row('👑', '最高Lv施設', highestLv > 0 ? `${highestB.emoji}${highestB.name} Lv${highestLv}` : '—') +
+    row('💎', 'Lv100以上の施設', `${lv100Count} 棟`) +
+    barRow('🗺️', '解放エリア数', `${unlockedAreaCount} / ${AREAS.length}`, areaPct, 'record-bar-blue')
+  );
+
+  // ── 育成記録 ──
+  html += section('📚 育成記録',
+    row('⭐', '転生回数', `${state.prestigeCount || 0} 回`) +
+    row('🌟', 'スキル習得数', `${skillCount} 個`) +
+    row('👑', '世代スキル習得数', `${pskillCount} 個`) +
+    row('🔬', '研究完了数', `${researchCount} 件`) +
+    row('🌺', '飾り所持数', `${decoOwnedCount} 個`) +
+    row('🎪', 'イベント発生数', `${state.eventCount || 0} 回`)
+  );
+
+  // ── 実績 ──
+  html += section('🏅 実績',
+    barRow('🏅', `解除数 ${achievCount} / ${ACHIEVEMENTS.length}`, `${achievPct.toFixed(1)}%`, achievPct, 'record-bar-gold')
+  );
+
+  el.innerHTML = html;
 }
 
 // ── 統合レンダリング ──
