@@ -3,7 +3,12 @@
 //  スロット演出 → 結果reveal → パーティクルバースト
 // ══════════════════════════════
 
-const SHRINE_MAX_PLAYS = 3;
+const SHRINE_MAX_PLAYS = 1;
+
+function _shrineCanPlay() {
+  if ((state.shrineGameLastDate || '') !== mgTodayStr()) return true;
+  return (state.shrineGamePlaysToday || 0) < SHRINE_MAX_PLAYS;
+}
 const SHRINE_LOTS = [
   { label:'大吉', emoji:'✨', mult:8,   prob:0.05, cls:'shrine-daikichi' },
   { label:'吉',   emoji:'😊', mult:3,   prob:0.20, cls:'shrine-kichi'    },
@@ -23,7 +28,8 @@ function openShrineGame() {
   if (name)  { name.textContent = ''; name.className = 'shrine-lot-name'; }
   if (paper) paper.className = 'shrine-scroll-paper';
   const btn = document.getElementById('shrinePressBtn');
-  if (btn) { btn.disabled = mgGetPlaysRemain('shrine', SHRINE_MAX_PLAYS) === 0; btn.textContent = '🎋 おみくじを引く'; }
+  const canPlay = _shrineCanPlay();
+  if (btn) { btn.disabled = !canPlay; btn.textContent = canPlay ? '🎋 おみくじを引く' : '今日はもう引けません'; }
   mgUpdatePlaysEl('shrinePlaysRemain', 'shrine', SHRINE_MAX_PLAYS);
   document.getElementById('shrineModal').classList.add('show');
 }
@@ -138,14 +144,13 @@ function _shrineReveal(result, reward) {
 
   const btn = document.getElementById('shrinePressBtn');
   if (btn) {
-    const remain = mgGetPlaysRemain('shrine', SHRINE_MAX_PLAYS);
-    btn.disabled    = remain === 0;
-    btn.textContent = remain > 0 ? '🎋 もう一度引く' : '今日はここまで';
+    btn.disabled    = true;
+    btn.textContent = '今日はもう引けません';
   }
 }
 
 function pressShrineBtn() {
-  if (mgGetPlaysRemain('shrine', SHRINE_MAX_PLAYS) === 0) return;
+  if (!_shrineCanPlay()) return;
   mgRecordPlay('shrine');
 
   const btn = document.getElementById('shrinePressBtn');

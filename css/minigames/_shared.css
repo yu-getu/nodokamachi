@@ -1,3 +1,11 @@
+/* ── ミニゲームモーダルサイズ上書き ── */
+.bakery-modal,
+.cafe-modal,
+.shrine-modal {
+    max-width: 480px;
+    width: 94%
+}
+
 /* ── ミニゲーム共通スタイル ── */
 .mg-desc {
     font-size: 12px;

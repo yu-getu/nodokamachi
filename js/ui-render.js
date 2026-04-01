@@ -180,10 +180,8 @@ function renderShop() {
         return `<button class="btn-deco-open${hasDeco ? ' has-deco' : ''}" onclick="openDecoModal('${b.id}')">🌺 飾り ${decoSlots.length}/3</button>`;
       })() : ''}
       ${lv > 0 && MINIGAMES[b.id] && MINIGAME_META[b.id] ? (() => {
-        const meta   = MINIGAME_META[b.id];
-        const remain = mgGetPlaysRemain(b.id, meta.maxPlays);
-        const label  = remain > 0 ? `${meta.emoji} ${meta.label}（残り${remain}回）` : `${meta.emoji} ${meta.label}終了（明日また来てね）`;
-        return `<button class="btn-minigame${remain === 0 ? ' on-cooldown' : ''}" onclick="${meta.fn}()" ${remain === 0 ? 'disabled' : ''}>${label}</button>`;
+        const meta = MINIGAME_META[b.id];
+        return `<button class="btn-minigame" onclick="${meta.fn}()">${meta.emoji} ${meta.label}</button>`;
       })() : ''}
     `;
     grid.appendChild(div);

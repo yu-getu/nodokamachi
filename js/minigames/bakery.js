@@ -27,7 +27,7 @@ function getBakeryPlaysToday() {
 }
 
 function getBakeryPlaysRemain() {
-  return Math.max(0, BAKERY_DAILY_MAX - getBakeryPlaysToday());
+  return BAKERY_DAILY_MAX; // 回数制限なし
 }
 
 function openBakeryGame() {

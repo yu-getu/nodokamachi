@@ -7,9 +7,8 @@ function mgTodayStr() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
-function mgGetPlaysRemain(id, maxPlays) {
-  if ((state[`${id}GameLastDate`] || '') !== mgTodayStr()) return maxPlays;
-  return Math.max(0, maxPlays - (state[`${id}GamePlaysToday`] || 0));
+function mgGetPlaysRemain(_id, maxPlays) {
+  return maxPlays; // 回数制限なし
 }
 
 function mgRecordPlay(id) {
@@ -28,17 +27,16 @@ function mgShowResult(elId, text, cls) {
   el.className = `mg-result ${cls}`;
 }
 
-function mgUpdatePlaysEl(elId, id, maxPlays) {
+function mgUpdatePlaysEl(elId, _id, _maxPlays) {
   const el = document.getElementById(elId);
-  if (!el) return;
-  const remain = mgGetPlaysRemain(id, maxPlays);
-  el.textContent = remain > 0 ? `残り ${remain} 回 / ${maxPlays}回` : '本日終了。また明日！';
+  if (el) el.textContent = '';
 }
 
 function mgBaseReward(buildingId, seconds) {
   const b = BUILDINGS.find(x => x.id === buildingId);
   if (!b) return 100;
-  return Math.max(100, Math.floor(getBuildingCps(b) * seconds));
+  const minigameMult = 1 + getSkillEffect('minigame_reward');
+  return Math.max(100, Math.floor(getBuildingCps(b) * seconds * minigameMult));
 }
 
 function mgRewardAndLog(reward, logText) {
