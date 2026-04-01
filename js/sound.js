@@ -123,5 +123,7 @@ function initSound() {
   const savedSfxVol = localStorage.getItem('nodoka_sfx_vol');
   if (savedSfxVol !== null) _sfxVol = Number(savedSfxVol) / 100;
   updateSoundBtns();
+  // まず自動再生を試みる。ブラウザにブロックされた場合はクリック時に再試行
+  if (_bgmOn) _startBgm();
   document.addEventListener('click', () => { if (_bgmOn) _startBgm(); }, { once: true });
 }

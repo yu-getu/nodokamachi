@@ -62,7 +62,7 @@ function getBulkInfo(b) {
 function getBuildingCps(b) {
   const lv = state.buildings[b.id] ? state.buildings[b.id].level : 0;
   if (lv === 0) return 0;
-  const base = b.baseCps * lv * (1 + lv * 0.10);
+  const base = b.baseCps * (1 + getLegacyBaseCpsRate(b.id, lv)) * lv * (1 + lv * 0.10);
   const foundationRate = getSkillEffect('foundation_rate');
   const foundationMult = foundationRate > 0
     ? BUILDINGS.filter(x => x.area === 1).reduce((m, x) => {

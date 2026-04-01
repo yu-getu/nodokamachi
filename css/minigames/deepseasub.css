@@ -1,0 +1,39 @@
+/* ── 深海調査船ミニゲーム ── */
+.sonar-wrap {
+    margin: 8px 0 12px;
+    display: flex;
+    justify-content: center
+}
+
+#sonarCanvas {
+    border-radius: 50%;
+    border: 2px solid #0d3349;
+    background: #0a1628;
+    display: block
+}
+
+.sonar-legend {
+    font-size: 10px;
+    color: #5a8a6a;
+    font-weight: 700;
+    margin-bottom: 8px
+}
+
+.sonar-press-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #006064, #00838f);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #004d40;
+    transition: transform .1s, box-shadow .1s;
+    margin-bottom: 6px
+}
+
+.sonar-press-btn:active   { transform: translateY(3px); box-shadow: 0 1px 0 #004d40 }
+.sonar-press-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #aaa; cursor: not-allowed }

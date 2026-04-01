@@ -477,3 +477,47 @@
     color: #4a148c;
     line-height: 2.1
 }
+/* ── パッチノート ── */
+.patchnotes-modal {
+  max-width: 500px;
+  width: 94%;
+}
+.pn-scroll {
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-bottom: 14px;
+  padding-right: 4px;
+}
+.pn-entry {
+  margin-bottom: 18px;
+  border-left: 3px solid var(--btn, #6abf69);
+  padding-left: 12px;
+}
+.pn-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.pn-version {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--btn, #388e3c);
+}
+.pn-date {
+  font-size: 11px;
+  color: #888;
+}
+.pn-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.9;
+  color: #444;
+}
+.btn-patchnotes {
+  background: rgba(100, 180, 100, .12);
+  color: #388e3c;
+  margin-bottom: 8px;
+  width: 100%;
+}

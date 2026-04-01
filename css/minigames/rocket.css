@@ -1,0 +1,70 @@
+/* ── 宇宙基地ミニゲーム ── */
+.rocket-countdown-wrap {
+    margin: 10px 0 12px
+}
+
+.rocket-countdown {
+    font-family: 'Kaisei Decol', serif;
+    font-size: 72px;
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 10px;
+    transition: color .2s, transform .15s
+}
+
+.rocket-urgent {
+    color: #e53935;
+    animation: rocketPulse .4s ease-in-out infinite alternate
+}
+
+.rocket-fire {
+    color: #ff9800;
+    font-size: 36px;
+    animation: rocketFlash .2s ease-in-out 3
+}
+
+@keyframes rocketPulse {
+    from { transform: scale(1) }
+    to   { transform: scale(1.08) }
+}
+
+@keyframes rocketFlash {
+    0%,100% { opacity: 1 }
+    50%      { opacity: .4 }
+}
+
+.rocket-start-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #1a237e, #283593);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #0d1680;
+    margin-bottom: 8px
+}
+
+.rocket-start-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #aaa; cursor: not-allowed }
+
+.rocket-press-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #f57f17, #e65100);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #bf360c;
+    transition: transform .1s, box-shadow .1s;
+    margin-bottom: 6px
+}
+
+.rocket-press-btn:active  { transform: translateY(3px); box-shadow: 0 1px 0 #bf360c }
+.rocket-press-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #aaa; cursor: not-allowed }

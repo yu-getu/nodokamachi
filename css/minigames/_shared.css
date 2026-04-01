@@ -1,0 +1,93 @@
+/* ── ミニゲームモーダルサイズ上書き ── */
+.bakery-modal,
+.cafe-modal,
+.shrine-modal {
+    max-width: 480px;
+    width: 94%
+}
+
+/* ── ミニゲーム共通スタイル ── */
+.mg-desc {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 12px
+}
+
+.mg-result {
+    font-size: 19px;
+    font-weight: 800;
+    min-height: 28px;
+    line-height: 28px;
+    margin-bottom: 8px;
+    transition: all .2s
+}
+
+.mg-result-perfect { color: var(--green2) }
+.mg-result-good    { color: var(--coin2) }
+.mg-result-miss    { color: var(--muted) }
+
+.mg-plays-remain {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 700;
+    min-height: 18px;
+    margin-bottom: 8px
+}
+
+/* ショップカード内ミニゲームボタン（共通） */
+.btn-minigame {
+    width: 100%;
+    margin-top: 4px;
+    padding: 5px 8px;
+    border-radius: 8px;
+    border: 1.5px solid #d4a855;
+    background: linear-gradient(135deg, #fff8e1, #fef5c7);
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: #8d6e00;
+    cursor: pointer;
+    transition: all .12s
+}
+
+.btn-minigame:hover {
+    background: linear-gradient(135deg, #fff3c4, #fde68a);
+    border-color: #b8860b
+}
+
+.btn-minigame:disabled,
+.btn-minigame.on-cooldown {
+    color: var(--muted);
+    border-color: #ddd;
+    background: #fafafa;
+    cursor: default
+}
+
+/* モーダル内アクションボタン（共通） */
+.mg-action-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #ff8f00, #e65100);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 13px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #bf360c;
+    transition: transform .1s, box-shadow .1s;
+    margin-bottom: 6px
+}
+
+.mg-action-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #bf360c
+}
+
+.mg-action-btn:disabled {
+    background: #ccc;
+    box-shadow: 0 4px 0 #aaa;
+    cursor: not-allowed
+}

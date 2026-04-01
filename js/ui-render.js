@@ -179,6 +179,10 @@ function renderShop() {
         const hasDeco = decoSlots.length > 0;
         return `<button class="btn-deco-open${hasDeco ? ' has-deco' : ''}" onclick="openDecoModal('${b.id}')">🌺 飾り ${decoSlots.length}/3</button>`;
       })() : ''}
+      ${lv > 0 && MINIGAMES[b.id] && MINIGAME_META[b.id] ? (() => {
+        const meta = MINIGAME_META[b.id];
+        return `<button class="btn-minigame" onclick="${meta.fn}()">${meta.emoji} ${meta.label}</button>`;
+      })() : ''}
     `;
     grid.appendChild(div);
     });
