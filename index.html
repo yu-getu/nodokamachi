@@ -330,7 +330,17 @@
           <span class="settings-vol-val" id="sSfxVolVal">80%</span>
         </div>
       </div>
+      <button class="btn-modal btn-patchnotes" onclick="closeModal('settingsModal');openPatchNotes()">📋 パッチノートを見る</button>
       <button class="btn-modal" onclick="closeModal('settingsModal')">閉じる</button>
+    </div>
+  </div>
+
+  <!-- パッチノートモーダル -->
+  <div class="modal-overlay" id="patchNotesModal" onclick="if(event.target===this)closePatchNotes()">
+    <div class="modal patchnotes-modal">
+      <h2>📋 パッチノート</h2>
+      <div class="pn-scroll" id="patchNotesList"></div>
+      <button class="btn-modal" onclick="closePatchNotes()">閉じる</button>
     </div>
   </div>
 
@@ -593,6 +603,7 @@
   <script src="js/minigames/rocket.js"></script>
   <script src="js/minigames/deepseasub.js"></script>
   <script src="js/minigames/dimgate.js"></script>
+  <script src="js/patchnotes.js"></script>
   <script src="js/ui-render.js"></script>
   <script src="js/main.js"></script>
   <!-- DEBUG: デバッグ時のみ有効化（本番はコメントアウト） -->
