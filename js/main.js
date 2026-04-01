@@ -21,12 +21,13 @@ function getEffectiveCps() { return getCps() * getEventMult() * getSeasonMult() 
 
 // ── アクション ──
 // ── 建物マイルストーン判定 ──
-const _BUILDING_MILESTONES = [10, 25, 50, 100];
+const _BUILDING_MILESTONES = [10, 25, 50, 100, 200];
 const _MILESTONE_CFG = {
   10:  { icon: '🌱', title: 'Lv10達成！',  body: '施設が軌道に乗り始めた！' },
   25:  { icon: '🌿', title: 'Lv25達成！',  body: 'まちのシンボルに成長した！' },
   50:  { icon: '⭐', title: 'Lv50達成！',  body: '円熟の域に達した施設！' },
-  100: { icon: '👑', title: 'Lv100達成！', body: '伝説級の施設として名を馳せる！' },
+  100: { icon: '✨', title: 'Lv100達成！', body: 'レガシー飾りが解放されました！飾りタブで確認！' },
+  200: { icon: '💎', title: 'Lv200達成！', body: '神話の領域へ！レガシー飾りがさらに輝く！' },
 };
 function _checkBuildingMilestone(b, prevLv, newLv) {
   const milestones = [..._BUILDING_MILESTONES];
@@ -36,6 +37,12 @@ function _checkBuildingMilestone(b, prevLv, newLv) {
   if (hit.length === 0) return;
   const ms = hit[hit.length - 1];
   const cfg = _MILESTONE_CFG[ms] || { icon: '💎', title: `Lv${ms}達成！`, body: '超越の領域へ踏み込んだ！' };
+  // Lv100到達でレガシー飾りを自動付与
+  if (prevLv < 100 && newLv >= 100) {
+    if (!state.decoOwned) state.decoOwned = {};
+    state.decoOwned[`legacy_${b.id}`] = true;
+    addLog(`✨ ${b.emoji}${b.name}の魂が解放された！飾りタブで確認しよう`);
+  }
   showMilestoneToast(cfg.icon, `${b.emoji}${b.name} ${cfg.title}`, cfg.body);
   spawnMilestoneParticles();
   playMilestoneSfx();
@@ -85,7 +92,7 @@ function manualHarvest() {
   const now = Date.now();
   _harvestTimestamps.push(now);
   _harvestTimestamps = _harvestTimestamps.filter(t => now - t <= 30000);
-  if (_harvestTimestamps.length >= 100) state.rapidHarvested = true;
+  if (_harvestTimestamps.length >= 300) state.rapidHarvested = true;
 
   checkAchievements(); renderQuests(); render();
 }

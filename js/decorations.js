@@ -2,6 +2,21 @@
 //  デコレーションシステム（施設設置型）
 // ══════════════════════════════
 
+// 通常 + レガシー両方を検索するヘルパー
+function findDeco(id) {
+  return DECORATIONS.find(x => x.id === id) || LEGACY_DECORATIONS.find(x => x.id === id) || null;
+}
+
+// レガシー飾りが設置されている場合、baseCps に掛ける追加レート（Lv×value）を返す
+function getLegacyBaseCpsRate(buildingId, lv) {
+  const legacyId = `legacy_${buildingId}`;
+  if (!(state.decoOwned || {})[legacyId]) return 0;
+  const placed = ((state.decoSlots || {})[buildingId] || []).includes(legacyId);
+  if (!placed) return 0;
+  const d = LEGACY_DECORATIONS.find(x => x.id === legacyId);
+  return d ? d.effect.value * lv : 0;
+}
+
 // 設置数に基づく美観スコア（設置1つにつき5pt）
 function getBeautyScore() {
   let total = 0;
@@ -28,7 +43,7 @@ function getDecoBuildingMult(buildingId) {
     if ((state.buildings?.[bId]?.level || 0) <= 0) return;
     if (!unlockedAreas.includes(pb.area)) return;
     slots.forEach(decoId => {
-      const d = DECORATIONS.find(x => x.id === decoId);
+      const d = findDeco(decoId);
       if (!d) return;
       switch (d.effect.type) {
         case 'self_cps':
@@ -57,7 +72,7 @@ function getDecoCollectMult() {
     if ((state.buildings?.[bId]?.level || 0) <= 0) return;
     if (!unlockedAreas.includes(pb.area)) return;
     slots.forEach(decoId => {
-      const d = DECORATIONS.find(x => x.id === decoId);
+      const d = findDeco(decoId);
       if (d && d.effect.type === 'collect') bonus += d.effect.value;
     });
   });
@@ -69,7 +84,7 @@ function getDecoEventBonus() { return 0; }
 
 // ── 購入 ──
 function buyDecoration(id) {
-  const d = DECORATIONS.find(x => x.id === id);
+  const d = findDeco(id);
   if (!d) return;
   if (d.focusOnly && !state.prestigeSkills?.deco_focus) return;
   if (!state.decoOwned) state.decoOwned = {};
@@ -100,7 +115,7 @@ function placeDecoration(buildingId, decoId) {
   }
   state.decoSlots[buildingId].push(decoId);
   const b = BUILDINGS.find(x => x.id === buildingId);
-  const d = DECORATIONS.find(x => x.id === decoId);
+  const d = findDeco(decoId);
   addLog(`🌺 ${d.emoji}${d.name}を${b.emoji}${b.name}に設置！`);
   if (_decoModalBuildingId) renderDecoModal(_decoModalBuildingId);
   if (_decoSelectDecoId) renderDecoSelectModal(_decoSelectDecoId);
@@ -146,7 +161,7 @@ function renderDecoModal(buildingId) {
   slotsEl.innerHTML = '';
   for (let i = 0; i < 3; i++) {
     const decoId = slots[i];
-    const d = decoId ? DECORATIONS.find(x => x.id === decoId) : null;
+    const d = decoId ? findDeco(decoId) : null;
     const div = document.createElement('div');
     div.className = `deco-slot ${d ? 'filled' : 'empty'}`;
     if (d) {
@@ -196,7 +211,7 @@ function renderDecoModal(buildingId) {
     hdr.textContent = '未配置の飾り';
     availEl.appendChild(hdr);
     unplaced.forEach(decoId => {
-      const d = DECORATIONS.find(x => x.id === decoId);
+      const d = findDeco(decoId);
       if (!d) return;
       const isWrongTarget = d.target && d.target !== buildingId;
       const targetB = d.target ? BUILDINGS.find(x => x.id === d.target) : null;
@@ -221,7 +236,7 @@ function renderDecoModal(buildingId) {
     hdr.textContent = '他の施設に設置中（移動可能）';
     availEl.appendChild(hdr);
     elsewhere.forEach(decoId => {
-      const d = DECORATIONS.find(x => x.id === decoId);
+      const d = findDeco(decoId);
       if (!d) return;
       const curBId = Object.keys(state.decoSlots || {}).find(bid =>
         (state.decoSlots[bid] || []).includes(decoId)
@@ -263,7 +278,7 @@ function closeDecoSelectModal() {
 }
 
 function renderDecoSelectModal(decoId) {
-  const d = DECORATIONS.find(x => x.id === decoId);
+  const d = findDeco(decoId);
   if (!d) return;
 
   document.getElementById('decoSelectEmoji').textContent = d.emoji;
@@ -369,12 +384,23 @@ function renderDeco() {
     return a.cost - b.cost;
   });
   sortedFocus.forEach(d => _renderDecoItem(d, grid, owned, focusUnlocked));
+
+  // レガシー飾りセクション（所持しているものだけ表示）
+  const ownedLegacy = LEGACY_DECORATIONS.filter(d => !!owned[d.id]);
+  if (ownedLegacy.length > 0) {
+    const legacyHdr = document.createElement('div');
+    legacyHdr.className = 'deco-focus-header';
+    legacyHdr.innerHTML = `<span>✨ レガシー飾り</span><span class="deco-focus-badge unlocked">Lv100達成で解放</span>`;
+    grid.appendChild(legacyHdr);
+    ownedLegacy.forEach(d => _renderDecoItem(d, grid, owned));
+  }
 }
 
 function _renderDecoItem(d, grid, owned, focusUnlocked = true) {
   const isOwned = !!owned[d.id];
   const isLocked = d.focusOnly && !focusUnlocked;
-  const canAfford = !isOwned && !isLocked && state.coins >= d.cost;
+  const isLegacy = !!d.legacyOnly;
+  const canAfford = !isOwned && !isLocked && !isLegacy && state.coins >= d.cost;
 
   let placedAt = '';
   if (isOwned) {
@@ -400,7 +426,10 @@ function _renderDecoItem(d, grid, owned, focusUnlocked = true) {
       </div>
     </div>
     ${targetB && !isLocked ? `<div class="deco-target-label">🎯 対象施設：${targetB.emoji}${targetB.name}</div>` : ''}
-    <div class="deco-synergy">🔗 ${isLocked ? '???' : d.effectDesc}</div>
+    <div class="deco-synergy">🔗 ${isLocked ? '???' : isLegacy ? (() => {
+      const lv = state.buildings[d.target]?.level || 0;
+      return `${targetB?.name ?? ''}のCPS +${(d.effect.value * lv * 100).toFixed(0)}%（Lv×1%・現在Lv${lv}）`;
+    })() : d.effectDesc}</div>
     ${isOwned
       ? `<div class="deco-placed-info">${placedAt ? `📍 ${placedAt}に設置中` : '⚪ 未配置'}</div>
          <button class="btn-deco-open" onclick="openDecoSelectModal('${d.id}')">🔄 配置変更</button>`

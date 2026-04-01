@@ -423,18 +423,26 @@
 
   <!-- 神社ミニゲームモーダル -->
   <div class="modal-overlay" id="shrineModal" onclick="if(event.target===this)closeShrineGame()">
-    <div class="modal">
+    <div class="modal shrine-modal">
+      <!-- フラッシュオーバーレイ -->
+      <div class="shrine-flash" id="shrineFlash"></div>
+      <!-- パーティクルコンテナ -->
+      <div class="shrine-particles" id="shrineParticles"></div>
       <h2>⛩️ おみくじを引こう！</h2>
       <p class="mg-desc">運を天に任せて…ボタンを押すだけ！</p>
-      <div class="shrine-lot-wrap" style="text-align:center">
-        <div class="shrine-lot-display" id="shrineLotDisplay">🎋</div>
+      <!-- おみくじ紙 -->
+      <div class="shrine-lot-wrap">
+        <div class="shrine-scroll-paper" id="shrineScrollPaper">
+          <div class="shrine-lot-display" id="shrineLotDisplay">🎋</div>
+          <div class="shrine-lot-name" id="shrineLotName"></div>
+        </div>
       </div>
       <div class="shrine-prob-table">
         <span>大吉5%</span><span>吉20%</span><span>中吉35%</span>
         <span>小吉25%</span><span>末吉10%</span><span>凶5%</span>
       </div>
       <div class="mg-result" id="shrineResult"></div>
-      <button class="mg-action-btn" id="shrinePressBtn" onclick="pressShrineBtn()">🎋 おみくじを引く</button>
+      <button class="shrine-press-btn" id="shrinePressBtn" onclick="pressShrineBtn()">🎋 おみくじを引く</button>
       <div class="mg-plays-remain" id="shrinePlaysRemain"></div>
       <button class="btn-modal" onclick="closeShrineGame()">閉じる</button>
     </div>

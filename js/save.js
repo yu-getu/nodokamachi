@@ -28,6 +28,11 @@ function saveGame() {
       totalHarvestCount: state.totalHarvestCount, totalSpent: state.totalSpent,
       totalPlaySecs: state.totalPlaySecs, maxCps: state.maxCps, maxCoins: state.maxCoins,
       firstPlayedAt: state.firstPlayedAt,
+      minigameState: Object.keys(MINIGAMES).reduce((obj, id) => {
+        obj[`${id}GameLastDate`]   = state[`${id}GameLastDate`]   || '';
+        obj[`${id}GamePlaysToday`] = state[`${id}GamePlaysToday`] || 0;
+        return obj;
+      }, {}),
     }));
     state.lastSaved = Date.now(); updateSaveStatus();
     addLog('💾 セーブしました！');
@@ -88,6 +93,11 @@ function loadGame() {
     state.maxCps = d.maxCps || 0;
     state.maxCoins = d.maxCoins || 0;
     state.firstPlayedAt = d.firstPlayedAt || Date.now();
+    const mg = d.minigameState || {};
+    Object.keys(MINIGAMES).forEach(id => {
+      state[`${id}GameLastDate`]   = mg[`${id}GameLastDate`]   || '';
+      state[`${id}GamePlaysToday`] = mg[`${id}GamePlaysToday`] || 0;
+    });
     const offSec = Math.min((Date.now() - d.savedAt) / 1000, 24 * 3600);
     if (offSec >= 8 * 3600) state.longOffline = true;
     if (offSec > 30 && getCps() > 0) {

@@ -61,11 +61,14 @@ function _bkUpdateBread(pos) {
     pos >= BK_GOOD_L    && pos <= BK_GOOD_L    + BK_GOOD_W    ? 'bk-bread-good'    :
     pos > BK_GOOD_L + BK_GOOD_W                                ? 'bk-bread-burnt'   :
                                                                   'bk-bread-raw';
-  el.className = 'bk-bread ' + cls;
-  if (lbl) lbl.textContent =
-    cls === 'bk-bread-perfect' ? '✨ 焼き立て！'  :
-    cls === 'bk-bread-good'    ? 'いい感じ！'     :
-    cls === 'bk-bread-burnt'   ? '💨 焦げそう！'  : '生焼け…';
+  const newClass = 'bk-bread ' + cls;
+  if (el.className !== newClass) {
+    el.className = newClass;
+    if (lbl) lbl.textContent =
+      cls === 'bk-bread-perfect' ? '✨ 焼き立て！'  :
+      cls === 'bk-bread-good'    ? 'いい感じ！'     :
+      cls === 'bk-bread-burnt'   ? '💨 焦げそう！'  : '生焼け…';
+  }
 }
 
 function _bkStartAnim() {

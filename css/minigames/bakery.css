@@ -40,7 +40,7 @@
     position: relative;
     width: 120px;
     height: 80px;
-    transition: transform .35s cubic-bezier(.34,1.56,.64,1), filter .35s
+    transition: transform .7s cubic-bezier(.34,1.56,.64,1), filter .7s
 }
 
 /* ── 下台（パンの底） ── */
@@ -50,8 +50,9 @@
     height: 32px;
     border-radius: 4px 4px 10px 10px;
     background: #e0c090;
-    border: 2px solid #c09050;
-    transition: background .35s, border-color .35s, box-shadow .35s
+    border: none;
+    box-shadow: inset 0 3px 6px rgba(0,0,0,.12);
+    transition: background .8s ease, box-shadow .8s ease
 }
 
 /* ── 上ドーム（パンの丸い頂部） ── */
@@ -61,9 +62,9 @@
     height: 62px;
     border-radius: 50% 50% 30% 30% / 60% 60% 40% 40%;
     background: #f0ddb0;
-    border: 2px solid #c8a060;
+    border: none;
     overflow: hidden;
-    transition: background .35s, border-color .35s, box-shadow .35s
+    transition: background .8s ease, border-color .8s ease, box-shadow .8s ease
 }
 
 /* ドームのツヤ */
@@ -100,19 +101,17 @@
 }
 
 /* ── 生焼け ── */
-.bk-bread-raw .bk-bread-dome { background: #f2e2c0; border-color: #c8aa70 }
-.bk-bread-raw .bk-bread-base { background: #e4cfa0; border-color: #b89050 }
+.bk-bread-raw .bk-bread-dome { background: #f2e2c0 }
+.bk-bread-raw .bk-bread-base { background: #e4cfa0 }
 .bk-bread-raw + .bk-bread-label { color: #b0906a }
 
 /* ── GOOD（こんがり） ── */
 .bk-bread-good .bk-bread-dome {
     background: linear-gradient(160deg, #c87820 0%, #a85e08 100%);
-    border-color: #8a4a00;
     box-shadow: 0 0 14px rgba(200,110,10,.35)
 }
 .bk-bread-good .bk-bread-base {
-    background: linear-gradient(160deg, #b06810, #8a4e00);
-    border-color: #703800
+    background: linear-gradient(160deg, #b06810, #8a4e00)
 }
 .bk-bread-good + .bk-bread-label { color: #b06010 }
 
@@ -123,23 +122,19 @@
 }
 .bk-bread-perfect .bk-bread-dome {
     background: linear-gradient(150deg, #b05c10 0%, #7a3600 100%);
-    border-color: #5a2200;
     box-shadow: 0 0 20px rgba(180,90,10,.6)
 }
 .bk-bread-perfect .bk-bread-base {
-    background: linear-gradient(150deg, #9a4e08, #6a2e00);
-    border-color: #4a1a00
+    background: linear-gradient(150deg, #9a4e08, #6a2e00)
 }
 .bk-bread-perfect + .bk-bread-label { color: #a04000 }
 
 /* ── 焦げ ── */
 .bk-bread-burnt .bk-bread-dome {
-    background: linear-gradient(160deg, #3c1c00 0%, #1e0c00 100%);
-    border-color: #180800
+    background: linear-gradient(160deg, #3c1c00 0%, #1e0c00 100%)
 }
 .bk-bread-burnt .bk-bread-base {
-    background: linear-gradient(160deg, #2c1200, #160800);
-    border-color: #100400
+    background: linear-gradient(160deg, #2c1200, #160800)
 }
 .bk-bread-burnt { filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)) }
 .bk-bread-burnt + .bk-bread-label { color: #886040 }

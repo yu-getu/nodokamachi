@@ -278,6 +278,20 @@ const DECORATIONS = [
   { id:'focus_core',   name:'エーテルコア',   emoji:'⚗️', cost:5e18,      desc:'魔法陣の核として召喚されたエーテルの塊', effect:{type:'self_cps', value:30.0}, effectDesc:'魔法陣に設置時 CPS ×31', focusOnly:true, target:'magicircle'},
 ];
 
+// ── レガシー飾り（Lv100到達で自動解放・購入不可）──
+// BUILDINGS 定義後に動的生成。effect.type = 'legacy_cps': 設置施設のCPS + Lv×value
+const LEGACY_DECORATIONS = BUILDINGS.map(b => ({
+  id: `legacy_${b.id}`,
+  name: `${b.name}の魂`,
+  emoji: b.emoji,
+  cost: 0,
+  desc: `${b.name}が積み重ねた歳月の輝き`,
+  target: b.id,
+  legacyOnly: true,
+  effect: { type: 'legacy_cps', value: 0.01 },
+  effectDesc: `${b.name}のbaseCPS Lv×1%増加（Lv100でbaseCPS×2、Lv200でbaseCPS×3）`,
+}));
+
 const WEATHER_DEFS = {
   clear:  { particles: [] },
   cherry: { particles: ['🌸','🌸','🌺','🌸'] },
@@ -485,7 +499,7 @@ const ACHIEVEMENTS = [
   {id:'dj_farmer',     icon:'🎵', name:'DJ農家',          desc:'BGMを10回切り替えた',                reward:'称号', hidden:true, cat:'hidden',    check:s=>(s.bgmToggleCount||0)>=10},
   {id:'night_farmer',  icon:'🌙', name:'夜型農家',        desc:'深夜0〜4時にプレイした',             reward:'称号', hidden:true, cat:'hidden',    check:s=>s.nightPlayed},
   {id:'lv1_collector', icon:'🏗️', name:'一期一会',        desc:'全建物をちょうどLv1にした',          reward:'称号', hidden:true, cat:'hidden',    check:s=>BUILDINGS.every(b=>(s.buildings[b.id]?.level||0)===1)},
-  {id:'rapid_harvest', icon:'⚡', name:'落ち着きのない人', desc:'30秒以内にひと稼ぎを100回押した',    reward:'称号', hidden:true, cat:'hidden',    check:s=>s.rapidHarvested},
+  {id:'rapid_harvest', icon:'⚡', name:'落ち着きのない人', desc:'30秒以内にひと稼ぎを300回押した',    reward:'称号', hidden:true, cat:'hidden',    check:s=>s.rapidHarvested},
   {id:'silent_town',   icon:'🗑️', name:'消えた音',        desc:'BGMとSFXを両方オフにして5分プレイした', reward:'称号', hidden:true, cat:'hidden',    check:s=>(s.silentMinutes||0)>=5},
   {id:'idle_start',    icon:'🏚️', name:'廃村の夢',        desc:'何も建てないまま1分間放置した',      reward:'称号', hidden:true, cat:'hidden',    check:s=>s.idledAtStart},
   {id:'buy_discount',  icon:'🛒', name:'お買い得ハンター', desc:'行商人の値引き中に建物を購入した',    reward:'称号', hidden:true, cat:'hidden',    check:s=>s.boughtDuringDiscount},
@@ -524,6 +538,6 @@ const ACHIEVEMENTS = [
     {id:`${b.id}_lv10`,  icon:b.emoji, name:`${b.name} Lv10`,  desc:`${b.name}をLv10に強化`,  reward:'称号', cat:'building_lv', check:s=>(s.buildings?.[b.id]?.level||0)>=10},
     {id:`${b.id}_lv50`,  icon:b.emoji, name:`${b.name} Lv50`,  desc:`${b.name}をLv50に強化`,  reward:'称号', cat:'building_lv', check:s=>(s.buildings?.[b.id]?.level||0)>=50},
     {id:`${b.id}_lv100`, icon:b.emoji, name:`${b.name} Lv100`, desc:`${b.name}をLv100に強化`, reward:'称号', cat:'building_lv', check:s=>(s.buildings?.[b.id]?.level||0)>=100},
-    {id:`${b.id}_lv500`, icon:b.emoji, name:`${b.name} Lv500`, desc:`${b.name}をLv500に強化`, reward:'称号', cat:'building_lv', check:s=>(s.buildings?.[b.id]?.level||0)>=500},
+    {id:`${b.id}_lv500`, icon:b.emoji, name:`${b.name} Lv200`, desc:`${b.name}をLv200に強化`, reward:'称号', cat:'building_lv', check:s=>(s.buildings?.[b.id]?.level||0)>=200},
   ]),
 ];

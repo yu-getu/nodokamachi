@@ -10,10 +10,11 @@ const CAFE_PERFECT_L  = 65;
 const CAFE_PERFECT_H  = 75;
 const CAFE_FILL_SPEED = 28; // %/秒（約3.5秒でMAX）
 
-let _cafeFill     = 0;
-let _cafeRaf      = null;
-let _cafeLastTime = null;
-let _cafePlayed   = false;
+let _cafeFill      = 0;
+let _cafeRaf       = null;
+let _cafeResetTimer = null;
+let _cafeLastTime  = null;
+let _cafePlayed    = false;
 
 function openCafeGame() {
   if ((state.buildings['cafe']?.level || 0) === 0) return;
@@ -74,6 +75,7 @@ function _cafeStartAnim() {
 
 function _cafeStopAnim() {
   if (_cafeRaf) { cancelAnimationFrame(_cafeRaf); _cafeRaf = null; }
+  if (_cafeResetTimer) { clearTimeout(_cafeResetTimer); _cafeResetTimer = null; }
 }
 
 function pressCafeBtn() {
@@ -106,7 +108,9 @@ function _cafeResolve() {
   if (btn) btn.disabled = true;
 
   if (mgGetPlaysRemain('cafe', CAFE_MAX_PLAYS) > 0) {
-    setTimeout(() => {
+    _cafeResetTimer = setTimeout(() => {
+      _cafeResetTimer = null;
+      if (!document.getElementById('cafeModal')?.classList.contains('show')) return;
       _cafeFill = 0; _cafePlayed = false;
       if (btn) btn.disabled = false;
       mgShowResult('cafeResult', '', '');

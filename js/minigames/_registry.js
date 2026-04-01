@@ -6,8 +6,8 @@
 const MINIGAMES = {
   bakery:     true,   // 🥐 パン屋タイミングゲーム（js/minigames/bakery.js）
   cafe:       true,   // ☕ 喫茶店 バー停止（js/minigames/cafe.js）
-  shrine:     false,  // ⛩️ 神社おみくじ（js/minigames/shrine.js）
-  onsen:      false,  // ♨️ 温泉湯加減調整（js/minigames/onsen.js）
+  shrine:     true,  // ⛩️ 神社おみくじ（js/minigames/shrine.js）
+  onsen:      true,  // ♨️ 温泉湯加減調整（js/minigames/onsen.js）
   amusement:  false,  // 🎡 遊園地連打（js/minigames/amusement.js）
   rocket:     false,  // 🚀 宇宙基地カウントダウン（js/minigames/rocket.js）
   deepseasub: false,  // 🦈 深海調査船ソナー（js/minigames/deepseasub.js）
