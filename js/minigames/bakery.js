@@ -90,21 +90,11 @@ function _bkStopAnim() {
 }
 
 function _bkUpdateStatus() {
-  const remain = getBakeryPlaysRemain();
-  const cdEl   = document.getElementById('bkCooldown');
-  const btn    = document.getElementById('bkPressBtn');
+  const cdEl = document.getElementById('bkCooldown');
+  const btn  = document.getElementById('bkPressBtn');
   if (!cdEl || !btn) return;
-
-  if (remain === 0) {
-    cdEl.textContent = '本日の分は終了しました。また明日！';
-    btn.disabled = true;
-  } else if (_bkPlayed) {
-    cdEl.textContent = `残り ${remain} 回 / ${BAKERY_DAILY_MAX}回`;
-    btn.disabled = false;
-  } else {
-    cdEl.textContent = `残り ${remain} 回 / ${BAKERY_DAILY_MAX}回`;
-    btn.disabled = false;
-  }
+  cdEl.textContent = '';
+  btn.disabled = false;
 }
 
 function pressBakeryBtn() {
