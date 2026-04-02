@@ -59,6 +59,13 @@ let state = {
   rocketGameLastDate: '',     rocketGamePlaysToday: 0,
   deepseasubGameLastDate: '', deepseasubGamePlaysToday: 0,
   dimgateGameLastDate: '',    dimgateGamePlaysToday: 0,
+  // ミニゲーム累計
+  bakeryTotalPlays: 0,
+  cafeTotalPlays: 0,
+  shrineTotalPlays: 0,
+  onsenTotalPlays: 0,
+  mgGotPerfect: false,
+  bakeryBurntOnce: false,
   // 統計
   totalHarvestCount: 0,
   totalSpent: 0,

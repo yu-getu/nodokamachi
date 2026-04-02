@@ -25,6 +25,9 @@ function saveGame() {
       lucky7777: state.lucky7777, zoromeCoins: state.zoromeCoins,
       longOffline: state.longOffline, hourlyPlay: state.hourlyPlay,
       perfectPrestige: state.perfectPrestige,
+      bakeryTotalPlays: state.bakeryTotalPlays, cafeTotalPlays: state.cafeTotalPlays,
+      shrineTotalPlays: state.shrineTotalPlays, onsenTotalPlays: state.onsenTotalPlays,
+      mgGotPerfect: state.mgGotPerfect, bakeryBurntOnce: state.bakeryBurntOnce,
       totalHarvestCount: state.totalHarvestCount, totalSpent: state.totalSpent,
       totalPlaySecs: state.totalPlaySecs, maxCps: state.maxCps, maxCoins: state.maxCoins,
       firstPlayedAt: state.firstPlayedAt,
@@ -87,6 +90,12 @@ function loadGame() {
     state.longOffline = d.longOffline || false;
     state.hourlyPlay = d.hourlyPlay || false;
     state.perfectPrestige = d.perfectPrestige || false;
+    state.bakeryTotalPlays  = d.bakeryTotalPlays  || 0;
+    state.cafeTotalPlays    = d.cafeTotalPlays    || 0;
+    state.shrineTotalPlays  = d.shrineTotalPlays  || 0;
+    state.onsenTotalPlays   = d.onsenTotalPlays   || 0;
+    state.mgGotPerfect      = d.mgGotPerfect      || false;
+    state.bakeryBurntOnce   = d.bakeryBurntOnce   || false;
     state.totalHarvestCount = d.totalHarvestCount || 0;
     state.totalSpent = d.totalSpent || 0;
     state.totalPlaySecs = d.totalPlaySecs || 0;

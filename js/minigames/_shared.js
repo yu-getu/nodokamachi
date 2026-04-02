@@ -18,6 +18,7 @@ function mgRecordPlay(id) {
     state[`${id}GamePlaysToday`] = 0;
   }
   state[`${id}GamePlaysToday`] = (state[`${id}GamePlaysToday`] || 0) + 1;
+  state[`${id}TotalPlays`] = (state[`${id}TotalPlays`] || 0) + 1;
 }
 
 function mgShowResult(elId, text, cls) {

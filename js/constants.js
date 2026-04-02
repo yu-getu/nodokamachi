@@ -426,12 +426,14 @@ const ACHIEV_CATEGORIES = [
   { id:'harvest',     label:'👆 ひと稼ぎ',    },
   { id:'playtime',    label:'⏰ プレイ時間',  },
   { id:'skill',       label:'🌟 スキル',      },
+  { id:'deco',        label:'🌺 飾り',        },
+  { id:'minigame',    label:'🎮 ミニゲーム',  },
   { id:'building_lv', label:'🏢 施設レベル',  },
   { id:'hidden',      label:'🔍 隠し実績',    },
 ];
 
 const ACHIEVEMENTS = [
-  {id:'first_build',   icon:'🏗️', name:'はじめの一歩',    desc:'最初の建物を建設',          reward:'記念',       cat:'build',    check:s=>getTotalLv()>=1},
+  {id:'first_build',   icon:'🏗️', name:'はじめの一歩',    desc:'最初の建物を建設',          reward:'記念',       cat:'build',    check:_s=>getTotalLv()>=1},
   {id:'lv10',          icon:'🌱', name:'Lv10到達',         desc:'いずれかの建物がLv10に',    reward:'記念称号',   cat:'build',    check:s=>BUILDINGS.some(b=>s.buildings[b.id]?.level>=10)},
   {id:'lv25',          icon:'🌿', name:'Lv25到達',         desc:'いずれかの建物がLv25に',    reward:'記念称号',   cat:'build',    check:s=>BUILDINGS.some(b=>s.buildings[b.id]?.level>=25)},
   {id:'lv50',          icon:'🌳', name:'Lv50到達',         desc:'いずれかの建物がLv50に',    reward:'称号',       cat:'build',    check:s=>BUILDINGS.some(b=>s.buildings[b.id]?.level>=50)},
@@ -490,7 +492,7 @@ const ACHIEVEMENTS = [
   // イベント
   {id:'events_10',     icon:'🎪', name:'イベント好き',      desc:'イベントを10回経験',      reward:'称号',       cat:'event',     check:s=>(s.eventCount||0)>=10},
   {id:'events_50',     icon:'🎆', name:'イベント常連',      desc:'イベントを50回経験',      reward:'称号',       cat:'event',     check:s=>(s.eventCount||0)>=50},
-  {id:'weekend',       icon:'🎉', name:'週末の楽しみ', desc:'週末ボーナス中に遊んだ', reward:'記念称号',       cat:'event',     check:s=>getWeekendMult()>1&&getTotalLv()>=1},
+  {id:'weekend',       icon:'🎉', name:'週末の楽しみ', desc:'週末ボーナス中に遊んだ', reward:'記念称号',       cat:'event',     check:_s=>getWeekendMult()>1&&getTotalLv()>=1},
   // ひと稼ぎ
   {id:'harvest_100',   icon:'👆', name:'ひと稼ぎ職人',      desc:'ひと稼ぎを100回した',     reward:'称号',       cat:'harvest',   check:s=>(s.totalHarvestCount||0)>=100},
   {id:'harvest_1000',  icon:'💪', name:'ひと稼ぎの達人',    desc:'ひと稼ぎを1000回した',    reward:'称号',       cat:'harvest',   check:s=>(s.totalHarvestCount||0)>=1000},
@@ -498,7 +500,27 @@ const ACHIEVEMENTS = [
   {id:'playtime_1h',   icon:'⏰', name:'1時間プレイヤー',   desc:'累計1時間プレイした',     reward:'称号',       cat:'playtime',  check:s=>(s.totalPlaySecs||0)>=3600},
   {id:'playtime_10h',  icon:'🕰️', name:'10時間プレイヤー',  desc:'累計10時間プレイした',    reward:'称号',       cat:'playtime',  check:s=>(s.totalPlaySecs||0)>=36000},
   // スキル
-  {id:'skill_5',       icon:'🌟', name:'スキル磨き',        desc:'スキルを5個習得した',     reward:'称号',       cat:'skill',     check:s=>Object.keys(s.skills||{}).length>=5},
+  {id:'skill_5',       icon:'🌟', name:'スキル磨き',        desc:'スキルを5個習得した',     reward:'称号', cat:'skill', check:s=>Object.keys(s.skills||{}).length>=5},
+  {id:'skill_15',      icon:'💡', name:'スキルの道',        desc:'スキルを15個習得した',    reward:'称号', cat:'skill', check:s=>Object.keys(s.skills||{}).length>=15},
+  {id:'skill_30',      icon:'🎓', name:'スキルの探求者',    desc:'スキルを30個習得した',    reward:'称号', cat:'skill', check:s=>Object.keys(s.skills||{}).length>=30},
+  // 飾り
+  {id:'deco_first',     icon:'🌺', name:'初めての飾り',        desc:'飾りを1つ購入した',                    reward:'称号', cat:'deco', check:s=>Object.keys(s.decoOwned||{}).filter(k=>!k.startsWith('legacy_')).length>=1},
+  {id:'deco_5',         icon:'🌸', name:'飾り好き',            desc:'飾りを5つ所持している',                reward:'称号', cat:'deco', check:s=>Object.keys(s.decoOwned||{}).filter(k=>!k.startsWith('legacy_')).length>=5},
+  {id:'deco_15',        icon:'🎀', name:'飾りコレクター',      desc:'飾りを15種類所持している',             reward:'称号', cat:'deco', check:s=>Object.keys(s.decoOwned||{}).filter(k=>!k.startsWith('legacy_')).length>=15},
+  {id:'deco_placed_10', icon:'✨', name:'まちを飾る人',        desc:'飾りを合計10個スロットに配置した',     reward:'称号', cat:'deco', check:s=>Object.values(s.decoSlots||{}).reduce((n,arr)=>n+arr.length,0)>=10},
+  {id:'legacy_first',   icon:'👑', name:'伝説の始まり',        desc:'初めてレガシー飾りを解放した',          reward:'称号', cat:'deco', check:s=>Object.keys(s.decoOwned||{}).some(k=>k.startsWith('legacy_'))},
+  {id:'legacy_3',       icon:'💫', name:'レガシーコレクター',  desc:'レガシー飾りを3種類解放した',           reward:'称号', cat:'deco', check:s=>Object.keys(s.decoOwned||{}).filter(k=>k.startsWith('legacy_')).length>=3},
+  {id:'legacy_all',     icon:'♾️', name:'伝説の継承者',        desc:'全施設のレガシー飾りを解放した',        reward:'称号', cat:'deco', check:s=>BUILDINGS.every(b=>s.decoOwned?.[`legacy_${b.id}`])},
+  // ミニゲーム
+  {id:'mg_first',       icon:'🎮', name:'ゲーム好き',          desc:'ミニゲームを初めてプレイした',          reward:'称号', cat:'minigame', check:s=>Object.keys(MINIGAMES).some(id=>(s[`${id}GamePlaysToday`]||0)>0||(s[`${id}GameLastDate`]||'')!=='')},
+  {id:'mg_bakery_10',   icon:'🥐', name:'パン職人',            desc:'パン屋ミニゲームを10回プレイした',      reward:'称号', cat:'minigame', check:s=>(s.bakeryTotalPlays||0)>=10},
+  {id:'mg_bakery_50',   icon:'🥖', name:'ベーカリーマスター',  desc:'パン屋ミニゲームを50回プレイした',      reward:'称号', cat:'minigame', check:s=>(s.bakeryTotalPlays||0)>=50},
+  {id:'mg_cafe_10',     icon:'☕', name:'コーヒー通',          desc:'喫茶店ミニゲームを10回プレイした',      reward:'称号', cat:'minigame', check:s=>(s.cafeTotalPlays||0)>=10},
+  {id:'mg_shrine_7',    icon:'⛩️', name:'七福の引き手',        desc:'おみくじを7回引いた',                   reward:'称号', cat:'minigame', check:s=>(s.shrineTotalPlays||0)>=7},
+  {id:'mg_onsen_10',    icon:'♨️', name:'湯守り',              desc:'温泉ミニゲームを10回プレイした',        reward:'称号', cat:'minigame', check:s=>(s.onsenTotalPlays||0)>=10},
+  {id:'mg_perfect',     icon:'🌟', name:'完璧なひと仕事',      desc:'いずれかのミニゲームでPERFECTを出した', reward:'称号', cat:'minigame', check:s=>s.mgGotPerfect||false},
+  // 隠し実績（ミニゲーム）
+  {id:'mg_bakery_burnt',icon:'🔥', name:'あえて焦がす',        desc:'パン屋でわざと焦がした',               reward:'称号', hidden:true, cat:'hidden', check:s=>s.bakeryBurntOnce||false},
   // 隠し実績
   {id:'storm_harvest', icon:'⚡', name:'嵐チェイサー',    desc:'嵐の中でひと稼ぎした',              reward:'称号', hidden:true, cat:'hidden',    check:s=>s.stormHarvested},
   {id:'save_maniac',   icon:'💾', name:'過保護セーバー',  desc:'手動保存ボタンを20回押した',         reward:'称号', hidden:true, cat:'hidden',    check:s=>(s.manualSaveCount||0)>=20},

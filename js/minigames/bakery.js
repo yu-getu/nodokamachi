@@ -110,6 +110,7 @@ function pressBakeryBtn() {
     state.bakeryGamePlaysToday = 0;
   }
   state.bakeryGamePlaysToday = (state.bakeryGamePlaysToday || 0) + 1;
+  state.bakeryTotalPlays = (state.bakeryTotalPlays || 0) + 1;
 
   const b      = BUILDINGS.find(x => x.id === 'bakery');
   const base   = Math.max(100, Math.floor(getBuildingCps(b) * 30));
@@ -122,12 +123,15 @@ function pressBakeryBtn() {
     label  = '🎉 PERFECT！';
     cls    = 'bk-result-perfect';
     playMilestoneSfx();
+    state.mgGotPerfect = true;
   } else if (inGood) {
     reward = Math.floor(base * 1.5);
     label  = '👍 GOOD！';
     cls    = 'bk-result-good';
     playQuestSfx();
   } else {
+    // バーが右端（焦げゾーン）にある場合
+    if (pos > BK_GOOD_L + BK_GOOD_W) state.bakeryBurntOnce = true;
     reward = Math.floor(base * 0.2);
     label  = '💨 ミス…';
     cls    = 'bk-result-miss';
