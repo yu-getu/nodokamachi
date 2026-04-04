@@ -57,9 +57,14 @@ function doPrestige() {
   state.prestigeCount++;
   state.prestigeSp = (state.prestigeSp || 0) + 1 + bonusSp;
   state.allTimeTotalEarned = (state.allTimeTotalEarned || 0) + (state.totalEarned || 0);
+  const inheritedSkillId = (state.prestigeSkills?.skill_inherit && state.inheritSkillId) ? state.inheritSkillId : null;
   state.coins = 0; state.totalEarned = 0;
   BUILDINGS.forEach(b => { state.buildings[b.id] = { level: 0 }; });
   state.activeEvents = []; state.eventDiscount = 1; state.skills = {}; state.research = {};
+  state.bonusSp = 0;
+  if (inheritedSkillId && SKILLS.find(s => s.id === inheritedSkillId)) {
+    state.skills[inheritedSkillId] = true;
+  }
   const prevQuestTotal = state.quests?.completedTotal || 0;
   state.quests = null;
   const newMax = getMaxLevel();

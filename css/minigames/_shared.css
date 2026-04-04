@@ -1,9 +1,16 @@
-/* ── ミニゲームモーダルサイズ上書き ── */
-.bakery-modal,
-.cafe-modal,
-.shrine-modal {
+/* ── ミニゲームモーダル共通サイズ ── */
+.modal.mg-modal {
     max-width: 480px;
     width: 94%
+}
+
+/* ── PC（960px〜）：ミニゲームモーダルを拡大 ── */
+@media (min-width: 960px) {
+  .modal.mg-modal {
+    max-width: 820px;
+    width: 80vw;
+    padding: 36px 40px;
+  }
 }
 
 /* ── ミニゲーム共通スタイル ── */

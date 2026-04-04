@@ -8,7 +8,7 @@ function getTotalSkillPoints() {
   const fromAchiev     = Math.floor(achievCount / 10);
   // 先祖の加護スキルによる転生ボーナス
   const spBonus = Math.floor(getPrestigeSkillEffect('prestige_sp_bonus') * (state.prestigeCount || 0));
-  return fromBuildings + fromAchiev + spBonus + (state.debugSkillSp || 0);
+  return fromBuildings + fromAchiev + spBonus + (state.bonusSp || 0) + (state.debugSkillSp || 0);
 }
 
 function getPrestigeSkillEffect(effect) {
@@ -17,7 +17,8 @@ function getPrestigeSkillEffect(effect) {
     .reduce((sum, s) => sum + s.value, 0);
 }
 function getSpentSkillPoints() {
-  return SKILLS.filter(s => state.skills?.[s.id]).reduce((sum, s) => sum + s.cost, 0);
+  return SKILLS.filter(s => state.skills?.[s.id] && s.id !== state.inheritSkillId)
+    .reduce((sum, s) => sum + s.cost, 0);
 }
 function getAvailableSkillPoints() {
   return Math.max(0, getTotalSkillPoints() - getSpentSkillPoints());
@@ -79,6 +80,28 @@ function getSkillQuestMult() {
   return 1 + getSkillEffect('quest_reward');
 }
 
+// ── SP変換 ──
+function getSpConvertCost() {
+  return Math.max(10000000, Math.floor(state.totalEarned * 0.01));
+}
+function convertCoinsToSp() {
+  const cost = getSpConvertCost();
+  if (state.coins < cost) return;
+  state.coins -= cost;
+  state.bonusSp = (state.bonusSp || 0) + 1;
+  addLog(`💰 コインをSPに変換！ +1 SP（消費: ${fmt(cost)}コイン）`);
+  renderSkills();
+  renderStats();
+  saveGame();
+}
+
+// ── スキル引き継ぎ ──
+function setInheritSkill(id) {
+  state.inheritSkillId = (state.inheritSkillId === id) ? null : id;
+  renderSkills();
+  saveGame();
+}
+
 
 const SKILL_POS = {
   // 左列（生産強化）x=0.20
@@ -105,24 +128,21 @@ const SKILL_POS = {
   beauty_power:    { x: 0.50, tier: 8  },
   event_sense:     { x: 0.50, tier: 9  },
   event_lord:      { x: 0.50, tier: 10 },
-  minigame_master: { x: 0.50, tier: 11 },
-  farm_market:     { x: 0.50, tier: 12 },
-  beauty_all:      { x: 0.50, tier: 13 },
-  all_harmony:     { x: 0.50, tier: 14 },
-  world_beauty:    { x: 0.50, tier: 15 },
+  deco_mastery:    { x: 0.50, tier: 11 },
+  beauty_feast:    { x: 0.50, tier: 12 },
   // 右列（効率系）x=0.80
   thrift:          { x: 0.80, tier: 1  },
   research_gift:   { x: 0.80, tier: 2  },
   achiev_eye:      { x: 0.80, tier: 3  },
   offline_master:  { x: 0.80, tier: 4  },
-  quest_wisdom:    { x: 0.80, tier: 5  },
-  town_vitality:   { x: 0.80, tier: 6  },
-  miracle_town:    { x: 0.80, tier: 7  },
-  cosmos_wisdom:   { x: 0.80, tier: 8  },
-  city_space:      { x: 0.80, tier: 9  },
-  culture_cosmos:  { x: 0.80, tier: 10 },
-  all_sync:        { x: 0.80, tier: 11 },
-  grand_unified:   { x: 0.80, tier: 12 },
+  farm_market:     { x: 0.80, tier: 5  },
+  culture_heal:    { x: 0.80, tier: 6  },
+  city_space:      { x: 0.80, tier: 7  },
+  deep_dim:        { x: 0.80, tier: 8  },
+  culture_cosmos:  { x: 0.80, tier: 9  },
+  minigame_master: { x: 0.80, tier: 10 },
+  cost_thrift:     { x: 0.80, tier: 11 },
+  cost_mastery:    { x: 0.80, tier: 12 },
 };
 const SKILL_ROW_H = 110;
 const SKILL_TOP_PAD = 30;
@@ -147,6 +167,37 @@ function renderSkills() {
       ? `・🙏 先祖の加護：転生ごとに+${bonus}SP（現在 +${Math.floor(bonus * (state.prestigeCount || 0))}SP）`
       : '';
     descEl.textContent = `建物1種がLv100に初到達するごとに+1SP・実績10件ごとに+1SP${ancestorNote}。スキルは転生でリセットされます。`;
+  }
+
+  // ── SP変換バー ──
+  const convertBar = document.getElementById('spConvertBar');
+  if (convertBar) {
+    const cost = getSpConvertCost();
+    const canConvert = state.coins >= cost;
+    convertBar.innerHTML = `
+      <div class="sp-convert-inner">
+        <span class="sp-convert-label">💰→💎 SP変換</span>
+        <span class="sp-convert-cost">${fmt(cost)} コイン / 1SP</span>
+        <button class="btn-sp-convert" onclick="convertCoinsToSp()" ${canConvert ? '' : 'disabled'}>変換</button>
+      </div>`;
+  }
+
+  // ── 引き継ぎスキルバー ──
+  const inheritBar = document.getElementById('inheritSkillBar');
+  if (inheritBar) {
+    if (state.prestigeSkills?.skill_inherit) {
+      const inherited = state.inheritSkillId;
+      const sk = inherited ? SKILLS.find(s => s.id === inherited) : null;
+      inheritBar.style.display = '';
+      inheritBar.innerHTML = `
+        <div class="inherit-bar-inner">
+          <span class="inherit-bar-label">🔖 引き継ぎスキル</span>
+          <span class="inherit-bar-current">${sk ? `${sk.emoji} ${sk.name}` : '未選択'}</span>
+          <span class="inherit-bar-hint">習得済みスキルをクリックして設定</span>
+        </div>`;
+    } else {
+      inheritBar.style.display = 'none';
+    }
   }
 
   const container = document.getElementById('skillTreeContent');
@@ -188,11 +239,12 @@ function renderSkills() {
     else if (canUnlock) stateClass = 'sk-available';
     else if (prereqMet) stateClass = 'sk-prereq';
 
+    const isInherited = state.inheritSkillId === sk.id;
     const node = document.createElement('div');
-    node.className = `skill-node ${stateClass}`;
+    node.className = `skill-node ${stateClass}${isInherited ? ' sk-inherited' : ''}`;
     node.dataset.id = sk.id;
     node.style.cssText = `left:${pos.x * 100}%;top:${_skillY(pos.tier)}px;cursor:pointer`;
-    node.innerHTML = `<div class="sk-icon">${sk.emoji}</div><div class="sk-name">${sk.name}</div>`;
+    node.innerHTML = `<div class="sk-icon">${sk.emoji}${isInherited ? '<span class="sk-inherit-badge">🔖</span>' : ''}</div><div class="sk-name">${sk.name}</div>`;
     node.addEventListener('click', e => { e.stopPropagation(); showSkillDetail(sk.id); });
     wrap.appendChild(node);
   });
@@ -284,6 +336,24 @@ function showSkillDetail(id) {
 
   const btn = document.getElementById('sdBtn');
   const btnAll = document.getElementById('sdBtnAll');
+
+  // 引き継ぎ設定ボタン
+  let inheritBtn = document.getElementById('sdInheritBtn');
+  if (!inheritBtn) {
+    inheritBtn = document.createElement('button');
+    inheritBtn.id = 'sdInheritBtn';
+    inheritBtn.className = 'sk-btn sk-inherit-btn';
+    panel.appendChild(inheritBtn);
+  }
+  if (unlocked && state.prestigeSkills?.skill_inherit) {
+    const isInherited = state.inheritSkillId === id;
+    inheritBtn.style.display = 'block';
+    inheritBtn.textContent = isInherited ? '🔖 引き継ぎ解除' : '🔖 引き継ぎスキルに設定';
+    inheritBtn.className = `sk-btn sk-inherit-btn${isInherited ? ' active' : ''}`;
+    inheritBtn.onclick = () => setInheritSkill(id);
+  } else {
+    inheritBtn.style.display = 'none';
+  }
 
   if (unlocked) {
     btn.textContent = '✅ 習得済み';

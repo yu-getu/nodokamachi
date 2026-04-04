@@ -98,6 +98,40 @@
     margin-top: 2px
 }
 
+.deco-bulk-bar {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border: 1.5px solid #1976d2;
+    border-radius: 12px
+}
+
+.btn-deco-bulk {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #1565c0;
+    background: linear-gradient(135deg, #1976d2, #1565c0);
+    color: #fff;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    flex-shrink: 0
+}
+
+.btn-deco-bulk:hover {
+    background: linear-gradient(135deg, #1e88e5, #1976d2)
+}
+
+.deco-bulk-hint {
+    font-size: 11px;
+    color: #1565c0
+}
+
 .deco-focus-header {
     grid-column: 1 / -1;
     display: flex;
@@ -163,6 +197,51 @@
     opacity: .85
 }
 
+/* ── 飾りレベルバッジ ── */
+.deco-lv-badge {
+    display: inline-block;
+    margin-left: 5px;
+    padding: 1px 5px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #7b1fa2, #4a148c);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    vertical-align: middle
+}
+
+.deco-lv-badge.max {
+    background: linear-gradient(135deg, #f5c430, #e65100)
+}
+
+/* ── 飾り強化ボタン ── */
+.btn-deco-levelup {
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    padding: 5px 6px;
+    border-radius: 8px;
+    border: 1.5px solid #7b1fa2;
+    background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    color: #fff;
+    cursor: pointer;
+    transition: all .12s
+}
+
+.btn-deco-levelup:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ab47bc, #9c27b0)
+}
+
+.btn-deco-levelup.unaffordable,
+.btn-deco-levelup:disabled {
+    background: #bbb;
+    border-color: #aaa;
+    cursor: default
+}
+
 /* ── 飾りボタン（ショップカード内）── */
 .btn-deco-open {
     width: 100%;
@@ -197,6 +276,17 @@
     max-height: 80vh;
     display: flex;
     flex-direction: column
+}
+
+@media (min-width: 960px) {
+  .modal.deco-modal {
+    max-width: 660px;
+    max-height: 88vh;
+  }
+
+  .deco-modal-avail-wrap {
+    max-height: 52vh;
+  }
 }
 
 .deco-modal-slots {

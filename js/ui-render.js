@@ -65,7 +65,7 @@ function renderTown() {
   if (decoRow) decoRow.remove();
   const areaBuildingIds = BUILDINGS.filter(b => b.area === cur.id && (state.buildings[b.id]?.level || 0) > 0).map(b => b.id);
   const areaDecos = areaBuildingIds.flatMap(bId => (state.decoSlots || {})[bId] || [])
-    .map(decoId => DECORATIONS.find(d => d.id === decoId))
+    .map(decoId => findDeco(decoId))
     .filter(Boolean);
   if (areaDecos.length > 0) {
     const dr = document.createElement('div');
@@ -177,7 +177,7 @@ function renderShop() {
       ${lv > 0 ? (() => {
         const decoSlots = (state.decoSlots || {})[b.id] || [];
         const hasDeco = decoSlots.length > 0;
-        return `<button class="btn-deco-open${hasDeco ? ' has-deco' : ''}" onclick="openDecoModal('${b.id}')">🌺 飾り ${decoSlots.length}/3</button>`;
+        return `<button class="btn-deco-open${hasDeco ? ' has-deco' : ''}" onclick="openDecoModal('${b.id}')">🌺 飾り ${decoSlots.length}/${getMaxDecoSlots()}</button>`;
       })() : ''}
       ${lv > 0 && MINIGAMES[b.id] && MINIGAME_META[b.id] ? (() => {
         const meta = MINIGAME_META[b.id];

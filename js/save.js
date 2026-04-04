@@ -7,7 +7,7 @@ function saveGame() {
       coins: state.coins, totalEarned: state.totalEarned, buildings: state.buildings,
       savedAt: Date.now(), prestigeCount: state.prestigeCount, activeEvents: state.activeEvents,
       achievements: state.achievements, eventCount: state.eventCount, stormCount: state.stormCount,
-      daily: state.daily, decoOwned: state.decoOwned, decoSlots: state.decoSlots,
+      daily: state.daily, decoOwned: state.decoOwned, decoSlots: state.decoSlots, decoLevels: state.decoLevels,
       unlockedAreas: state.unlockedAreas, research: state.research,
       quests: state.quests, skills: state.skills,
       prestigeSkills: state.prestigeSkills, prestigeSp: state.prestigeSp,
@@ -54,6 +54,7 @@ function loadGame() {
     state.daily = d.daily || { lastClaimDate: null, streak: 0, totalClaimed: 0 };
     state.decoOwned = d.decoOwned || {};
     state.decoSlots = d.decoSlots || {};
+    state.decoLevels = d.decoLevels || {};
     state.unlockedAreas = d.unlockedAreas || [1];
     state.research = d.research || {};
     BUILDINGS.forEach(b => {

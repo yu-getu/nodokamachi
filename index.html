@@ -206,6 +206,8 @@
         </div>
       </div>
       <p id="skillSpDesc" style="font-size:10px;color:var(--muted);margin-bottom:10px">建物1種がLv100に初到達するごとに+1SP・実績10件ごとに+1SP。スキルは転生でリセットされます。</p>
+      <div id="spConvertBar" class="sp-convert-bar"></div>
+      <div id="inheritSkillBar" class="inherit-skill-bar" style="display:none"></div>
       <div id="skillDetailArea"></div>
       <div id="skillTreeContent"></div>
     </div>
@@ -346,7 +348,7 @@
 
   <!-- パン屋ミニゲームモーダル -->
   <div class="modal-overlay" id="bakeryModal" onclick="if(event.target===this)closeBakeryGame()">
-    <div class="modal bakery-modal">
+    <div class="modal mg-modal bakery-modal">
       <h2>🥐 パン焼きタイム！</h2>
       <div class="bk-oven-label">火加減がちょうどいいときに「焼く！」を押そう</div>
       <!-- パンイラスト -->
@@ -385,7 +387,7 @@
 
   <!-- 喫茶店ミニゲームモーダル -->
   <div class="modal-overlay" id="cafeModal" onclick="if(event.target===this)closeCafeGame()">
-    <div class="modal cafe-modal">
+    <div class="modal mg-modal cafe-modal">
       <h2>☕ コーヒーを淹れよう！</h2>
       <p class="mg-desc">ちょうどいい量になったら「止める！」を押そう</p>
       <!-- カップイラスト -->
@@ -434,7 +436,7 @@
 
   <!-- 神社ミニゲームモーダル -->
   <div class="modal-overlay" id="shrineModal" onclick="if(event.target===this)closeShrineGame()">
-    <div class="modal shrine-modal">
+    <div class="modal mg-modal shrine-modal">
       <!-- フラッシュオーバーレイ -->
       <div class="shrine-flash" id="shrineFlash"></div>
       <!-- パーティクルコンテナ -->
@@ -461,7 +463,7 @@
 
   <!-- 温泉旅館ミニゲームモーダル -->
   <div class="modal-overlay" id="onsenModal" onclick="if(event.target===this)closeOnsenGame()">
-    <div class="modal">
+    <div class="modal mg-modal">
       <h2>♨️ 湯加減を整えよう！</h2>
       <p class="mg-desc">青いゾーン内に温度を保ち続けよう（6秒）</p>
       <div class="onsen-gauge-wrap">
@@ -488,7 +490,7 @@
 
   <!-- 遊園地ミニゲームモーダル -->
   <div class="modal-overlay" id="amusementModal" onclick="if(event.target===this)closeAmusementGame()">
-    <div class="modal">
+    <div class="modal mg-modal">
       <h2>🎡 盛り上げタップ！</h2>
       <p class="mg-desc">5秒間で連打！たくさん叩いて盛り上げよう！</p>
       <div class="amus-hype-wrap">
@@ -509,7 +511,7 @@
 
   <!-- 宇宙基地ミニゲームモーダル -->
   <div class="modal-overlay" id="rocketModal" onclick="if(event.target===this)closeRocketGame()">
-    <div class="modal">
+    <div class="modal mg-modal">
       <h2>🚀 ロケット発射！</h2>
       <p class="mg-desc">「発射！」が出た瞬間にボタンを押そう！いつ来るかはわからない…</p>
       <div class="rocket-countdown-wrap" style="text-align:center">
@@ -525,7 +527,7 @@
 
   <!-- 深海調査船ミニゲームモーダル -->
   <div class="modal-overlay" id="deepseasubModal" onclick="if(event.target===this)closeDeepseasubGame()">
-    <div class="modal">
+    <div class="modal mg-modal">
       <h2>🦈 ソナー探査！</h2>
       <p class="mg-desc">回転アームがターゲット（ブリップ）に重なった瞬間に押そう！</p>
       <div class="sonar-wrap">
@@ -541,7 +543,7 @@
 
   <!-- 次元の扉ミニゲームモーダル -->
   <div class="modal-overlay" id="dimgateModal" onclick="if(event.target===this)closeDimgateGame()">
-    <div class="modal">
+    <div class="modal mg-modal">
       <h2>🌀 次元の扉！</h2>
       <p class="mg-desc">2本の針を同時にゾーンに合わせてボタンを押そう！</p>
       <div class="dimgate-bars-wrap">

@@ -1,3 +1,91 @@
+/* ── SP変換バー ── */
+.sp-convert-bar { margin-bottom: 8px }
+.sp-convert-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #fff8e1, #fef5c7);
+    border: 1.5px solid #d4a855;
+    border-radius: 12px;
+    padding: 8px 12px
+}
+.sp-convert-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: #8d6e00;
+    flex-shrink: 0
+}
+.sp-convert-cost {
+    font-size: 11px;
+    color: #a07800;
+    flex: 1
+}
+.btn-sp-convert {
+    padding: 4px 12px;
+    border-radius: 8px;
+    border: 1.5px solid #d4a855;
+    background: linear-gradient(135deg, #ff8f00, #e65100);
+    color: #fff;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    flex-shrink: 0
+}
+.btn-sp-convert:disabled {
+    background: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed
+}
+
+/* ── 引き継ぎスキルバー ── */
+.inherit-skill-bar { margin-bottom: 8px }
+.inherit-bar-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    border: 1.5px solid var(--green);
+    border-radius: 12px;
+    padding: 8px 12px
+}
+.inherit-bar-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--green2);
+    flex-shrink: 0
+}
+.inherit-bar-current {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text);
+    flex: 1
+}
+.inherit-bar-hint {
+    font-size: 10px;
+    color: var(--muted)
+}
+
+/* ── 引き継ぎ中スキルノード ── */
+.skill-node.sk-inherited {
+    box-shadow: 0 0 0 2px var(--green), 0 0 8px rgba(76,175,80,.4)
+}
+.sk-inherit-badge {
+    font-size: 10px;
+    vertical-align: top;
+    margin-left: 1px
+}
+.sk-inherit-btn {
+    margin-top: 6px;
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    color: var(--green2);
+    border: 1.5px solid var(--green)
+}
+.sk-inherit-btn.active {
+    background: var(--green);
+    color: #fff
+}
+
 /* ── スキルツリー ── */
 .skill-sp-bar {
     background: linear-gradient(135deg, #f3e5f5, #e1bee7);

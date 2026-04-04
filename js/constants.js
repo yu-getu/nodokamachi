@@ -119,7 +119,7 @@ const RESEARCH_TIERS = [
 // 世代スキルツリー定義（3列×8段）
 const PRESTIGE_SKILLS = [
   // ── 左列：CPS永続強化 ──
-  {id:'legacy_memory',  name:'遺産の記憶', emoji:'📜', cost:1, tier:1, requires:[],               effect:'offline_mult',      value:0.15, desc:'オフライン効率 +15%'},
+  {id:'legacy_memory',  name:'遺産の記憶', emoji:'📜', cost:1, tier:1, requires:[],               effect:'cps_perm',          value:0.10, desc:'全CPS +10% 永続'},
   {id:'gen_bond',       name:'世代の絆',   emoji:'🔗', cost:2, tier:2, requires:['legacy_memory'],effect:'cps_perm',          value:0.20, desc:'全CPS +20% 永続'},
   {id:'history_mark',   name:'歴史の刻印', emoji:'⚖️', cost:2, tier:3, requires:['gen_bond'],     effect:'cps_perm',          value:0.25, desc:'全CPS +25% 永続'},
   {id:'legend_grace',   name:'伝説の加護', emoji:'⭐', cost:3, tier:4, requires:['history_mark'], effect:'prestige_cps_rate', value:0.2,  desc:'転生ごとのCPS増加率 +0.2'},
@@ -131,18 +131,18 @@ const PRESTIGE_SKILLS = [
   {id:'unlock_bulk_lv', name:'一括強化',   emoji:'⬆️', cost:1, tier:1, requires:[],               effect:'unlock_feature',    value:0,    desc:'建物の一括レベルアップを解放（×10・×100・MAX）'},
   {id:'unlock_bulk_sk', name:'まとめ習得', emoji:'📚', cost:1, tier:2, requires:['unlock_bulk_lv'],effect:'unlock_feature',    value:0,    desc:'スキル・世代スキルのまとめて習得を解放'},
   {id:'unlock_bulk_res',name:'一括研究',   emoji:'🔬', cost:1, tier:3, requires:['unlock_bulk_sk'],effect:'unlock_feature',    value:0,    desc:'施設の全Tier一括研究を解放'},
-  {id:'gods_will',      name:'神々の意志', emoji:'🌟', cost:3, tier:4, requires:['unlock_bulk_res'],effect:'cost_perm',         value:0.15, desc:'全建物コスト -15% 永続'},
-  {id:'deco_focus',     name:'飾りの極意', emoji:'🎯', cost:2, tier:5, requires:['gods_will'],     effect:'unlock_feature',    value:0,    desc:'施設特化飾りを解放。特定の施設を集中強化できる飾りが購入可能になる'},
-  {id:'wisdom_bond',    name:'知恵の絆',   emoji:'📖', cost:3, tier:6, requires:['deco_focus'],    effect:'prestige_sp_bonus', value:2,    desc:'転生ごとに通常SP +2（追加）'},
-  {id:'eternal_economy',name:'永遠の経済', emoji:'💰', cost:4, tier:7, requires:['wisdom_bond'],   effect:'cost_perm',         value:0.15, desc:'全建物コスト さらに-15% 永続（計-30%）'},
-  {id:'cosmic_archive', name:'宇宙の記録', emoji:'🗂️', cost:5, tier:8, requires:['eternal_economy'],effect:'offline_mult',     value:0.30, desc:'オフライン効率 +30% 永続'},
+  {id:'deco_focus',     name:'飾りの極意', emoji:'🎯', cost:2, tier:4, requires:['unlock_bulk_res'],effect:'unlock_feature',    value:0,    desc:'施設特化飾りを解放。特定の施設を集中強化できる飾りが購入可能になる'},
+  {id:'skill_inherit',  name:'スキルの継承',emoji:'🔖', cost:3, tier:5, requires:['deco_focus'],   effect:'unlock_feature',    value:0,    desc:'転生時にスキルを1つ選んで引き継げる（無償で習得状態を維持）'},
+  {id:'deco_bulk_place',name:'飾りの一括配置',emoji:'🏗️',cost:3, tier:6, requires:['skill_inherit'],effect:'unlock_feature',   value:0,    desc:'所持する飾りを効果値の高い順に自動配置するボタンを解放'},
+  {id:'deco_slot_extend',name:'スロット拡張',   emoji:'➕', cost:4, tier:7, requires:['deco_bulk_place'], effect:'unlock_feature', value:0, desc:'各建物の飾りスロットを4つに拡張'},
+  {id:'deco_levelup',    name:'飾り強化解放',  emoji:'⬆️', cost:5, tier:8, requires:['deco_slot_extend'],effect:'unlock_feature', value:0, desc:'所持中の飾りをコインで強化できる（最大Lv10）。レベルに応じて効果が倍増'},
   // ── 右列：稼ぎ強化 ──
   {id:'ancestor_grace', name:'先祖の加護', emoji:'🙏', cost:1, tier:1, requires:[],               effect:'prestige_sp_bonus', value:1,    desc:'転生ごとに通常SP +1'},
   {id:'harvest_gift',   name:'稼ぎの才覚', emoji:'🪙', cost:2, tier:2, requires:['ancestor_grace'],effect:'click_sec',         value:2,    desc:'ひと稼ぎ +2秒分'},
   {id:'harvest_art',    name:'稼ぎの奥義', emoji:'⚡', cost:3, tier:3, requires:['harvest_gift'],  effect:'click_sec',         value:4,    desc:'ひと稼ぎ +4秒分'},
   {id:'harvest_legend', name:'稼ぎの伝説', emoji:'🌾', cost:4, tier:4, requires:['harvest_art'],   effect:'click_mult',        value:1.0,  desc:'ひと稼ぎ量 ×2（永続）'},
   {id:'harvest_master', name:'稼ぎの極み', emoji:'🎯', cost:4, tier:5, requires:['harvest_legend'],effect:'click_sec',         value:6,    desc:'ひと稼ぎ +6秒分'},
-  {id:'harvest_god',    name:'稼ぎの神',   emoji:'🌟', cost:5, tier:6, requires:['harvest_master'],effect:'click_mult',        value:1.0,  desc:'ひと稼ぎ量 さらに×2（永続）'},
+  {id:'harvest_god',    name:'稼ぎの神',   emoji:'🌟', cost:5, tier:6, requires:['harvest_master'],effect:'cps_perm',          value:0.30, desc:'稼ぎの勢いが街全体に波及。全CPS +30% 永続'},
   {id:'legacy_harvest', name:'遺産の恵み', emoji:'✨', cost:5, tier:7, requires:['harvest_god'],   effect:'click_sec',         value:10,   desc:'ひと稼ぎ +10秒分'},
   {id:'eternal_fortune',name:'永遠の幸運', emoji:'🍀', cost:6, tier:8, requires:['legacy_harvest'],effect:'click_mult',        value:2.0,  desc:'ひと稼ぎ量 さらに×3（永続）'},
 ];
@@ -161,11 +161,11 @@ const PRESTIGE_SKILL_POS = {
   unlock_bulk_lv:  { x: 0.50, tier: 1 },
   unlock_bulk_sk:  { x: 0.50, tier: 2 },
   unlock_bulk_res: { x: 0.50, tier: 3 },
-  gods_will:       { x: 0.50, tier: 4 },
-  deco_focus:      { x: 0.50, tier: 5 },
-  wisdom_bond:     { x: 0.50, tier: 6 },
-  eternal_economy: { x: 0.50, tier: 7 },
-  cosmic_archive:  { x: 0.50, tier: 8 },
+  deco_focus:      { x: 0.50, tier: 4 },
+  skill_inherit:   { x: 0.50, tier: 5 },
+  deco_bulk_place: { x: 0.50, tier: 6 },
+  deco_slot_extend:{ x: 0.50, tier: 7 },
+  deco_levelup:    { x: 0.50, tier: 8 },
   // 右列（x=0.80）
   ancestor_grace:  { x: 0.80, tier: 1 },
   harvest_gift:    { x: 0.80, tier: 2 },
@@ -189,10 +189,10 @@ const SKILLS = [
   {id:'deep_sea_power',  name:'深海の覇権',       emoji:'🌊', cost:4, tier:7,  requires:['space_ambition'],   effect:'cps_area7',       value:0.35,  desc:'深海エリア全建物のCPS +35%'},
   {id:'dim_mastery',     name:'異次元の理',       emoji:'🔮', cost:4, tier:8,  requires:['deep_sea_power'],   effect:'cps_area8',       value:0.40,  desc:'異次元エリア全建物のCPS +40%'},
   {id:'galaxy_civ',      name:'銀河文明',         emoji:'🌌', cost:4, tier:9,  requires:['dim_mastery'],      effect:'cps_mult',        value:0.50,  desc:'全建物のCPS ×1.5'},
-  {id:'dim_enlighten',   name:'異次元の悟り',     emoji:'💎', cost:5, tier:10, requires:['galaxy_civ'],       effect:'cps_mult',        value:0.50,  desc:'全建物のCPS ×1.5'},
+  {id:'dim_enlighten',   name:'異次元の悟り',     emoji:'💎', cost:5, tier:10, requires:['galaxy_civ'],       effect:'cps_all',         value:0.30,  desc:'全建物のCPS +30%'},
   {id:'culture_bloom',   name:'文化の花開き',     emoji:'📚', cost:3, tier:11, requires:['dim_enlighten'],    effect:'cps_all',         value:0.20,  desc:'全建物のCPS +20%'},
   {id:'eternal_creation',name:'永遠の創造',       emoji:'♾️', cost:6, tier:12, requires:['culture_bloom'],    effect:'cps_mult',        value:1.00,  desc:'全建物のCPS ×2'},
-  // ── 中列：飾り系 ──（デコ・礎 → イベント → ミニゲーム → シナジー）
+  // ── 中列：飾り系 ──（デコ・礎 → 美観 → イベント → 飾りの極み）
   {id:'nature_beauty',   name:'自然の美',         emoji:'🌿', cost:1, tier:1,  requires:[],                   effect:'deco_mult',       value:0.15,  desc:'全デコレーション効果 +15%'},
   {id:'foundation_area1',  name:'農村の礎',         emoji:'🏡', cost:2, tier:2,  requires:['nature_beauty'],        effect:'foundation_rate',       value:0.002, desc:'農村各建物Lv×0.2%を全建物CPS強化（農村全Lv100で全体×3）'},
   {id:'foundation_area2',  name:'商いの礎',         emoji:'🏪', cost:2, tier:3,  requires:['foundation_area1'],     effect:'foundation_area2_rate', value:0.001, desc:'商店街各建物Lv×0.1%を全建物CPS強化（商店街全Lv100で全体×1.77倍）'},
@@ -203,21 +203,21 @@ const SKILLS = [
   {id:'beauty_power',      name:'美の力',           emoji:'🌺', cost:3, tier:8,  requires:['foundation_area6'],     effect:'beauty_mult',           value:0.30,  desc:'美観ボーナス ×1.3'},
   {id:'event_sense',       name:'イベント感知',     emoji:'🎪', cost:3, tier:9,  requires:['beauty_power'],         effect:'event_mult',            value:0.20,  desc:'イベント効果倍率 +20%'},
   {id:'event_lord',        name:'祭典の主',         emoji:'🎆', cost:4, tier:10, requires:['event_sense'],          effect:'event_dur',             value:0.30,  desc:'イベント継続時間 +30%'},
-  {id:'minigame_master',   name:'ミニゲームの達人', emoji:'🎮', cost:4, tier:11, requires:['event_lord'],           effect:'minigame_reward',       value:0.50,  desc:'ミニゲームの報酬 +50%'},
-  {id:'farm_market',       name:'農商連携',         emoji:'🤝', cost:4, tier:12, requires:['minigame_master'],      effect:'cps_synergy', areas:[1,2], value:0.15, desc:'農村・商店街エリアが互いに+15%（両区解放時）'},
-  // ── 右列：効率系 ──（クエスト・研究・実績・オフライン → 全体増幅 → シナジー）
-  {id:'thrift',          name:'知恵の報酬',       emoji:'📜', cost:1, tier:1,  requires:[],                   effect:'quest_reward',    value:0.30,  desc:'クエスト報酬 +30%'},
-  {id:'research_gift',   name:'研究の才能',       emoji:'🔬', cost:2, tier:2,  requires:['thrift'],           effect:'research_cost',   value:0.20,  desc:'研究コスト -20%'},
-  {id:'achiev_eye',      name:'実績の目',         emoji:'👁️', cost:3, tier:3,  requires:['research_gift'],    effect:'achiev_cps',      value:0.01,  desc:'実績1件ごとに全CPS +1%'},
-  {id:'offline_master',  name:'倹約の境地',       emoji:'💤', cost:3, tier:4,  requires:['achiev_eye'],       effect:'offline_mult',    value:0.20,  desc:'オフライン効率 +20%'},
-  {id:'quest_wisdom',    name:'クエストの極意',   emoji:'📋', cost:3, tier:5,  requires:['offline_master'],   effect:'quest_reward',    value:0.30,  desc:'クエスト報酬 +30%'},
-  {id:'town_vitality',   name:'街の活気',         emoji:'✨', cost:2, tier:6,  requires:['quest_wisdom'],     effect:'cps_all',         value:0.15,  desc:'全建物のCPS +15%'},
-  {id:'miracle_town',    name:'奇跡の街',         emoji:'🌟', cost:3, tier:7,  requires:['town_vitality'],    effect:'cps_all',         value:0.20,  desc:'全建物のCPS +20%'},
-  {id:'cosmos_wisdom',   name:'宇宙の全知',       emoji:'🌠', cost:5, tier:8,  requires:['miracle_town'],     effect:'cps_mult',        value:0.30,  desc:'全建物のCPS ×1.3'},
-  {id:'city_space',      name:'都宙連帯',         emoji:'🌌', cost:4, tier:9,  requires:['cosmos_wisdom'],    effect:'cps_synergy', areas:[5,6], value:0.20, desc:'娯楽・宇宙エリアが互いに+20%（両区解放時）'},
-  {id:'culture_cosmos',  name:'文化と宇宙の絆',   emoji:'🔭', cost:4, tier:10, requires:['city_space'],       effect:'cps_synergy', areas:[3,6], value:0.25, desc:'文化の丘・宇宙エリアが互いに+25%（両区解放時）'},
-  {id:'all_sync',        name:'全区同調',         emoji:'⚡', cost:5, tier:11, requires:['culture_cosmos'],   effect:'cps_mult',        value:0.50,  desc:'全建物のCPS ×1.5'},
-  {id:'grand_unified',   name:'大統一理論',       emoji:'⚛️', cost:6, tier:12, requires:['all_sync'],         effect:'cps_mult',        value:1.00,  desc:'全建物のCPS ×2'},
+  {id:'deco_mastery',      name:'飾り師の極意',     emoji:'🎨', cost:4, tier:11, requires:['event_lord'],           effect:'deco_mult',             value:0.30,  desc:'全デコレーション効果 さらに+30%'},
+  {id:'beauty_feast',      name:'美の饗宴',         emoji:'🌸', cost:4, tier:12, requires:['deco_mastery'],         effect:'beauty_mult',           value:0.50,  desc:'美観ボーナス ×1.5'},
+  // ── 右列：効率系 ──（クエスト・研究・実績・オフライン → エリアシナジー → コスト削減）
+  {id:'thrift',          name:'知恵の報酬',         emoji:'📜', cost:1, tier:1,  requires:[],                   effect:'quest_reward',    value:0.30,  desc:'クエスト報酬 +30%'},
+  {id:'research_gift',   name:'研究の才能',         emoji:'🔬', cost:2, tier:2,  requires:['thrift'],           effect:'research_cost',   value:0.20,  desc:'研究コスト -20%'},
+  {id:'achiev_eye',      name:'実績の目',           emoji:'👁️', cost:3, tier:3,  requires:['research_gift'],    effect:'achiev_cps',      value:0.01,  desc:'実績1件ごとに全CPS +1%'},
+  {id:'offline_master',  name:'倹約の境地',         emoji:'💤', cost:3, tier:4,  requires:['achiev_eye'],       effect:'offline_mult',    value:0.20,  desc:'オフライン効率 +20%'},
+  {id:'farm_market',     name:'農商連携',           emoji:'🤝', cost:3, tier:5,  requires:['offline_master'],   effect:'cps_synergy', areas:[1,2], value:0.20, desc:'農村・商店街エリアが互いに+20%（両区解放時）'},
+  {id:'culture_heal',    name:'文化と癒しの絆',     emoji:'🌿', cost:3, tier:6,  requires:['farm_market'],      effect:'cps_synergy', areas:[3,4], value:0.20, desc:'文化の丘・癒やしの里エリアが互いに+20%（両区解放時）'},
+  {id:'city_space',      name:'都市宇宙連帯',       emoji:'🌌', cost:4, tier:7,  requires:['culture_heal'],     effect:'cps_synergy', areas:[5,6], value:0.25, desc:'娯楽エリア・宇宙エリアが互いに+25%（両区解放時）'},
+  {id:'deep_dim',        name:'深海と異次元の共鳴', emoji:'🔮', cost:4, tier:8,  requires:['city_space'],       effect:'cps_synergy', areas:[7,8], value:0.25, desc:'深海エリア・異次元エリアが互いに+25%（両区解放時）'},
+  {id:'culture_cosmos',  name:'文化と宇宙の絆',     emoji:'🔭', cost:4, tier:9,  requires:['deep_dim'],         effect:'cps_synergy', areas:[3,6], value:0.30, desc:'文化の丘・宇宙エリアが互いに+30%（両区解放時）'},
+  {id:'minigame_master', name:'ミニゲームの達人',   emoji:'🎮', cost:4, tier:10, requires:['culture_cosmos'],   effect:'minigame_reward', value:0.50, desc:'ミニゲームの報酬 +50%'},
+  {id:'cost_thrift',     name:'節約の心得',         emoji:'💰', cost:4, tier:11, requires:['minigame_master'],  effect:'cost_down',       value:0.15, desc:'全建物のコスト −15%'},
+  {id:'cost_mastery',    name:'倹約の極意',         emoji:'🏦', cost:5, tier:12, requires:['cost_thrift'],      effect:'cost_down',       value:0.20, desc:'全建物のコスト さらに−20%（合計−35%）'},
 ];
 
 const EVENTS = [
@@ -284,7 +284,7 @@ const DECORATIONS = [
   { id:'focus_core',   name:'エーテルコア',   emoji:'⚗️', cost:5e18,      desc:'魔法陣の核として召喚されたエーテルの塊', effect:{type:'self_cps', value:30.0}, effectDesc:'魔法陣に設置時 CPS ×31', focusOnly:true, target:'magicircle'},
 ];
 
-// ── レガシー飾り（Lv100到達で自動解放・購入不可）──
+// ── 時代の証（Lv100到達で自動解放・購入不可）──
 // BUILDINGS 定義後に動的生成。effect.type = 'legacy_cps': 設置施設のCPS + Lv×value
 const LEGACY_DECORATIONS = BUILDINGS.map(b => ({
   id: `legacy_${b.id}`,
@@ -508,9 +508,9 @@ const ACHIEVEMENTS = [
   {id:'deco_5',         icon:'🌸', name:'飾り好き',            desc:'飾りを5つ所持している',                reward:'称号', cat:'deco', check:s=>Object.keys(s.decoOwned||{}).filter(k=>!k.startsWith('legacy_')).length>=5},
   {id:'deco_15',        icon:'🎀', name:'飾りコレクター',      desc:'飾りを15種類所持している',             reward:'称号', cat:'deco', check:s=>Object.keys(s.decoOwned||{}).filter(k=>!k.startsWith('legacy_')).length>=15},
   {id:'deco_placed_10', icon:'✨', name:'まちを飾る人',        desc:'飾りを合計10個スロットに配置した',     reward:'称号', cat:'deco', check:s=>Object.values(s.decoSlots||{}).reduce((n,arr)=>n+arr.length,0)>=10},
-  {id:'legacy_first',   icon:'👑', name:'伝説の始まり',        desc:'初めてレガシー飾りを解放した',          reward:'称号', cat:'deco', check:s=>Object.keys(s.decoOwned||{}).some(k=>k.startsWith('legacy_'))},
-  {id:'legacy_3',       icon:'💫', name:'レガシーコレクター',  desc:'レガシー飾りを3種類解放した',           reward:'称号', cat:'deco', check:s=>Object.keys(s.decoOwned||{}).filter(k=>k.startsWith('legacy_')).length>=3},
-  {id:'legacy_all',     icon:'♾️', name:'伝説の継承者',        desc:'全施設のレガシー飾りを解放した',        reward:'称号', cat:'deco', check:s=>BUILDINGS.every(b=>s.decoOwned?.[`legacy_${b.id}`])},
+  {id:'legacy_first',   icon:'👑', name:'伝説の始まり',        desc:'初めて時代の証を解放した',              reward:'称号', cat:'deco', check:s=>Object.keys(s.decoOwned||{}).some(k=>k.startsWith('legacy_'))},
+  {id:'legacy_3',       icon:'💫', name:'レガシーコレクター',  desc:'時代の証を3種類解放した',               reward:'称号', cat:'deco', check:s=>Object.keys(s.decoOwned||{}).filter(k=>k.startsWith('legacy_')).length>=3},
+  {id:'legacy_all',     icon:'♾️', name:'伝説の継承者',        desc:'全施設の時代の証を解放した',            reward:'称号', cat:'deco', check:s=>BUILDINGS.every(b=>s.decoOwned?.[`legacy_${b.id}`])},
   // ミニゲーム
   {id:'mg_first',       icon:'🎮', name:'ゲーム好き',          desc:'ミニゲームを初めてプレイした',          reward:'称号', cat:'minigame', check:s=>Object.keys(MINIGAMES).some(id=>(s[`${id}GamePlaysToday`]||0)>0||(s[`${id}GameLastDate`]||'')!=='')},
   {id:'mg_bakery_10',   icon:'🥐', name:'パン職人',            desc:'パン屋ミニゲームを10回プレイした',      reward:'称号', cat:'minigame', check:s=>(s.bakeryTotalPlays||0)>=10},

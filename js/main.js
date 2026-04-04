@@ -26,8 +26,8 @@ const _MILESTONE_CFG = {
   10:  { icon: '🌱', title: 'Lv10達成！',  body: '施設が軌道に乗り始めた！' },
   25:  { icon: '🌿', title: 'Lv25達成！',  body: 'まちのシンボルに成長した！' },
   50:  { icon: '⭐', title: 'Lv50達成！',  body: '円熟の域に達した施設！' },
-  100: { icon: '✨', title: 'Lv100達成！', body: 'レガシー飾りが解放されました！飾りタブで確認！' },
-  200: { icon: '💎', title: 'Lv200達成！', body: '神話の領域へ！レガシー飾りがさらに輝く！' },
+  100: { icon: '✨', title: 'Lv100達成！', body: '時代の証が解放されました！飾りタブで確認！' },
+  200: { icon: '💎', title: 'Lv200達成！', body: '神話の領域へ！時代の証がさらに輝く！' },
 };
 function _checkBuildingMilestone(b, prevLv, newLv) {
   const milestones = [..._BUILDING_MILESTONES];
@@ -37,7 +37,7 @@ function _checkBuildingMilestone(b, prevLv, newLv) {
   if (hit.length === 0) return;
   const ms = hit[hit.length - 1];
   const cfg = _MILESTONE_CFG[ms] || { icon: '💎', title: `Lv${ms}達成！`, body: '超越の領域へ踏み込んだ！' };
-  // Lv100到達でレガシー飾りを自動付与
+  // Lv100到達で時代の証を自動付与
   if (prevLv < 100 && newLv >= 100) {
     if (!state.decoOwned) state.decoOwned = {};
     state.decoOwned[`legacy_${b.id}`] = true;
