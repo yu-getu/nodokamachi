@@ -1,27 +1,27 @@
 // ══════════════════════════════
 //  宇宙基地ミニゲーム：ロケット発射
-//  カウントダウンが0になった瞬間にボタンを押す
+//  ランダムなタイミングで「発射！」が出たら即座にボタンを押す
 // ══════════════════════════════
 
 const ROCKET_MAX_PLAYS      = 10;
-const ROCKET_STEP_MS        = 900;  // 各数字の表示時間
-const ROCKET_PERFECT_WINDOW = 250;  // ms（0表示後この時間内 = PERFECT）
-const ROCKET_GOOD_WINDOW    = 600;  // ms（PERFECT外でこの時間内 = GOOD）
-const ROCKET_SEQUENCE       = [5, 4, 3, 2, 1, '発射！'];
+const ROCKET_PERFECT_WINDOW = 300;  // ms（発射後この時間内 = PERFECT）
+const ROCKET_GOOD_WINDOW    = 700;  // ms
+const ROCKET_TIMEOUT_MS     = 1500; // ms（これ以降は MISS）
 
-let _rocketStep      = -1;
-let _rocketTimer     = null;
-let _rocketFireTime  = null; // '発射！'が表示された時刻
-let _rocketPlayed    = false;
-let _rocketEarlyMiss = false;
+let _rocketFireTime = null;
+let _rocketTimer    = null;
+let _rocketPlayed   = false;
+let _rocketWaiting  = false; // 開始〜発射までの待機中フラグ
 
 function openRocketGame() {
   if ((state.buildings['rocket']?.level || 0) === 0) return;
-  _rocketPlayed = false; _rocketStep = -1; _rocketEarlyMiss = false;
+  _rocketReset();
   mgShowResult('rocketResult', '', '');
-  _rocketSetDisplay('🚀');
-  const btn = document.getElementById('rocketPressBtn');
-  if (btn) btn.disabled = mgGetPlaysRemain('rocket', ROCKET_MAX_PLAYS) === 0;
+  _rocketSetDisplay('🚀', '');
+  const startBtn = document.getElementById('rocketStartBtn');
+  const pressBtn = document.getElementById('rocketPressBtn');
+  if (startBtn) startBtn.disabled = mgGetPlaysRemain('rocket', ROCKET_MAX_PLAYS) === 0;
+  if (pressBtn) pressBtn.disabled = true;
   mgUpdatePlaysEl('rocketPlaysRemain', 'rocket', ROCKET_MAX_PLAYS);
   document.getElementById('rocketModal').classList.add('show');
 }
@@ -41,52 +41,60 @@ function _rocketSetDisplay(text, cls = '') {
 
 function _rocketClear() {
   if (_rocketTimer) { clearTimeout(_rocketTimer); _rocketTimer = null; }
-  _rocketPlayed = false;
 }
 
+function _rocketReset() {
+  _rocketClear();
+  _rocketFireTime = null;
+  _rocketPlayed   = false;
+  _rocketWaiting  = false;
+}
+
+// HTML の onclick="startRocketCountdown()" と互換
 function startRocketCountdown() {
-  if (mgGetPlaysRemain('rocket', ROCKET_MAX_PLAYS) === 0 || _rocketStep >= 0) return;
+  if (mgGetPlaysRemain('rocket', ROCKET_MAX_PLAYS) === 0 || _rocketWaiting) return;
   mgRecordPlay('rocket');
-  _rocketStep = 0; _rocketEarlyMiss = false; _rocketFireTime = null;
-  document.getElementById('rocketPressBtn').disabled = false;
-  _rocketAdvance();
-}
+  _rocketWaiting  = true;
+  _rocketFireTime = null;
+  _rocketPlayed   = false;
 
-function _rocketAdvance() {
-  if (_rocketStep >= ROCKET_SEQUENCE.length) return;
-  const val = ROCKET_SEQUENCE[_rocketStep];
-  if (val === '発射！') {
+  const startBtn = document.getElementById('rocketStartBtn');
+  const pressBtn = document.getElementById('rocketPressBtn');
+  if (startBtn) startBtn.disabled = true;
+  if (pressBtn) pressBtn.disabled = false; // 早押しミス可能なので有効化
+
+  _rocketSetDisplay('待機中…', 'rocket-wait');
+
+  // ランダム遅延 1.5〜4.0 秒
+  const delay = 1500 + Math.random() * 2500;
+  _rocketTimer = setTimeout(() => {
+    if (_rocketPlayed) return; // 早押し済み
     _rocketFireTime = Date.now();
     _rocketSetDisplay('発射！', 'rocket-fire');
     playTones([784, 988, 1175], 0.5, 0.28);
+    // タイムアウト
     _rocketTimer = setTimeout(() => {
-      if (!_rocketPlayed) _rocketResolve(); // タイムオーバー
-    }, 1200);
-  } else {
-    _rocketSetDisplay(String(val), val <= 2 ? 'rocket-urgent' : '');
-    playTones([440], 0.2, 0.15);
-    _rocketStep++;
-    _rocketTimer = setTimeout(_rocketAdvance, ROCKET_STEP_MS);
-  }
+      if (!_rocketPlayed) _rocketResolve();
+    }, ROCKET_TIMEOUT_MS);
+  }, delay);
 }
 
 function pressRocketBtn() {
-  if (_rocketPlayed) return;
-  if (_rocketFireTime === null && _rocketStep >= 0) {
-    // カウントダウン中に押した = 早押しミス
-    _rocketEarlyMiss = true;
+  if (_rocketPlayed || !_rocketWaiting) return;
+
+  if (_rocketFireTime === null) {
+    // 発射前の早押し
     _rocketClear();
     _rocketPlayed = true;
-    const base   = mgBaseReward('rocket', 30);
-    const reward = Math.floor(base * 0.1);
-    mgShowResult('rocketResult', `⚡ 早すぎた！  +${fmt(reward)} 🪙`, 'mg-result-miss');
-    mgRewardAndLog(reward, '🚀 ロケット 早すぎた！');
+    _rocketSetDisplay('💥', '');
+    mgShowResult('rocketResult', `⚡ 早すぎた！`, 'mg-result-miss');
+    addLog('🚀 ロケット 早すぎた…');
     mgUpdatePlaysEl('rocketPlaysRemain', 'rocket', ROCKET_MAX_PLAYS);
-    playTones([300,250],0.3,0.18);
+    playTones([300, 250], 0.3, 0.18);
     _rocketAfterPlay();
     return;
   }
-  if (_rocketFireTime !== null) _rocketResolve();
+  _rocketResolve();
 }
 
 function _rocketResolve() {
@@ -100,23 +108,27 @@ function _rocketResolve() {
   if (delay <= ROCKET_PERFECT_WINDOW) {
     reward = Math.floor(base * 3);   label = '🚀 PERFECT！完璧な発射！'; cls = 'mg-result-perfect'; playMilestoneSfx();
   } else if (delay <= ROCKET_GOOD_WINDOW) {
-    reward = Math.floor(base * 1.5); label = '👍 GOOD！いいタイミング'; cls = 'mg-result-good';    playQuestSfx();
+    reward = Math.floor(base * 1.5); label = '👍 GOOD！いいタイミング';  cls = 'mg-result-good';    playQuestSfx();
   } else {
-    reward = Math.floor(base * 0.2); label = '😅 遅すぎた…';           cls = 'mg-result-miss';    playTones([300,250],0.3,0.18);
+    reward = 0;                       label = '😅 遅すぎた…';            cls = 'mg-result-miss';    playTones([300, 250], 0.3, 0.18);
   }
 
-  mgShowResult('rocketResult', `${label}  +${fmt(reward)} 🪙`, cls);
-  mgRewardAndLog(reward, `🚀 ロケット ${label}`);
+  _rocketSetDisplay('🚀', '');
+  mgShowResult('rocketResult', reward > 0 ? `${label}  +${fmt(reward)} 🪙` : label, cls);
+  if (reward > 0) mgRewardAndLog(reward, `🚀 ロケット ${label}`);
+  else addLog(`🚀 ロケット ${label}`);
   mgUpdatePlaysEl('rocketPlaysRemain', 'rocket', ROCKET_MAX_PLAYS);
-  _rocketSetDisplay('🚀');
   _rocketAfterPlay();
 }
 
 function _rocketAfterPlay() {
-  _rocketStep = -1;
-  const btn = document.getElementById('rocketPressBtn');
-  if (!btn) return;
-  const remain = mgGetPlaysRemain('rocket', ROCKET_MAX_PLAYS);
-  btn.disabled    = remain === 0;
-  btn.textContent = remain > 0 ? '🚀 もう一度' : '今日はここまで';
+  _rocketWaiting = false;
+  const startBtn = document.getElementById('rocketStartBtn');
+  const pressBtn = document.getElementById('rocketPressBtn');
+  const remain   = mgGetPlaysRemain('rocket', ROCKET_MAX_PLAYS);
+  if (pressBtn) pressBtn.disabled = true;
+  if (startBtn) {
+    startBtn.disabled    = remain === 0;
+    startBtn.textContent = remain > 0 ? '▶ もう一度' : '今日はここまで';
+  }
 }

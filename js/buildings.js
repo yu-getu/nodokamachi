@@ -64,11 +64,19 @@ function getBuildingCps(b) {
   if (lv === 0) return 0;
   const base = b.baseCps * (1 + getLegacyBaseCpsRate(b.id, lv)) * lv * (1 + lv * 0.10);
   const foundationRate = getSkillEffect('foundation_rate');
-  const foundationMult = foundationRate > 0
+  let foundationMult = foundationRate > 0
     ? BUILDINGS.filter(x => x.area === 1).reduce((m, x) => {
         return m * (1 + (state.buildings[x.id]?.level || 0) * foundationRate);
       }, 1)
     : 1;
+  for (let area = 2; area <= 6; area++) {
+    const areaRate = getSkillEffect(`foundation_area${area}_rate`);
+    if (areaRate > 0) {
+      foundationMult = BUILDINGS.filter(x => x.area === area).reduce((m, x) => {
+        return m * (1 + (state.buildings[x.id]?.level || 0) * areaRate);
+      }, foundationMult);
+    }
+  }
   return base * getResearchMult(b.id) * getSkillCpsMult(b)
     * getDecoAreaMult(b.area) * getDecoBuildingMult(b.id) * foundationMult;
 }

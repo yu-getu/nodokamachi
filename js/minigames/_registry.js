@@ -8,10 +8,10 @@ const MINIGAMES = {
   cafe:       true,   // ☕ 喫茶店 バー停止（js/minigames/cafe.js）
   shrine:     true,  // ⛩️ 神社おみくじ（js/minigames/shrine.js）
   onsen:      true,  // ♨️ 温泉湯加減調整（js/minigames/onsen.js）
-  amusement:  false,  // 🎡 遊園地連打（js/minigames/amusement.js）
-  rocket:     false,  // 🚀 宇宙基地カウントダウン（js/minigames/rocket.js）
-  deepseasub: false,  // 🦈 深海調査船ソナー（js/minigames/deepseasub.js）
-  dimgate:    false,  // 🌀 次元の扉デュアルバー（js/minigames/dimgate.js）
+  amusement:  true,   // 🎡 遊園地連打（js/minigames/amusement.js）
+  rocket:     true,   // 🚀 宇宙基地カウントダウン（js/minigames/rocket.js）
+  deepseasub: true,   // 🦈 深海調査船ソナー（js/minigames/deepseasub.js）
+  dimgate:    true,   // 🌀 次元の扉デュアルバー（js/minigames/dimgate.js）
 };
 
 // ショップボタン表示用メタ情報

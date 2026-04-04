@@ -6,13 +6,13 @@ const SAVE_KEY = 'nodokamachi_v6';
 // デイリーボーナス定義
 // cpsHours: 現在CPS × 3600秒 × cpsHours 分のコインを支給（最低保証: minCoins）
 const DAILY_REWARDS = [
-  { day:1, icon:'🌱', label:'初日',    cpsHours:1,  minCoins:100,  multiplier:1 },
-  { day:2, icon:'🌿', label:'2日目',   cpsHours:2,  minCoins:200,  multiplier:1 },
-  { day:3, icon:'☕', label:'3日目',   cpsHours:3,  minCoins:400,  multiplier:1 },
-  { day:4, icon:'🥐', label:'4日目',   cpsHours:5,  minCoins:800,  multiplier:1 },
-  { day:5, icon:'⭐', label:'5日目',   cpsHours:8,  minCoins:1500, multiplier:1 },
-  { day:6, icon:'🎆', label:'6日目',   cpsHours:12, minCoins:3000, multiplier:1 },
-  { day:7, icon:'👑', label:'7日目！', cpsHours:0,  minCoins:0,    multiplier:3, special:'CPS×3（2時間）', duration:7200 },
+  { day:1, icon:'🌱', label:'初日',    cpsHours:0.5, minCoins:50,   multiplier:1 },
+  { day:2, icon:'🌿', label:'2日目',   cpsHours:1,   minCoins:100,  multiplier:1 },
+  { day:3, icon:'☕', label:'3日目',   cpsHours:1.5, minCoins:200,  multiplier:1 },
+  { day:4, icon:'🥐', label:'4日目',   cpsHours:2.5, minCoins:400,  multiplier:1 },
+  { day:5, icon:'⭐', label:'5日目',   cpsHours:4,   minCoins:750,  multiplier:1 },
+  { day:6, icon:'🎆', label:'6日目',   cpsHours:6,   minCoins:1500, multiplier:1 },
+  { day:7, icon:'👑', label:'7日目！', cpsHours:0,   minCoins:0,    multiplier:2, special:'CPS×2（1時間）', duration:3600 },
 ];
 
 // フェーズ定義: [最大Lv, コスト倍率, フェーズ名, フェーズカラーCSS]
@@ -31,7 +31,7 @@ const PRESTIGE_LV_BONUS = 20;
 
 // ゲーム内時間定数
 const GAME_DAY_REAL_SECS = 600; // 10リアル分 = 1ゲーム日
-const GAME_SEASON_DAYS   = 30;  // 30ゲーム日 = 1シーズン
+const GAME_SEASON_DAYS   = 30;   // 30ゲーム日 = 1ゲーム月（季節は月から判定）
 
 // 建物定義
 const BUILDINGS = [
@@ -194,17 +194,17 @@ const SKILLS = [
   {id:'eternal_creation',name:'永遠の創造',       emoji:'♾️', cost:6, tier:12, requires:['culture_bloom'],    effect:'cps_mult',        value:1.00,  desc:'全建物のCPS ×2'},
   // ── 中列：飾り系 ──（デコ・礎 → イベント → ミニゲーム → シナジー）
   {id:'nature_beauty',   name:'自然の美',         emoji:'🌿', cost:1, tier:1,  requires:[],                   effect:'deco_mult',       value:0.15,  desc:'全デコレーション効果 +15%'},
-  {id:'foundation_1',    name:'礎の目覚め',       emoji:'🏡', cost:2, tier:2,  requires:['nature_beauty'],    effect:'foundation_rate', value:0.002, desc:'農村各建物Lv×0.2%を全建物CPS強化（農村全Lv100で全体×3）'},
-  {id:'foundation_2',    name:'礎の力',           emoji:'🏯', cost:3, tier:3,  requires:['foundation_1'],     effect:'foundation_rate', value:0.003, desc:'礎レート +0.3%/Lv → 計0.5%（農村全Lv100で全体×11倍）'},
-  {id:'foundation_3',    name:'礎の真髄',         emoji:'🌍', cost:5, tier:4,  requires:['foundation_2'],     effect:'foundation_rate', value:0.005, desc:'礎レート +0.5%/Lv → 計1.0%（農村全Lv100で全体×64倍）'},
-  {id:'beauty_power',    name:'美の力',           emoji:'🌺', cost:3, tier:5,  requires:['foundation_3'],     effect:'beauty_mult',     value:0.30,  desc:'美観ボーナス ×1.3'},
-  {id:'event_sense',     name:'イベント感知',     emoji:'🎪', cost:3, tier:6,  requires:['beauty_power'],     effect:'event_mult',      value:0.20,  desc:'イベント効果倍率 +20%'},
-  {id:'event_lord',      name:'祭典の主',         emoji:'🎆', cost:4, tier:7,  requires:['event_sense'],      effect:'event_dur',       value:0.30,  desc:'イベント継続時間 +30%'},
-  {id:'minigame_master', name:'ミニゲームの達人', emoji:'🎮', cost:4, tier:8,  requires:['event_lord'],       effect:'minigame_reward', value:0.50,  desc:'ミニゲームの報酬 +50%'},
-  {id:'farm_market',     name:'農商連携',         emoji:'🤝', cost:4, tier:9,  requires:['minigame_master'],  effect:'cps_synergy', areas:[1,2], value:0.15, desc:'農村・商店街エリアが互いに+15%（両区解放時）'},
-  {id:'beauty_all',      name:'美と力の融合',     emoji:'💫', cost:4, tier:10, requires:['farm_market'],      effect:'cps_all',         value:0.15,  desc:'全建物のCPS +15%'},
-  {id:'all_harmony',     name:'全区調和',         emoji:'🌐', cost:5, tier:11, requires:['beauty_all'],       effect:'cps_all',         value:0.20,  desc:'全建物のCPS +20%'},
-  {id:'world_beauty',    name:'世界の美',         emoji:'🌏', cost:5, tier:12, requires:['all_harmony'],      effect:'cps_mult',        value:0.50,  desc:'全建物のCPS ×1.5'},
+  {id:'foundation_area1',  name:'農村の礎',         emoji:'🏡', cost:2, tier:2,  requires:['nature_beauty'],        effect:'foundation_rate',       value:0.002, desc:'農村各建物Lv×0.2%を全建物CPS強化（農村全Lv100で全体×3）'},
+  {id:'foundation_area2',  name:'商いの礎',         emoji:'🏪', cost:2, tier:3,  requires:['foundation_area1'],     effect:'foundation_area2_rate', value:0.001, desc:'商店街各建物Lv×0.1%を全建物CPS強化（商店街全Lv100で全体×1.77倍）'},
+  {id:'foundation_area3',  name:'文化の礎',         emoji:'📚', cost:2, tier:4,  requires:['foundation_area2'],     effect:'foundation_area3_rate', value:0.0008,desc:'文化の丘各建物Lv×0.08%を全建物CPS強化（全Lv100で全体×1.59倍）'},
+  {id:'foundation_area4',  name:'癒やしの礎',       emoji:'♨️', cost:3, tier:5,  requires:['foundation_area3'],     effect:'foundation_area4_rate', value:0.0006,desc:'癒やしの里各建物Lv×0.06%を全建物CPS強化（全Lv100で全体×1.42倍）'},
+  {id:'foundation_area5',  name:'都市の礎',         emoji:'🏙️', cost:3, tier:6,  requires:['foundation_area4'],     effect:'foundation_area5_rate', value:0.0004,desc:'夢の都市各建物Lv×0.04%を全建物CPS強化（全Lv100で全体×1.27倍）'},
+  {id:'foundation_area6',  name:'宇宙の礎',         emoji:'🚀', cost:4, tier:7,  requires:['foundation_area5'],     effect:'foundation_area6_rate', value:0.0003,desc:'宇宙の夢各建物Lv×0.03%を全建物CPS強化（全Lv100で全体×1.19倍）'},
+  {id:'beauty_power',      name:'美の力',           emoji:'🌺', cost:3, tier:8,  requires:['foundation_area6'],     effect:'beauty_mult',           value:0.30,  desc:'美観ボーナス ×1.3'},
+  {id:'event_sense',       name:'イベント感知',     emoji:'🎪', cost:3, tier:9,  requires:['beauty_power'],         effect:'event_mult',            value:0.20,  desc:'イベント効果倍率 +20%'},
+  {id:'event_lord',        name:'祭典の主',         emoji:'🎆', cost:4, tier:10, requires:['event_sense'],          effect:'event_dur',             value:0.30,  desc:'イベント継続時間 +30%'},
+  {id:'minigame_master',   name:'ミニゲームの達人', emoji:'🎮', cost:4, tier:11, requires:['event_lord'],           effect:'minigame_reward',       value:0.50,  desc:'ミニゲームの報酬 +50%'},
+  {id:'farm_market',       name:'農商連携',         emoji:'🤝', cost:4, tier:12, requires:['minigame_master'],      effect:'cps_synergy', areas:[1,2], value:0.15, desc:'農村・商店街エリアが互いに+15%（両区解放時）'},
   // ── 右列：効率系 ──（クエスト・研究・実績・オフライン → 全体増幅 → シナジー）
   {id:'thrift',          name:'知恵の報酬',       emoji:'📜', cost:1, tier:1,  requires:[],                   effect:'quest_reward',    value:0.30,  desc:'クエスト報酬 +30%'},
   {id:'research_gift',   name:'研究の才能',       emoji:'🔬', cost:2, tier:2,  requires:['thrift'],           effect:'research_cost',   value:0.20,  desc:'研究コスト -20%'},

@@ -205,6 +205,19 @@
     color: #999
 }
 
+.btn-quest-next {
+    background: linear-gradient(135deg, var(--prestige), var(--prestige2));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 24px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 var(--prestige2);
+}
+
 /* デイリーモーダルカレンダー */
 .daily-calendar {
     display: grid;

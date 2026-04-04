@@ -12,6 +12,12 @@
     transition: color .2s, transform .15s
 }
 
+.rocket-wait {
+    color: var(--muted);
+    font-size: 32px;
+    animation: rocketPulse .8s ease-in-out infinite alternate
+}
+
 .rocket-urgent {
     color: #e53935;
     animation: rocketPulse .4s ease-in-out infinite alternate

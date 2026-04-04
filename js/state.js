@@ -47,8 +47,8 @@ let state = {
   longOffline: false,
   hourlyPlay: false,
   perfectPrestige: false,
-  // ゲーム内時間（0=春の1日目 朝8時スタート）
-  gameDay: 0,
+  // ゲーム内時間（90=4月1日 朝8時スタート）
+  gameDay: 90,
   gameDayProgress: 8 / 24,
   // ミニゲーム
   bakeryGameLastDate: '',     bakeryGamePlaysToday: 0,

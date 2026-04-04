@@ -309,6 +309,14 @@
 }
 .bk-press-btn:disabled::before { display: none }
 
+.bk-mult-display {
+    font-size: 12px;
+    color: #555;
+    font-weight: 700;
+    min-height: 18px;
+    margin-bottom: 4px;
+}
+
 .bk-cooldown {
     font-size: 11px;
     color: #9b6830;

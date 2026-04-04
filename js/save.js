@@ -63,6 +63,15 @@ function loadGame() {
     if (!state.research) state.research = {};
     state.quests = d.quests || null;
     state.skills = d.skills || {};
+    // ── マイグレーション ──
+    // foundation_1 → foundation_area1 へのリネーム対応
+    if (state.skills['foundation_1']) {
+      state.skills['foundation_area1'] = state.skills['foundation_1'];
+      delete state.skills['foundation_1'];
+    }
+    // 廃止されたスキルIDを除去
+    delete state.skills['foundation_2'];
+    delete state.skills['foundation_3'];
     state.prestigeSkills = d.prestigeSkills || {};
     state.prestigeSp = d.prestigeSp || 0;
     state.manualSaveCount = d.manualSaveCount || 0;

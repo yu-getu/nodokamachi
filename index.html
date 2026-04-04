@@ -179,7 +179,7 @@
         <div class="prestige-bonus-bar" id="prestigeBonusBar"></div>
       </div>
       <div id="prestigeBonusSpInfo" style="display:none"></div>
-      <button class="btn-prestige" id="btnPrestige" onclick="confirmPrestige()" disabled>⭐ 転生する</button>
+      <button class="btn-prestige" id="btnPrestige" onclick="confirmPrestige()">⭐ 転生する</button>
 
       <!-- 世代スキルツリー -->
       <div class="psk-section">
@@ -219,7 +219,7 @@
     <!-- クエストパネル -->
     <div class="quest-panel">
       <div class="quest-panel-title">
-        <span>🎯 デイリークエスト</span>
+        <span>🎯 クエスト</span>
         <span id="questCompleted" style="font-size:11px;color:var(--muted);font-family:sans-serif"></span>
       </div>
       <div id="questContainer"></div>
@@ -376,6 +376,7 @@
       </div>
       <div class="bk-result" id="bkResult"></div>
       <div class="bk-reward-info" id="bkRewardInfo"></div>
+      <div class="bk-mult-display" id="bkMultDisplay"></div>
       <button class="bk-press-btn" id="bkPressBtn" onclick="pressBakeryBtn()">🔥 焼く！</button>
       <div class="bk-cooldown" id="bkCooldown"></div>
       <button class="btn-modal" onclick="closeBakeryGame()">閉じる</button>
@@ -510,12 +511,12 @@
   <div class="modal-overlay" id="rocketModal" onclick="if(event.target===this)closeRocketGame()">
     <div class="modal">
       <h2>🚀 ロケット発射！</h2>
-      <p class="mg-desc">「発射！」が表示された瞬間にボタンを押そう！</p>
+      <p class="mg-desc">「発射！」が出た瞬間にボタンを押そう！いつ来るかはわからない…</p>
       <div class="rocket-countdown-wrap" style="text-align:center">
         <div class="rocket-countdown" id="rocketCountdown">🚀</div>
       </div>
       <div class="mg-result" id="rocketResult"></div>
-      <button class="rocket-start-btn" onclick="startRocketCountdown()">▶ カウントダウン開始</button>
+      <button class="rocket-start-btn" id="rocketStartBtn" onclick="startRocketCountdown()">▶ 開始</button>
       <button class="rocket-press-btn" id="rocketPressBtn" onclick="pressRocketBtn()" disabled>🚀 発射！</button>
       <div class="mg-plays-remain" id="rocketPlaysRemain"></div>
       <button class="btn-modal" onclick="closeRocketGame()">閉じる</button>

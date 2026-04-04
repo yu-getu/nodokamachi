@@ -60,13 +60,16 @@ function doPrestige() {
   state.coins = 0; state.totalEarned = 0;
   BUILDINGS.forEach(b => { state.buildings[b.id] = { level: 0 }; });
   state.activeEvents = []; state.eventDiscount = 1; state.skills = {}; state.research = {};
+  const prevQuestTotal = state.quests?.completedTotal || 0;
   state.quests = null;
   const newMax = getMaxLevel();
   const curMult = getPrestigeMult().toFixed(1);
   const spGain = 1 + bonusSp;
   addLog(`⭐ 転生(${state.prestigeCount}回目)！Lv上限→${newMax}、CPS倍率×${curMult}、世代SP+${spGain}${bonusSp > 0 ? `（ボーナス+${bonusSp}）` : ''}`);
   saveGame(); checkAchievements(); render(); renderPrestige();
-  checkQuestRefresh(); renderQuests();
+  checkQuestRefresh();
+  if (state.quests) state.quests.completedTotal = prevQuestTotal;
+  renderQuests();
   document.getElementById('prestigeBadge').style.display = 'flex';
   document.getElementById('prestigeCount').textContent = state.prestigeCount;
   for (let i = 0; i < 10; i++) setTimeout(() => spawnFloatCoins('⭐'), i * 100);
@@ -110,7 +113,7 @@ function updatePrestigeProgress() {
   if (barEl) barEl.style.width = `${prog}%`;
   if (btnEl) btnEl.disabled = !can;
   const mainBtnEl = document.getElementById('btnPrestige');
-  if (mainBtnEl) mainBtnEl.disabled = !can;
+  if (mainBtnEl) mainBtnEl.disabled = false;  // 転生タブのボタンは常に有効（リワード確認用）
   if (bonusBarEl) {
     if (!can) {
       bonusBarEl.style.display = 'none';

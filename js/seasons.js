@@ -9,19 +9,21 @@ function getGameHour() {
 
 function getGameDate() {
   const day = state.gameDay || 0;
-  const seasonIdx = Math.floor(day / GAME_SEASON_DAYS) % 4;
-  const dayInSeason = (day % GAME_SEASON_DAYS) + 1;
-  const year = Math.floor(day / (GAME_SEASON_DAYS * 4)) + 1;
-  return { year, season: SEASONS[seasonIdx], dayInSeason, totalDays: day + 1 };
+  const year       = Math.floor(day / 360) + 1;
+  const monthIdx   = Math.floor(day / 30) % 12;   // 0〜11
+  const month      = monthIdx + 1;                  // 1〜12
+  const dayInMonth = (day % 30) + 1;               // 1〜30
+  const season     = SEASONS.find(s => s.months.includes(month)) || SEASONS[0];
+  return { year, month, dayInMonth, season, totalDays: day + 1 };
 }
 
 function getCurrentSeason() { return getGameDate().season; }
 function getSeasonMult() { return getCurrentSeason().cpsMult; }
 
 function renderSeason() {
-  const { year, season, dayInSeason } = getGameDate();
+  const { year, month, dayInMonth, season } = getGameDate();
   const badge = document.getElementById('seasonBadge');
-  badge.textContent = `${season.emoji} ${year}年 ${season.name} ${dayInSeason}日`;
+  badge.textContent = `${season.emoji} ${year}年目 ${season.name} ${month}月${dayInMonth}日`;
   badge.className = `season-badge ${season.cssClass}`;
   updateSky();
 }

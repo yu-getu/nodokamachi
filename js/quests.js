@@ -6,14 +6,17 @@ function generateQuests() {
   const unlockedAreas = state.unlockedAreas || [1];
   const cps = Math.max(1, getEffectiveCps());
   // CPS秒数とコスト基準フロアの大きい方を報酬にする
-  const reward = (cpsSecs, costFloor = 0) => Math.max(Math.floor(cps * cpsSecs), Math.floor(costFloor));
+  const r = (cpsSecs, costFloor = 0) => ({
+    reward: Math.max(Math.floor(cps * cpsSecs), Math.floor(costFloor)),
+    rewardLabel: `CPS×${cpsSecs}`,
+  });
 
   BUILDINGS.filter(b => unlockedAreas.includes(b.area)).forEach(b => {
     const lv = state.buildings[b.id]?.level || 0;
     const targets = b.area <= 2 ? [1, 5, 10, 25, 50]
       : b.area <= 4 ? [1, 5, 10, 25]
         : [1, 5, 10];
-    const secs = { 1: 30, 5: 60, 10: 120, 25: 240, 50: 480 };
+    const secs = { 1: 15, 5: 30, 10: 60, 25: 120, 50: 240 };
     // フロア: そのレベルに到達するまでの建物コストの約15%
     const costFloors = { 1: b.baseCost * 0.5, 5: b.baseCost * 2, 10: b.baseCost * 5, 25: b.baseCost * 15, 50: b.baseCost * 40 };
     targets.forEach(target => {
@@ -21,18 +24,18 @@ function generateQuests() {
         id: `${b.id}_lv${target}`, emoji: b.emoji,
         label: `${b.name}をLv${target}にする`,
         type: 'building_level', buildingId: b.id, target,
-        reward: reward(secs[target] || 60, costFloors[target]),
+        ...r(secs[target] || 60, costFloors[target]),
       });
     });
   });
 
-  const totalSecs = { 5: 60, 15: 90, 30: 120, 60: 180, 100: 240, 150: 300, 230: 420, 350: 600, 500: 900 };
+  const totalSecs = { 5: 30, 15: 45, 30: 60, 60: 90, 100: 120, 150: 150, 230: 210, 350: 300, 500: 450 };
   const curTotalLv = getTotalLv();
   [5, 15, 30, 60, 100, 150, 230, 350, 500].forEach(t => {
     if (curTotalLv < t && t <= curTotalLv + 80) pool.push({
       id: `total_${t}`, emoji: '🏘️', label: `建物の総レベルを${t}にする`,
       type: 'total_level', target: t,
-      reward: reward(totalSecs[t] || 120),
+      ...r(totalSecs[t] || 120),
     });
   });
 
@@ -41,41 +44,41 @@ function generateQuests() {
       id: `earn_${t}`, emoji: '💰', label: `累計${fmt(t)}コインを稼ぐ`,
       type: 'earn', target: t,
       // フロア: 目標額の5%
-      reward: reward(120, t * 0.05),
+      ...r(60, t * 0.05),
     });
   });
 
   const decoCount = Object.keys(state.decoOwned || {}).filter(id => state.decoOwned[id]).length;
-  const decoSecs = { 1: 60, 3: 120, 5: 180, 8: 300, 10: 420 };
+  const decoSecs = { 1: 30, 3: 60, 5: 90, 8: 150, 10: 210 };
   // デコのコストフロア: 該当個数目のデコ購入コストの10%（概算）
   const decoFloors = { 1: 500, 3: 2000, 5: 8000, 8: 50000, 10: 200000 };
   [1, 3, 5, 8, 10].forEach(t => {
     if (decoCount < t) pool.push({
       id: `deco_${t}`, emoji: '🌺', label: `デコレーションを${t}個設置する`,
       type: 'deco', target: t,
-      reward: reward(decoSecs[t] || 120, decoFloors[t]),
+      ...r(decoSecs[t] || 120, decoFloors[t]),
     });
   });
 
   const resCount = Object.keys(state.research || {}).length;
-  const resSecs = { 1: 120, 3: 240, 5: 360, 9: 600 };
+  const resSecs = { 1: 60, 3: 120, 5: 180, 9: 300 };
   // 研究コストフロア: 研究コストの10%（概算）
   const resFloors = { 1: 5000, 3: 50000, 5: 500000, 9: 5000000 };
   [1, 3, 5, 9].forEach(t => {
     if (resCount < t) pool.push({
       id: `res_${t}`, emoji: '🔬', label: `研究を${t}件完了する`,
       type: 'research', target: t,
-      reward: reward(resSecs[t] || 180, resFloors[t]),
+      ...r(resSecs[t] || 180, resFloors[t]),
     });
   });
 
   const skillCount = Object.keys(state.skills || {}).length;
-  const skillSecs = { 1: 120, 3: 240, 5: 360, 8: 540, 13: 900 };
+  const skillSecs = { 1: 60, 3: 120, 5: 180, 8: 270, 13: 450 };
   [1, 3, 5, 8, 13].forEach(t => {
     if (skillCount < t) pool.push({
       id: `skill_${t}`, emoji: '🌟', label: `スキルを${t}個習得する`,
       type: 'skill', target: t,
-      reward: reward(skillSecs[t] || 240),
+      ...r(skillSecs[t] || 240),
     });
   });
 
@@ -86,7 +89,7 @@ function generateQuests() {
       label: `CPS ${fmt(t)}/秒 を達成する`,
       type: 'cps', target: t,
       // フロア: 目標CPS × 30秒分
-      reward: reward(300, t * 30),
+      ...r(150, t * 30),
     });
   });
 
@@ -100,7 +103,7 @@ function generateQuests() {
         label: `${area.name}（${area.desc}）を解放する`,
         type: 'unlock_area', areaId, target: 1,
         // フロア: 解放コストの10%
-        reward: reward(300, area.unlockCost * 0.1),
+        ...r(150, area.unlockCost * 0.1),
       });
     }
   });
@@ -153,9 +156,8 @@ function refreshQuests() {
 
 function checkQuestRefresh() {
   const quests = state.quests?.active;
-  const dateChanged = state.quests?.lastRefresh !== getTodayStr();
   const invalid = !isQuestsValid(quests);
-  if (!quests?.length || dateChanged || invalid) refreshQuests();
+  if (!quests?.length || invalid) refreshQuests();
 }
 
 function renderQuests() {
@@ -178,7 +180,7 @@ function renderQuests() {
         <div class="quest-count">${fmt(prog)} / ${fmt(q.target)}</div>
       </div>
       <div class="quest-right">
-        <div class="quest-reward">🪙${fmt(q.reward)}</div>
+        <div class="quest-reward">${q.rewardLabel ?? '🪙' + fmt(q.reward)}</div>
         <button class="btn-quest" onclick="claimQuest(${i})" ${q.claimed || !done ? 'disabled' : ''}>
           ${q.claimed ? '✅' : done ? '受け取る' : '未達成'}
         </button>
@@ -187,8 +189,9 @@ function renderQuests() {
   }).join('');
 
   if (allClaimed) {
-    container.innerHTML += `<div style="text-align:center;margin-top:10px;font-size:12px;color:var(--muted)">
-      🎉 本日のクエストはすべて完了！明日また来てね
+    container.innerHTML += `<div style="text-align:center;margin-top:12px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">🎉 すべてのクエストを完了！</div>
+      <button class="btn-quest-next" onclick="refreshQuests()">📋 次のクエスト</button>
     </div>`;
   }
 }
