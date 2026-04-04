@@ -10,6 +10,9 @@ const BK_GOOD_W    = 44;
 const BK_PERFECT_L = 42;
 const BK_PERFECT_W = 16;
 
+// 目押し補正：描画遅延（描画+入力で約50ms）分だけ過去の位置で判定
+const BK_PRESS_COMP_MS = 30;
+
 // クールタイム・倍率
 const BK_COOLDOWN_SEC  = 1;    // クリック間のクールタイム（秒）
 const BK_MULT_MIN      = 0.3;  // 倍率下限
