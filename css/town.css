@@ -220,7 +220,7 @@
     transition: opacity 0.4s ease;
 }
 
-/* ── ひと稼ぎ行（stats-bar上部） ── */
+/* ── ひと稼ぎ行（常に表示・sticky）── */
 .harvest-row {
     display: flex;
     justify-content: center;
@@ -233,6 +233,9 @@
     gap: 8px;
     width: 100%;
     box-sizing: border-box;
+    position: sticky;
+    top: var(--header-h, 108px);
+    z-index: 150;
 }
 
 /* ── ひと稼ぎ建物 ── */

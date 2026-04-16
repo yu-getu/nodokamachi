@@ -294,8 +294,15 @@ function renderPrestigeSkillTree() {
       <div class="skill-detail-desc" id="psdDesc"></div>
       <button class="sk-btn" id="psdBtn"></button>
       <button class="sk-btn sk-btn-all" id="psdBtnAll" style="display:none"></button>`;
+    detail.addEventListener('click', e => e.stopPropagation());
     detailArea.appendChild(detail);
   }
+
+  if (document._pskOutsideClick) {
+    document.removeEventListener('click', document._pskOutsideClick);
+  }
+  document._pskOutsideClick = () => closePskDetail();
+  document.addEventListener('click', document._pskOutsideClick);
 
   container.appendChild(wrap);
 

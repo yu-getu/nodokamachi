@@ -67,6 +67,9 @@ function buyResearchAll(bid) {
   renderResearch();
 }
 
+// ── 研究タブ（アコーディオン折りたたみ状態） ──
+const _researchCollapsed = new Set();
+
 function renderResearch() {
   const grid = document.getElementById('researchGrid');
   grid.innerHTML = '';
@@ -83,9 +86,24 @@ function renderResearch() {
     const section = document.createElement('div');
     section.className = 'research-area-section';
 
+    const collapsed = _researchCollapsed.has(areaId);
     const header = document.createElement('div');
-    header.className = 'research-area-header';
-    header.innerHTML = `${area.emoji} ${area.name}`;
+    header.className = 'research-area-header' + (collapsed ? ' collapsed' : '');
+    header.innerHTML = `<span>${area.emoji} ${area.name}</span><span class="research-area-header-arrow">▼</span>`;
+
+    const items = document.createElement('div');
+    items.className = 'research-area-items' + (collapsed ? ' collapsed' : '');
+
+    header.addEventListener('click', () => {
+      if (_researchCollapsed.has(areaId)) {
+        _researchCollapsed.delete(areaId);
+      } else {
+        _researchCollapsed.add(areaId);
+      }
+      header.classList.toggle('collapsed');
+      items.classList.toggle('collapsed');
+    });
+
     section.appendChild(header);
 
     buildings.forEach(b => {
@@ -148,9 +166,10 @@ function renderResearch() {
         <span class="rb-emoji">${b.emoji}</span>
         <span class="rb-name">${b.name}${advHint}</span>
         <div class="rb-tiers">${tierBtns}${bulkBtn}</div>`;
-      section.appendChild(row);
+      items.appendChild(row);
     });
 
+    section.appendChild(items);
     grid.appendChild(section);
   });
 }

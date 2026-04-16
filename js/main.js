@@ -198,6 +198,21 @@ function tick() {
   if (tickCount % resInterval === 0) spawnResident();
 }
 
+// ── sticky位置をCSS変数に反映（harvest-row / stats-bar用） ──
+function _updateHeaderH() {
+  const header = document.querySelector('header');
+  const harvestRow = document.getElementById('harvestRow');
+  if (!header) return;
+  const headerPx = header.getBoundingClientRect().height + 12; // +margin-bottom
+  document.documentElement.style.setProperty('--header-h', headerPx + 'px');
+  if (harvestRow) {
+    const harvestRect = harvestRow.getBoundingClientRect();
+    const harvestPx = harvestRect.height + 8 + 8; // +margin top/bottom
+    document.documentElement.style.setProperty('--sticky-stats-top', (headerPx + harvestPx) + 'px');
+  }
+}
+window.addEventListener('resize', _updateHeaderH);
+
 // ── 起動 ──
 const loaded = loadGame();
 addLog(loaded ? '💾 セーブデータを読み込みました。' : '🌿 のどかまちへようこそ！最初の建物を建ててみよう。');
@@ -206,6 +221,7 @@ if (state.prestigeCount > 0) {
   document.getElementById('prestigeCount').textContent = state.prestigeCount;
 }
 render();
+_updateHeaderH();
 renderDailyBar();
 checkQuestRefresh();
 renderQuests();

@@ -271,8 +271,15 @@ function renderSkills() {
       <div class="skill-detail-desc" id="sdDesc"></div>
       <button class="sk-btn" id="sdBtn"></button>
       <button class="sk-btn sk-btn-all" id="sdBtnAll" style="display:none"></button>`;
+    detail.addEventListener('click', e => e.stopPropagation());
     detailArea.appendChild(detail);
   }
+
+  if (document._skillOutsideClick) {
+    document.removeEventListener('click', document._skillOutsideClick);
+  }
+  document._skillOutsideClick = () => closeSkillDetail();
+  document.addEventListener('click', document._skillOutsideClick);
 
   if (prevOpen) showSkillDetail(prevOpen);
 }

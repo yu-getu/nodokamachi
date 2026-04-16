@@ -56,7 +56,7 @@
   }
 
   /* ショップ：1列 */
-  .shop-grid {
+  .area-items {
     grid-template-columns: 1fr;
   }
 
@@ -161,7 +161,7 @@
   }
 
   /* ショップ：2列維持 */
-  .shop-grid {
+  .area-items {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
@@ -236,7 +236,7 @@
   }
 
   /* ショップ：3列 */
-  .shop-grid {
+  .area-items {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -268,6 +268,7 @@
     grid-row: 2;
     margin: 0;
     align-self: stretch;
+    top: calc(var(--header-h, 82px) - 12px);
   }
 
   /* 上段右：町エリア */
@@ -337,7 +338,7 @@
   }
 
   /* ショップ：画面幅に応じた可変列数（最小190px/列） */
-  .shop-grid {
+  .area-items {
     grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
     gap: 12px;
   }

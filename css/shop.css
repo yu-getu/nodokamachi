@@ -45,9 +45,33 @@
 }
 
 .shop-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* エリアセクション */
+.area-section {
+    width: 100%;
+}
+
+/* エリア建物グリッド（折りたたみ対象） */
+.area-items {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px
+    gap: 10px;
+    padding: 4px 0 8px;
+    overflow: hidden;
+    max-height: 2000px;
+    opacity: 1;
+    transition: max-height 0.3s ease, opacity 0.2s ease;
+}
+
+.area-items.collapsed {
+    max-height: 0;
+    opacity: 0;
+    padding: 0;
+    transition: max-height 0.25s ease, opacity 0.15s ease, padding 0.25s;
 }
 
 .shop-item {
@@ -240,20 +264,35 @@
 
 /* ── エリアヘッダー ── */
 .area-header {
-    grid-column: 1/-1;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 7px 6px;
     border-bottom: 2px solid #e8d8b0;
-    margin: 6px 0 4px;
+    margin: 6px 0 0;
     font-weight: 800;
     font-size: 13px;
-    color: var(--brown)
+    color: var(--brown);
+    cursor: pointer;
+    user-select: none;
+}
+
+.area-header:first-child {
+    margin-top: 0;
+}
+
+.area-header-arrow {
+    font-size: 10px;
+    transition: transform 0.25s ease;
+    display: inline-block;
+}
+
+.area-header.collapsed .area-header-arrow {
+    transform: rotate(-90deg);
 }
 
 .area-locked-card {
-    grid-column: 1/-1;
+    width: 100%;
     background: linear-gradient(135deg, #f5f5f5, #eeeeee);
     border: 2px dashed #ccc;
     border-radius: 14px;

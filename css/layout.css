@@ -155,7 +155,10 @@ header {
     width: 100%;
     display: flex;
     gap: 8px;
-    margin-bottom: 12px
+    margin-bottom: 12px;
+    position: sticky;
+    top: var(--sticky-stats-top, 280px);
+    z-index: 140;
 }
 
 .stat-card-cps {

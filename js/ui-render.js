@@ -76,6 +76,9 @@ function renderTown() {
   }
 }
 
+// ── ショップ（アコーディオン折りたたみ状態） ──
+const _shopCollapsed = new Set();
+
 // ── ショップ ──
 function renderShop() {
   const grid=document.getElementById('shopGrid'); grid.innerHTML='';
@@ -107,7 +110,6 @@ function renderShop() {
       const canAfford = state.coins >= area.unlockCost;
       const card = document.createElement('div');
       card.className = 'area-locked-card';
-      card.style.cssText = 'grid-column:1/-1';
       card.innerHTML = `
         <div>
           <div class="area-locked-name">🔒 ${area.emoji} ${area.name}</div>
@@ -119,12 +121,30 @@ function renderShop() {
       grid.appendChild(card);
       return;
     }
-    if (area.id > 1) {
-      const hdr = document.createElement('div');
-      hdr.className = 'area-header';
-      hdr.innerHTML = `${area.emoji} ${area.name}`;
-      grid.appendChild(hdr);
-    }
+
+    // エリアセクション
+    const section = document.createElement('div');
+    section.className = 'area-section';
+
+    // アコーディオンヘッダー
+    const collapsed = _shopCollapsed.has(area.id);
+    const hdr = document.createElement('div');
+    hdr.className = 'area-header' + (collapsed ? ' collapsed' : '');
+    hdr.innerHTML = `<span>${area.emoji} ${area.name}</span><span class="area-header-arrow">▼</span>`;
+
+    // 建物グリッド
+    const items = document.createElement('div');
+    items.className = 'area-items' + (collapsed ? ' collapsed' : '');
+
+    hdr.addEventListener('click', () => {
+      if (_shopCollapsed.has(area.id)) {
+        _shopCollapsed.delete(area.id);
+      } else {
+        _shopCollapsed.add(area.id);
+      }
+      hdr.classList.toggle('collapsed');
+      items.classList.toggle('collapsed');
+    });
 
     const totalBuildingCps = BUILDINGS.reduce((s,x)=>s+getBuildingCps(x),0);
 
@@ -184,8 +204,12 @@ function renderShop() {
         return `<button class="btn-minigame" onclick="${meta.fn}()">${meta.emoji} ${meta.label}</button>`;
       })() : ''}
     `;
-    grid.appendChild(div);
+    items.appendChild(div);
     });
+
+    section.appendChild(hdr);
+    section.appendChild(items);
+    grid.appendChild(section);
   });
 }
 

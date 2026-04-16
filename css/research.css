@@ -17,7 +17,35 @@
     padding: 6px 12px;
     font-size: 12px;
     font-weight: 800;
-    color: #4a148c
+    color: #4a148c;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.research-area-header-arrow {
+    font-size: 10px;
+    display: inline-block;
+    transition: transform 0.25s ease;
+}
+
+.research-area-header.collapsed .research-area-header-arrow {
+    transform: rotate(-90deg);
+}
+
+/* 折りたたみコンテナ */
+.research-area-items {
+    max-height: 2000px;
+    opacity: 1;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.2s ease;
+}
+
+.research-area-items.collapsed {
+    max-height: 0;
+    opacity: 0;
 }
 
 /* ── 施設行 ── */
